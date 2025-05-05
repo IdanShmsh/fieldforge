@@ -1,0 +1,71 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/core/ops/simulation_data_ops.hlsl"
+#include "../../../src/core/ops/fermion_field_state_ops.hlsl"
+#include "../../../src/core/ops/gauge_symmeyries_vector_pack_ops.hlsl"
+#include "../../../src/core/ops/global_intrinsics_indieces.hlsl"
+
+// This function is used to loop the states through the fermion lattice buffers at a given position
+void loop_fermion_field(float3 position, uint field_index)
+{
+    uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
+    FermionFieldState empty_state;
+    FermionFieldStateOps::empty(empty_state);
+    prev_fermions_lattice_buffer[lattice_buffer_index] = crnt_fermions_lattice_buffer[lattice_buffer_index];
+    crnt_fermions_lattice_buffer[lattice_buffer_index] = next_fermions_lattice_buffer[lattice_buffer_index];
+    next_fermions_lattice_buffer[lattice_buffer_index] = empty_state;
+}
+
+// This function is used to loop the states through the fermion lattice buffers at a given position
+void loop_fermion_fields(float3 position)
+{
+    for (uint fieldIndex = 0; fieldIndex < 8; fieldIndex++) loop_fermion_field(position, fieldIndex);
+}
+
+// This function is used to loop the states through the gauge lattice buffers at a given position
+void loop_gauge_fields(float3 position)
+{
+    uint lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
+    GaugeSymmetriesVectorPack empty_gauge_state;
+    GaugeSymmetriesVectorPackOps::empty(empty_gauge_state);
+    prev_gauge_potentials_lattice_buffer[lattice_buffer_index] = crnt_gauge_potentials_lattice_buffer[lattice_buffer_index];
+    crnt_gauge_potentials_lattice_buffer[lattice_buffer_index] = next_gauge_potentials_lattice_buffer[lattice_buffer_index];
+    next_gauge_potentials_lattice_buffer[lattice_buffer_index] = empty_gauge_state;
+
+    prev_electric_strengths_lattice_buffer[lattice_buffer_index] = crnt_electric_strengths_lattice_buffer[lattice_buffer_index];
+    crnt_electric_strengths_lattice_buffer[lattice_buffer_index] = next_electric_strengths_lattice_buffer[lattice_buffer_index];
+    next_electric_strengths_lattice_buffer[lattice_buffer_index] = empty_gauge_state;
+
+    prev_magnetic_strengths_lattice_buffer[lattice_buffer_index] = crnt_magnetic_strengths_lattice_buffer[lattice_buffer_index];
+    crnt_magnetic_strengths_lattice_buffer[lattice_buffer_index] = next_magnetic_strengths_lattice_buffer[lattice_buffer_index];
+    next_magnetic_strengths_lattice_buffer[lattice_buffer_index] = empty_gauge_state;
+}
+
+// This function is used to perform the update required on the global intrinsics buffer
+void update_global_intrinsics()
+{
+    global_intrinsics[GI_FRAME_COUNT] += 1;
+}
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation performs all actions involved in a "simulation step" - actions crucial for happening
+/// every frame to make sure the simulation and its internal data is updated correctly.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    loop_fermion_fields(position);
+    loop_gauge_fields(position);
+    bool last_thread = dispatch_thread_id.x == simulation_width - 1 && dispatch_thread_id.y == simulation_height - 1 && dispatch_thread_id.z == simulation_depth - 1;
+    if (!last_thread) return;
+    update_global_intrinsics();
+}

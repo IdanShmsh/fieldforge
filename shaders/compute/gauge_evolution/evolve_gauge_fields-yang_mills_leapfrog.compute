@@ -1,0 +1,26 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/gauge_field_evolution/yang_mills_leapfrog.hlsl"
+
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation performs the evolution of gauge fields using the Yang-Mills theory, which describes the
+/// behavior of gauge fields in an abelian/non-abelian gauge theory. The evolution is performed by writing values to
+/// the buffers associated with the gauge fields in the next time-step, such that they, together with the values in
+/// the current and previous time-steps, represent a local structure which satisfies the Yang-Mills equations with
+/// no approximations up to the numerical precision of the machine running the simulation.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    GaugeFieldsEvolution::YangMillsLeapfrog::gauge_evolution(position);
+}

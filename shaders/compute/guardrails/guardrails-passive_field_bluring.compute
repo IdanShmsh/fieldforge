@@ -1,0 +1,32 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/guarding_rails/passive_field_blurring.hlsl"
+
+int kernel_radius = 1;
+float standard_deviation = 0.5f;
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation applies local blurring, the same way everywhere and to all fields in the simulation, using
+/// a 3x3x3 gaussian kernel.
+/// Properties:
+/// • kernel_center (float)
+///   This parameter <kernel_center> is the value associated with the center of the kernel.
+///   The blurring kernel is constructed as a 3x3x3 gaussian kernel accordingly.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    GuardingRails::PassiveFieldBlurring::blur_fermion_fields(position, kernel_radius, standard_deviation, crnt_fermions_lattice_buffer);
+    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_gauge_potentials_lattice_buffer);
+    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_electric_strengths_lattice_buffer);
+    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_magnetic_strengths_lattice_buffer);
+}

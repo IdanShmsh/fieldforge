@@ -1,0 +1,30 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#define BLURRING_KERNEL_RADIUS 2
+
+#include "../../../src/dynamics/guarding_rails/activity_dependent_energy_dissipation.hlsl"
+
+float activity_energy_scale = 10.0f;
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation applies an energy dissipation effect to the fields, by scaling them down by a fraction
+/// inversely proportional to the energy density of the fields at the position in which the scaling takes place.
+/// Properties:
+/// • activity_energy_scale (float)
+///   This parameter <activity_energy_scale> is incorporated via the field scalar calculation as:
+///   scale_factor = sqrt(1 + pow(energy_density / <activity_energy_scale>, 2)) - 1
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    // GuardingRails::ActivityDependentEnergyDissipation::energy_density_dependent_scaling(position, activity_energy_scale);
+}
