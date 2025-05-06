@@ -14,18 +14,18 @@ namespace GuardingRails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void blur_fermion_fields(float3 position, int kernel_radius, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
+        void blur_fermion_fields(float3 position, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
         {
-            FieldBlurring::blur_fermion_fields(position, kernel_radius, standard_deviation, fermion_lattice_buffer);
+            FieldBlurring::blur_fermion_fields_3x3x3(position, standard_deviation, fermion_lattice_buffer);
         }
 
         // Blur the gauge fields at a given position with a specified kernel radius and standard deviation
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void blur_gauge_fields(float3 position, int kernel_radius, float standard_deviation, GaugeLatticeBuffer gauge_lattice_buffer)
+        void blur_gauge_fields(float3 position, float standard_deviation, GaugeLatticeBuffer gauge_lattice_buffer)
         {
-            FieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, gauge_lattice_buffer);
+            FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, gauge_lattice_buffer);
         }
     }
 }

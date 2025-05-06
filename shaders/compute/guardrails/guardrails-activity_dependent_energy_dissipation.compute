@@ -26,5 +26,5 @@ float activity_energy_scale = 10.0f;
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
-    // GuardingRails::ActivityDependentEnergyDissipation::energy_density_dependent_scaling(position, activity_energy_scale);
+    GuardingRails::ActivityDependentEnergyDissipation::energy_density_dependent_scaling(position, activity_energy_scale);
 }

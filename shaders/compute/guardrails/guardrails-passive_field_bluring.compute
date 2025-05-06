@@ -9,7 +9,6 @@
 
 #include "../../../src/dynamics/guarding_rails/passive_field_blurring.hlsl"
 
-int kernel_radius = 1;
 float standard_deviation = 0.5f;
 
 /// --------------------------------------------------------------------------------------------------------------
@@ -25,8 +24,8 @@ float standard_deviation = 0.5f;
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
-    GuardingRails::PassiveFieldBlurring::blur_fermion_fields(position, kernel_radius, standard_deviation, crnt_fermions_lattice_buffer);
-    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_gauge_potentials_lattice_buffer);
-    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_electric_strengths_lattice_buffer);
-    // GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, kernel_radius, standard_deviation, crnt_magnetic_strengths_lattice_buffer);
+    GuardingRails::PassiveFieldBlurring::blur_fermion_fields(position, standard_deviation, crnt_fermions_lattice_buffer);
+    GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_gauge_potentials_lattice_buffer);
+    GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_electric_strengths_lattice_buffer);
+    GuardingRails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_magnetic_strengths_lattice_buffer);
 }

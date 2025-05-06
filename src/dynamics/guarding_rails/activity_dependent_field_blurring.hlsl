@@ -30,17 +30,15 @@ namespace GuardingRails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void energy_density_dependent_blurring(float3 position, float energy_scale)
+        void energy_density_dependent_blurring(float3 position, float energy_scale, float radius_cap)
         {
-            float energy_density = _compute_energy_density(position);
-            // This is a simple hyperbola : https://www.desmos.com/calculator/fuuc0ethl9
-            float blurring_radius = sqrt(1 + pow(energy_density / energy_scale, 2)) - 1;
-            if (blurring_radius < 1) return;
-            int kernel_radius = max((int)blurring_radius, 1);
-            FieldBlurring::blur_fermion_fields(position, kernel_radius, blurring_radius, crnt_fermions_lattice_buffer);
-            FieldBlurring::blur_gauge_fields(position, kernel_radius, blurring_radius, crnt_gauge_potentials_lattice_buffer);
-            FieldBlurring::blur_gauge_fields(position, kernel_radius, blurring_radius, crnt_electric_strengths_lattice_buffer);
-            FieldBlurring::blur_gauge_fields(position, kernel_radius, blurring_radius, crnt_magnetic_strengths_lattice_buffer);
+            float energy_density = _compute_energy_density(position) / energy_scale;
+            // TODO: provide visualization
+            float standard_deviation = radius_cap * (1 - exp(-energy_density * energy_density));
+            FieldBlurring::blur_fermion_fields_3x3x3(position, standard_deviation, crnt_fermions_lattice_buffer);
+            FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, crnt_gauge_potentials_lattice_buffer);
+            FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, crnt_electric_strengths_lattice_buffer);
+            FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, crnt_magnetic_strengths_lattice_buffer);
         }
     }
 }

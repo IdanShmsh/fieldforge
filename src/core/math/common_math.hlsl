@@ -4,6 +4,8 @@
 /// This namespace implements functions used to perform simple common mathematical operations.
 namespace CommonMath
 {
+    const float PI = 3.14159265358979323846;
+
     float harmonic_mean(float a, float b)
     {
         return a * b / (a + b);
@@ -58,6 +60,26 @@ namespace CommonMath
         float theta = spherical.y;
         float phi = spherical.z;
         return float3(r * sin(phi) * cos(theta), r * sin(phi) * sin(theta), r * cos(phi));
+    }
+
+    float gaussian(float x, float stddev)
+    {
+        return exp(-0.5 * pow(x / stddev, 2)) / (stddev * sqrt(2 * PI));
+    }
+
+    float gaussian(float2 x, float stddev)
+    {
+        return gaussian(length(x), stddev);
+    }
+
+    float gaussian(float3 x, float stddev)
+    {
+        return gaussian(length(x), stddev);
+    }
+
+    float gaussian(float4 x, float stddev)
+    {
+        return gaussian(length(x), stddev);
     }
 }
 

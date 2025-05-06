@@ -12,20 +12,11 @@
 /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
 namespace FieldBlurring
 {
-    // Compute the Gaussian weight for a given offset and sigma (blur radius)
-    float gaussian_weight(int x, int y, int z, float sigma)
-    {
-        float r2 = float(x * x + y * y + z * z);
-        float twc_sigma_sqrd = 2.0 * sigma * sigma;
-        float coeff = 1.0 / pow(3.14159 * twc_sigma_sqrd, 1.5);
-        return coeff * exp(-r2 / twc_sigma_sqrd);
-    }
-
     // Blur the fermion fields at a given position with a specified kernel radius and standard deviation
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_fermion_fields(float3 position, int kernel_radius, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
+    void blur_fermion_fields_3x3x3(float3 position, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
     {
         for (uint field_index = 0; field_index < 8; field_index++)
         {
@@ -33,12 +24,12 @@ namespace FieldBlurring
             FermionFieldState fermion_state;
             FermionFieldStateOps::empty(fermion_state);
             float total_weight = 0;
-            for (int x = -kernel_radius; x <= kernel_radius; x++)
-            for (int y = -kernel_radius; y <= kernel_radius; y++)
-            for (int z = -kernel_radius; z <= kernel_radius; z++)
+            for (int x = -1; x <= 1; x++)
+            for (int y = -1; y <= 1; y++)
+            for (int z = -1; z <= 1; z++)
             {
                 float3 offset = float3(x, y, z);
-                float weight = gaussian_weight(x, y, z, standard_deviation);
+                float weight = CommonMath::gaussian(offset, standard_deviation);
                 total_weight += weight;
                 uint neighbor_index = SimulationDataOps::get_fermion_lattice_buffer_index(position + offset, field_index);
                 FermionFieldState neighbor = fermion_lattice_buffer[neighbor_index];
@@ -55,18 +46,18 @@ namespace FieldBlurring
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_gauge_fields(float3 position, int kernel_radius, float standard_deviation, GaugeLatticeBuffer gauge_lattice_buffer)
+    void blur_gauge_fields_3x3x3(float3 position, float standard_deviation, GaugeLatticeBuffer gauge_lattice_buffer)
     {
         uint center_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
         GaugeSymmetriesVectorPack state;
         GaugeSymmetriesVectorPackOps::empty(state);
         float total_weight = 0;
-        for (int x = -kernel_radius; x <= kernel_radius; x++)
-        for (int y = -kernel_radius; y <= kernel_radius; y++)
-        for (int z = -kernel_radius; z <= kernel_radius; z++)
+        for (int x = -1; x <= 1; x++)
+        for (int y = -1; y <= 1; y++)
+        for (int z = -1; z <= 1; z++)
         {
             float3 offset = float3(x, y, z);
-            float weight = gaussian_weight(x, y, z, standard_deviation);
+            float weight = CommonMath::gaussian(offset, standard_deviation);
             total_weight += weight;
             uint neighbor_index = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
             GaugeSymmetriesVectorPack neighbor = gauge_lattice_buffer[neighbor_index];
