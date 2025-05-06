@@ -9,7 +9,7 @@
 
 #define BLURRING_KERNEL_RADIUS 2
 
-#include "../../../src/dynamics/guarding_rails/activity_dependent_field_blurring.hlsl"
+#include "../../../src/dynamics/guardrails/activity_dependent_field_blurring.hlsl"
 
 float activity_energy_scale = 5.0f;
 float radius_cap = 2.0f;

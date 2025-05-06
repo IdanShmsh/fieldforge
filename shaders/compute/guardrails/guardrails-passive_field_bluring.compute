@@ -7,7 +7,7 @@
 
 #define SPATIAL_DIMENSIONALITY 3
 
-#include "../../../src/dynamics/guarding_rails/passive_field_blurring.hlsl"
+#include "../../../src/dynamics/guardrails/passive_field_blurring.hlsl"
 
 float standard_deviation = 0.25f;
 

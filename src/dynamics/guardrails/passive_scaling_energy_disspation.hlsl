@@ -1,5 +1,5 @@
-#ifndef GUARDING_RAILS_AmpEngDsp
-#define GUARDING_RAILS_AmpEngDsp
+#ifndef GUARDRAILS_PASSIVE_SCALING_ENERGY_DISSIPATION
+#define GUARDRAILS_PASSIVE_SCALING_ENERGY_DISSIPATION
 
 #include "../../core/math/gauge_symmetries_vector_pack_math.hlsl"
 #include "../../core/math/fermion_field_state_math.hlsl"
