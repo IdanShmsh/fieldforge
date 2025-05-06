@@ -86,9 +86,6 @@ namespace FermionFieldEvolution
 
             // Parallel transport the entire result
             WilsonFormalism::backward_parallel_transport_fermion(next_state, evolution_cache.weak_partner_state, evolution_cache.gauge_state, 0, evolution_cache.coupling_constants, evolution_cache.weak_doublet_index, next_state);
-
-            // Zeroing small states doesn't affect the simulation but improves performance
-            if (FermionFieldStateOps::is_zero(next_state, 1e-2)) FermionFieldStateOps::empty(next_state);
         }
 
         // Ensure the validity of the evolution result
