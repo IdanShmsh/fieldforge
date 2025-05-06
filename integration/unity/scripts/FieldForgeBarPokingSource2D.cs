@@ -28,10 +28,9 @@ namespace FieldForge
 
         private void Update()
         {
-            // if (_pulseFrameCounter > 0) SubmitCurrentPoke();
-            // if (_pulseFrameCounter > pulseDuration) _pulseFrameCounter = -pulseCooldown;
+            if (_pulseFrameCounter > 0) SubmitCurrentPoke();
+            if (_pulseFrameCounter > pulseDuration) _pulseFrameCounter = -pulseCooldown;
             _pulseFrameCounter++;
-            SubmitCurrentPoke();
         }
 
         private void SubmitCurrentPoke()
@@ -48,7 +47,7 @@ namespace FieldForge
             Debug.Log(pokeStrength * math.cos((float)_pulseFrameCounter / pulseCooldown));
             return new SimulationPokeInformation
             {
-                pokeStrength = (int)(pokeStrength * math.cos((float)_pulseFrameCounter / pulseCooldown)),
+                pokeStrength = (int)pokeStrength,
                 pokeRadius = (int)pokeRadius,
                 x = (int)pokingPosition.x,
                 y = (int)pokingPosition.y,
