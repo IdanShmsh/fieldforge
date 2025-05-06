@@ -9,7 +9,7 @@
 
 #include "../../../src/dynamics/guardrails/passive_field_blurring.hlsl"
 
-float standard_deviation = 0.25f;
+float standard_deviation;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
@@ -23,6 +23,8 @@ float standard_deviation = 0.25f;
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
+    standard_deviation = standard_deviation ? standard_deviation : 0.25f;
+
     float3 position = float3(dispatch_thread_id);
     Guardrails::PassiveFieldBlurring::blur_fermion_fields(position, standard_deviation, crnt_fermions_lattice_buffer);
     Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_gauge_potentials_lattice_buffer);

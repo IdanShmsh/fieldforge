@@ -11,7 +11,7 @@
 
 #include "../../../src/dynamics/guardrails/activity_dependent_energy_dissipation.hlsl"
 
-float activity_energy_scale = 10.0f;
+float activity_energy_scale;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
@@ -25,6 +25,8 @@ float activity_energy_scale = 10.0f;
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
+    activity_energy_scale = activity_energy_scale ? activity_energy_scale : 10.0f;
+
     float3 position = float3(dispatch_thread_id);
     Guardrails::ActivityDependentEnergyDissipation::energy_density_dependent_scaling(position, activity_energy_scale);
 }

@@ -9,7 +9,7 @@
 
 #include "../../../src/dynamics/guardrails/passive_scaling_energy_disspation.hlsl"
 
-float scaling_factor = 0.005f;
+float dissipating_factor;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
@@ -17,12 +17,14 @@ float scaling_factor = 0.005f;
 /// This pipeline operation applies energy dissipation to the simulation, by scaling down the fermion and gauge fields
 /// by the same fraction at every position in the simulation.
 /// Properties:
-/// • scaling_factor (float)
-///   This parameter <scaling_factor> is the fraction by which the fields are scaled down every frame
+/// • dissipating_factor (float)
+///   This parameter <dissipating_factor> is the fraction taken away from the fields as they are scaled down every frame
 ///   via this compute shader execution.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
+    dissipating_factor = dissipating_factor ? dissipating_factor : 0.005f;
+
     float3 position = float3(dispatch_thread_id);
-    Guardrails::PassiveScalingEnergyDissipation::dissipate_energy(position, scaling_factor);
+    Guardrails::PassiveScalingEnergyDissipation::dissipate_energy(position, dissipating_factor);
 }
