@@ -52,7 +52,7 @@ namespace FermionFieldEvolution
             evolution_data.weak_doublet_index = fermion_field_index % 2 == 0;
         }
 
-        // Function to calculate the derivative of the spinor field
+        // Perform the Dirac-Wilson leapfrog evolution of the fermion field provided the cached evolution data
         void _dirac_evolution(EvolutionCache evolution_cache, out FermionFieldState next_state)
         {
             // Would represent the slope given by the gauge interaction of the field.
