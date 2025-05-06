@@ -1,5 +1,5 @@
-#ifndef FIELD_BLURING
-#define FIELD_BLURING
+#ifndef FIELD_BLURRING
+#define FIELD_BLURRING
 
 #include "../ops/simulation_data_ops.hlsl"
 #include "../ops/fermion_field_state_ops.hlsl"
