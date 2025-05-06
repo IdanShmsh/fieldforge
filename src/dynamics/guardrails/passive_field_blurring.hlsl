@@ -4,7 +4,7 @@
 #include "../../core/altering/field_blurring.hlsl"
 
 
-namespace GuardingRails
+namespace Guardrails
 {
     /// Implementation of passive field blurring capabilities.
     /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.

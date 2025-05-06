@@ -28,5 +28,5 @@ float radius_cap = 2.0f;
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
-    GuardingRails::ActivityDependentEnergyDissipation::energy_density_dependent_blurring(position, activity_energy_scale, radius_cap);
+    Guardrails::ActivityDependentEnergyDissipation::energy_density_dependent_blurring(position, activity_energy_scale, radius_cap);
 }

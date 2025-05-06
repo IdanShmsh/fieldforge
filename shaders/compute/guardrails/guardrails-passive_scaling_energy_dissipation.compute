@@ -24,5 +24,5 @@ float scaling_factor = 0.005f;
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
-    GuardingRails::PassiveScalingEnergyDissipation::dissipate_energy(position, scaling_factor);
+    Guardrails::PassiveScalingEnergyDissipation::dissipate_energy(position, scaling_factor);
 }

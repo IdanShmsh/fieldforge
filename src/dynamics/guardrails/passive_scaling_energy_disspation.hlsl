@@ -5,7 +5,7 @@
 #include "../../core/math/fermion_field_state_math.hlsl"
 #include "../../core/ops/simulation_data_ops.hlsl"
 
-namespace GuardingRails
+namespace Guardrails
 {
     /// Implementation of passive energy dissipation capabilities.
     /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.

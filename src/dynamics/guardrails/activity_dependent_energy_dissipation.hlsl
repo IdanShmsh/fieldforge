@@ -11,7 +11,7 @@
 #define BLURRING_KERNEL_RADIUS 1
 #endif
 
-namespace GuardingRails
+namespace Guardrails
 {
     /// Implementation of an activity-dependent energy dissipation.
     /// Allows performing energy dissipation in the simulation with aggressiveness directly proportional on the local

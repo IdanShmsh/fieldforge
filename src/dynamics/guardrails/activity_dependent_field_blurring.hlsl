@@ -9,7 +9,7 @@
 #define BLURRING_KERNEL_RADIUS 1
 #endif
 
-namespace GuardingRails
+namespace Guardrails
 {
     /// Implementation of an activity-dependent field blurring.
     /// Allows performing field blurring with a radius directly proportional on the local activity of the fields.
