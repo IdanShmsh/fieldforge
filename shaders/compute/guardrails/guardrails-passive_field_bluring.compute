@@ -9,7 +9,7 @@
 
 #include "../../../src/dynamics/guarding_rails/passive_field_blurring.hlsl"
 
-float standard_deviation = 0.5f;
+float standard_deviation = 0.25f;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
