@@ -12,16 +12,16 @@ namespace GaugeEnergyComputations
     // Compute the total energy density of all gauge fields given their field strength tensor
     float compute_energy_density(GaugeFieldStrength field_strength_tensor) {
         float total_energy = 0;
-        for (uint a = 0; a < 12; a++) for (uint m = 0; m < 4; m++) for (uint n = 0; n < 4; n++) total_energy += dot(field_strength_tensor[a][m][n], field_strength_tensor[a][m][n]); // unroll
+        [unroll] for (uint a = 0; a < 12; a++) [unroll] for (uint m = 0; m < 4; m++) [unroll] for (uint n = 0; n < 4; n++) total_energy += dot(field_strength_tensor[a][m][n], field_strength_tensor[a][m][n]);
         total_energy /= 2;
         return total_energy;
     }
 
     // Compute the energy densities of all gauge fields given their field strength tensor
     void compute_energy_density(GaugeFieldStrength field_strength_tensor, out float energy_densities[12]) {
-        for (uint a = 0; a < 12; a++) {
+        [unroll] for (uint a = 0; a < 12; a++) {
             energy_densities[a] = 0;
-            for (uint m = 0; m < 4; m++) for (uint n = 0; n < 4; n++) energy_densities[a] += dot(field_strength_tensor[a][m][n], field_strength_tensor[a][m][n]); // unroll
+            [unroll] for (uint m = 0; m < 4; m++) [unroll] for (uint n = 0; n < 4; n++) energy_densities[a] += dot(field_strength_tensor[a][m][n], field_strength_tensor[a][m][n]);
             energy_densities[a] /= 2;
         }
     }
