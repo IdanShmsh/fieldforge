@@ -100,8 +100,7 @@ namespace GaugeFieldsEvolution
             if (cleaning_axis == 0) cleaning_direction = float4(0, 1, 0, 0);
             else if (cleaning_axis == 1) cleaning_direction = float4(0, 0, 1, 0);
             else cleaning_direction = float4(0, 0, 0, 1);
-            // unroll
-            for (uint a = 0; a < 12; a++) next_electric_strengths[a] -= (evolution_data.prev_electric_strength_divergences[a] - evolution_data.total_gauge_currents[a][0]) * electric_divergence_cleaning_factor * cleaning_direction;
+            [unroll] for (uint a = 0; a < 12; a++) next_electric_strengths[a] -= (evolution_data.prev_electric_strength_divergences[a] - evolution_data.total_gauge_currents[a][0]) * electric_divergence_cleaning_factor * cleaning_direction;
         }
 
         // Evolve the magnetic gauge field given the evolution data
