@@ -222,7 +222,7 @@ namespace SimulationPokesProcessing
         // • Writes directly to the simulation's lattice buffers
         void process_pokes(float3 position)
         {
-            for (int i = 0; i < POKES_BUFFER_LENGTH; i++) // unroll
+            for (int i = 0; i < POKES_BUFFER_LENGTH; i++)
             {
                 SimulationPokeData raw_poke_data = simulation_pokes_buffer[i];
                 process_poke(position, raw_poke_data);
