@@ -115,7 +115,7 @@ namespace FermionStateSymmetryTransformations
     // Apply SU(3) generator λ^1 to a given spinor state
     void lambda1(FermionFieldState fermion_state, out FermionFieldState transformed_fermion_state)
     {
-        for (uint spinor_component = 0; spinor_component < 4; spinor_component++) { //unroll
+        [unroll] for (uint spinor_component = 0; spinor_component < 4; spinor_component++) {
             transformed_fermion_state[3 * spinor_component + 0] = fermion_state[3 * spinor_component + 1];
             transformed_fermion_state[3 * spinor_component + 1] = fermion_state[3 * spinor_component + 0];
             transformed_fermion_state[3 * spinor_component + 2] = 0;
