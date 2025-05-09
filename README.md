@@ -20,3 +20,5 @@ This means FieldForge is **not** a scientific modeling tool in the strict sense.
 FieldForge is designed for those who want to probe the structure of quantum fields without the constraints of measurement or quantization.
 
 ---
+
+<img src="assets/gifs/free_fermion_fields.gif" width="400"/><img src="assets/gifs/fermion_double_slit.gif" width="400"/><img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="400"/><img src="assets/gifs/fermion+u1_gauge.gif" width="400"/>
