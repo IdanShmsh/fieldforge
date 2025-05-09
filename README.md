@@ -21,4 +21,8 @@ FieldForge is designed for those who want to probe the structure of quantum fiel
 
 ---
 
+## Gallery
+
+*The following were captured in real time using FieldForge*
+
 <img src="assets/gifs/free_fermion_fields.gif" width="400"/><img src="assets/gifs/fermion_double_slit.gif" width="400"/><img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="400"/><img src="assets/gifs/fermion+u1_gauge.gif" width="400"/>
