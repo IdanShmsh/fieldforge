@@ -179,7 +179,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     {
         GaugeFieldsSpatialGradient gradient;
         spatial_gradient(position, lattice_buffer, gradient);
-        for (uint a = 0; a < 12; a++) field_divergences[a] = gradient[0][a][1] + gradient[1][a][2] + gradient[2][a][3]; // unroll
+        [unroll] for (uint a = 0; a < 12; a++) field_divergences[a] = gradient[0][a][1] + gradient[1][a][2] + gradient[2][a][3];
     }
 
     // Take the divergence of all gauge fields at a specified simulation location, in the current gauge potentials lattice buffer.
@@ -195,7 +195,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // • Reads directly from the simulation's lattice buffers.
     void divergence(GaugeFieldsSpacetimeGradient gradient, out GaugeFieldsDivergence field_divergences)
     {
-        for (uint a = 0; a < 12; a++) field_divergences[a] = gradient[1][a][1] + gradient[2][a][2] + gradient[3][a][3]; // unroll
+        [unroll] for (uint a = 0; a < 12; a++) field_divergences[a] = gradient[1][a][1] + gradient[2][a][2] + gradient[3][a][3];
     }
 
     // Take the curl of all gauge fields at a specified simulation location, in a specified gauge lattice buffer.
@@ -205,7 +205,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     {
         GaugeFieldsSpatialGradient gradient;
         spatial_gradient(position, lattice_buffer, gradient);
-        for (uint a = 0; a < 12; a++) field_curls[a] = float4(
+        [unroll] for (uint a = 0; a < 12; a++) field_curls[a] = float4(
                 0,
                 gradient[1][a][3] - gradient[2][a][2],
                 gradient[2][a][1] - gradient[0][a][3],

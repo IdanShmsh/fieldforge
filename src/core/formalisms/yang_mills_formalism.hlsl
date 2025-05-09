@@ -29,29 +29,29 @@ namespace YangMillsFormalism
     // Fμνᵃ = ∂μ Avᵃ - ∂ν Aμᵃ - g f⁽ᵃᵇᶜ⁾ Aᵇμ Aᶜν
     // (g = simulation_non_abelian_self_interaction)
     void field_strength_tensor(GaugeSymmetriesVectorPack gauge_potentials_pack, GaugeFieldsJacobian gauge_potentials_jacobian, out GaugeFieldStrength field_strength_tensor) {
-        for (uint a = 0; a < 12; a++) field_strength_tensor[a] = gauge_potentials_jacobian[a] - transpose(gauge_potentials_jacobian[a]); // unroll
+        [unroll] for (uint a = 0; a < 12; a++) field_strength_tensor[a] = gauge_potentials_jacobian[a] - transpose(gauge_potentials_jacobian[a]);
         if (simulation_non_abelian_self_interaction == 0) return;
-        for (uint a = 0; a < 12; a++) for (uint m = 0; m < 4; m++) for (uint n = 0; n < 4; n++) field_strength_tensor[a][m][n] -= gauge_commutator(gauge_potentials_pack, gauge_potentials_pack, a, m, n); // unroll
+        [unroll] for (uint a = 0; a < 12; a++) [unroll] for (uint m = 0; m < 4; m++) [unroll] for (uint n = 0; n < 4; n++) field_strength_tensor[a][m][n] -= gauge_commutator(gauge_potentials_pack, gauge_potentials_pack, a, m, n);
     }
 
     // Extracts the n-th column from a provided field strength tensor
     void field_strength_column(GaugeFieldStrength field_strength_tensor, uint n, out GaugeSymmetriesVectorPack column) {
-        for (uint a = 0; a < 12; a++) column[a] = transpose(field_strength_tensor[a])[n]; // unroll
+        [unroll] for (uint a = 0; a < 12; a++) column[a] = transpose(field_strength_tensor[a])[n];
     }
 
     // Extracts the m-th row from a provided field strength tensor
     void field_strength_row(GaugeFieldStrength field_strength_tensor, uint m, out GaugeSymmetriesVectorPack row) {
-        for (uint a = 0; a < 12; a++) row[a] = field_strength_tensor[a][m]; // unroll
+        [unroll] for (uint a = 0; a < 12; a++) row[a] = field_strength_tensor[a][m];
     }
 
     // Extracts the electric field strengths from a provided field strength tensor
     void field_strength_electric(GaugeFieldStrength field_strength_tensor, out GaugeSymmetriesVectorPack electric_field_strength) {
-        for (uint a = 0; a < 12; a++) electric_field_strength[a] = float4(0, field_strength_tensor[a][0][1], field_strength_tensor[a][0][2], field_strength_tensor[a][0][3]); // unroll
+        [unroll] for (uint a = 0; a < 12; a++) electric_field_strength[a] = float4(0, field_strength_tensor[a][0][1], field_strength_tensor[a][0][2], field_strength_tensor[a][0][3]);
     }
 
     // Extracts the magnetic field strengths from a provided field strength tensor
     void field_strength_magnetic(GaugeFieldStrength field_strength_tensor, out GaugeSymmetriesVectorPack magnetic_field_strength) {
-        for (uint a = 0; a < 12; a++) magnetic_field_strength[a] = float4(0, field_strength_tensor[a][3][2], field_strength_tensor[a][1][3], field_strength_tensor[a][2][1]); // unroll
+        [unroll] for (uint a = 0; a < 12; a++) magnetic_field_strength[a] = float4(0, field_strength_tensor[a][3][2], field_strength_tensor[a][1][3], field_strength_tensor[a][2][1]);
     }
 }
 
