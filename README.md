@@ -73,7 +73,7 @@ FieldForge simulations enforce theoretical constraints by calculating states for
 
 The dynamics of a free fermion field are given by the Dirac equation, from which, one explicitly obtains a time-derivative relation:
 
-$$(\gamma^\mu \partial_\mu - i m)\psi = 0 \implies \partial_0 \psi = \gamma^0(im - \gamma^i \partial_i)\psi$$
+$$(i \gamma^\mu \partial_\mu - m)\psi = 0 \implies \partial_0 \psi = \gamma^0(im - \gamma^i \partial_i)\psi$$
 
 In FieldForge, this theoretical relation might be realized through numerically approximating the right hand side via computations performed on the current lattice configuration, and then choosing an appropriate fermion state for the next time step such that the temporal derivative computed using a finite difference involving it remains consistent with the outlined theoretical relation.
 
