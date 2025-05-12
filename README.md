@@ -37,10 +37,7 @@ FieldForge is designed for probing the structure of quantum fields without the c
 
 *The following were captured in real time using FieldForge*
 
-<img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/>
-<img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/>
-<img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/>
-<img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+<img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/><img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/><img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/><img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
 
 ---
 
