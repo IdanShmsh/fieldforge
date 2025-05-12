@@ -153,7 +153,7 @@ namespace FermionFieldEvolution
         // • Writes directly to the simulation's lattice buffers
         void fermion_evolution(float3 position)
         {
-            for (uint i = 0; i < 8; i++) fermion_evolution(position, i);
+            for (uint i = 0; i < FERMION_FIELDS_COUNT; i++) fermion_evolution(position, i);
         }
     }
 }

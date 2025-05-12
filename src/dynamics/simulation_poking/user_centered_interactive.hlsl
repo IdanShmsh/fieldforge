@@ -85,7 +85,7 @@ namespace SimulationPokesProcessing
         {
             int number_of_poke_participating_fermion_fields = 0;
             // TODO - this can be done much more effectively / if even
-            for (int i = 0; i < 8; i++) number_of_poke_participating_fermion_fields += _poking_active_for_field(poke_application_data.poke_mask, i);
+            for (int i = 0; i < FERMION_FIELDS_COUNT; i++) number_of_poke_participating_fermion_fields += _poking_active_for_field(poke_application_data.poke_mask, i);
 
             if (number_of_poke_participating_fermion_fields == 0) return;
 
@@ -106,7 +106,7 @@ namespace SimulationPokesProcessing
                 float randomly_chosen_participating_field = round(_get_random_number_for_poke_data(poke_application_data.raw_poke_data, i + 1)) % number_of_poke_participating_fermion_fields + 1;
                 // The field index given is transformed to an appropriate field index participating in the poke as specified by the mask
                 uint random_field_index;
-                for (random_field_index = 0; random_field_index < 8; random_field_index++)
+                for (random_field_index = 0; random_field_index < FERMION_FIELDS_COUNT; random_field_index++)
                 {
                     randomly_chosen_participating_field -= _poking_active_for_field(poke_application_data.poke_mask, random_field_index);
                     if (randomly_chosen_participating_field <= 0) break;
@@ -194,8 +194,8 @@ namespace SimulationPokesProcessing
             // Add the gauge potential to the gauge field state (with the mask incorporated)
             for (int a = 0; a < 12; a++)
             {
-                crntNewGaugeState[a] = crnt_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, 8 + a) * crntGaugeChange;
-                prevNewGaugeState[a] = prev_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, 8 + a) * prevGaugeChange;
+                crntNewGaugeState[a] = crnt_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, FERMION_FIELDS_COUNT + a) * crntGaugeChange;
+                prevNewGaugeState[a] = prev_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, FERMION_FIELDS_COUNT + a) * prevGaugeChange;
             }
 
             // Write the new gauge field state to the buffer

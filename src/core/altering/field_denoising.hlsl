@@ -70,7 +70,7 @@ namespace FieldDenoising
     // • Writes directly to the simulation's lattice buffers
     void bilateral_denoise_fermion_fields(float3 position, float spatial_std, float range_std, FermionLatticeBuffer fermion_lattice_buffer)
     {
-        for (uint field_index = 0; field_index < 8; field_index++) bilateral_denoise_fermion_state(position, field_index, spatial_std, range_std, fermion_lattice_buffer);
+        for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++) bilateral_denoise_fermion_state(position, field_index, spatial_std, range_std, fermion_lattice_buffer);
     }
 
     // This function is used to denoise a gauge state with a specified symmetry index at a specified position using a bilateral filter
@@ -108,7 +108,7 @@ namespace FieldDenoising
     // • Writes directly to the simulation's lattice buffers
     void bilateral_denoise_gauge_fields(float3 position, float spatial_std, float range_std, GaugeLatticeBuffer gauge_lattice_buffer)
     {
-        for (uint symmetry_index = 0; symmetry_index < 8; symmetry_index++) bilateral_denoise_gauge_state(position, symmetry_index, spatial_std, range_std, gauge_lattice_buffer);
+        for (uint symmetry_index = 0; symmetry_index < FERMION_FIELDS_COUNT; symmetry_index++) bilateral_denoise_gauge_state(position, symmetry_index, spatial_std, range_std, gauge_lattice_buffer);
     }
 }
 

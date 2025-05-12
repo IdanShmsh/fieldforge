@@ -26,7 +26,7 @@ void loop_fermion_field(float3 position, uint field_index)
 // This function is used to loop the states through the fermion lattice buffers at a given position
 void loop_fermion_fields(float3 position)
 {
-    for (uint fieldIndex = 0; fieldIndex < 8; fieldIndex++) loop_fermion_field(position, fieldIndex);
+    for (uint fieldIndex = 0; fieldIndex < FERMION_FIELDS_COUNT; fieldIndex++) loop_fermion_field(position, fieldIndex);
 }
 
 // This function is used to loop the states through the gauge lattice buffers at a given position

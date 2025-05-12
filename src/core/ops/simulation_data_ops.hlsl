@@ -72,7 +72,7 @@ namespace SimulationDataOps
     // Check if a gauge field is active in the simulation
     bool is_gauge_field_active(uint field_index)
     {
-        return is_simulation_field_active(field_index + 8);
+        return is_simulation_field_active(field_index + FERMION_FIELDS_COUNT);
     }
 
     // Obtain a tuple containing a fermion field's 3 coupling constants given that field's index

@@ -18,7 +18,7 @@ namespace FieldBlurring
     // • Writes directly to the simulation's lattice buffers
     void blur_fermion_fields_3x3x3(float3 position, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
     {
-        for (uint field_index = 0; field_index < 8; field_index++)
+        for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
         {
             uint center_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
             FermionFieldState fermion_state;

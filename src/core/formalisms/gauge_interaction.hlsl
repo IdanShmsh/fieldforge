@@ -81,7 +81,7 @@ namespace GaugeInteraction
     void compute_total_gauge_currents_at_position(float3 position, FermionLatticeBuffer fermion_lattice_buffer, out GaugeSymmetriesVectorPack total_current)
     {
         GaugeSymmetriesVectorPackOps::empty(total_current);
-        for (uint field_index = 0; field_index < 8; field_index++)
+        for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
         {
             GaugeSymmetriesVectorPack fermion_gauge_current;
             compute_fermion_gauge_currents_at_position(position, field_index, fermion_lattice_buffer, fermion_gauge_current);

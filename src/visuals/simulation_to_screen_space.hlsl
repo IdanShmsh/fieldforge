@@ -107,7 +107,7 @@ namespace SimulationToScreenSpace
         result = lerp(v0, v1, fraction.x);
     }
 
-    // This function gathers the norms of 8 fermion fields at lattice positions representing the 8 corners of a cube
+    // This function gathers the norms of 8 fermion field states at lattice positions representing the 8 corners of a cube
     // that surrounds the specified position.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
@@ -140,7 +140,7 @@ namespace SimulationToScreenSpace
         values[7] = FermionFieldStateMath::norm(fermions_lattice_buffer[index]);
     }
 
-    // This function gathers the Dirac norms of 8 fermion fields at lattice positions representing the 8 corners of a cube
+    // This function gathers the Dirac norms of 8 fermion field states at lattice positions representing the 8 corners of a cube
     // that surrounds the specified position.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
@@ -173,7 +173,7 @@ namespace SimulationToScreenSpace
         values[7] = DiracFormalism::dirac_norm(fieldBuffer[index]);
     }
 
-    // This function gathers the spin states of 8 fermion fields at lattice positions representing the 8 corners of a cube
+    // This function gathers the spin states of 8 fermion field states at lattice positions representing the 8 corners of a cube
     // that surrounds the specified position.
     void _gather_8_fermion_spin_states(float3 position, uint spinorFieldIndex, FermionLatticeBuffer fieldBuffer, out float3 values[8])
     {
@@ -204,8 +204,8 @@ namespace SimulationToScreenSpace
         values[7] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
     }
 
-    // This function gathers the gauge potential norms of 8 gauge fields at lattice positions representing the 8 corners of a cube
-    // that surrounds the specified position.
+    // This function gathers the gauge potential norms of 8 gauge potential states associated with a specified symmetry index at lattice
+    // positions representing the 8 corners of a cube that surrounds the specified position.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     void _gather_8_gauge_potential_norms(float3 position, uint symmetry_index, GaugeLatticeBuffer field_buffer, out float4 values[8])
