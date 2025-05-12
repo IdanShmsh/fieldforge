@@ -1,4 +1,4 @@
-# Structure and Theory
+# Structure And Theory
 
 This document expands on the structural design, theoretical foundations, and practical implementations of the FieldForge simulation platform.
 
