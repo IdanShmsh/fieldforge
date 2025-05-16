@@ -44,15 +44,15 @@ FieldForge employs a clearly defined set of simulation parameters governing all 
 
 To concretely illustrate the process of translating theoretical equations into practical simulation logic, consider a simple example - the evolution of a free fermion field governed by the Dirac equation:
 
-<p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?(\gamma^\mu\partial_\mu&space;-&space;im)\psi=0" />
-</p>
+$$
+(\gamma^\mu\partial_\mu-im)\psi=0
+$$
 
 Initially, the temporal derivative of the fermion field would be isolated:
 
-<p align="center">
-  <img src="https://latex.codecogs.com/gif.latex?\partial_0\psi=\gamma^0(im&space;-&space;\gamma^i\partial_i)\psi" />
-</p>
+$$
+\partial_0\psi=\gamma^0(im-\gamma^i\partial_i)\psi
+$$
 
 Then, given the theory fully outlined and prepared for implementation, a practical FieldForge implementation might follow the following steps:
 
