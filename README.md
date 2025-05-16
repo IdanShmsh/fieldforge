@@ -4,7 +4,7 @@
 
 ## Table Of Contents
 
-- [About](#about)
+- [Foundations & Intentions](#Foundations-&-Intentions)
 - [Gallery](#gallery)
 - [Structure And Theory](#structure-and-theory)
   - [Architecture](#architecture)
@@ -12,7 +12,7 @@
 
 ---
 
-## About
+## Foundations & Intentions
 
 ***What would quantum fields look like if we could *see* them without *observing* them?***
 
@@ -73,7 +73,9 @@ FieldForge simulations enforce theoretical constraints by calculating states for
 
 The dynamics of a free fermion field are given by the Dirac equation, from which, one explicitly obtains a time-derivative relation:
 
-$$(i \gamma^\mu \partial_\mu - m)\psi = 0 \implies \partial_0 \psi = \gamma^0(im - \gamma^i \partial_i)\psi$$
+$$
+(i \gamma^\mu \partial_\mu - m)\psi = 0 \implies \partial_0 \psi = \gamma^0(im - \gamma^i \partial_i)\psi
+$$
 
 In FieldForge, this theoretical relation might be realized through numerically approximating the right hand side via computations performed on the current lattice configuration, and then choosing an appropriate fermion state for the next time step such that the temporal derivative computed using a finite difference involving it remains consistent with the outlined theoretical relation.
 
@@ -84,3 +86,9 @@ Interaction terms are naturally embedded by upgrading simple finite-difference d
 The above illustrates merely a single approach for an implementation of dynamics in FieldForge, though, as mentioned - any working approach compatible with FieldForge's generic infrastructure is allowed.
 
 [⇥ Read More About: Structure and Theory](docs/theory/Structure%20And%20Theory.md)
+
+---
+
+### Authors
+
+[Idan Shemesh](https://github.com/IdanShmsh)
