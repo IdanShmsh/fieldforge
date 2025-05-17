@@ -54,7 +54,7 @@ $$
 E^a_i = F^a_{0i} \quad B^a_i = -\frac12 \epsilon_{ijk} F^a_{jk} \tag{1.2.1}
 $$
 
-which, by the definition of the fields strength tensor, equals:
+Making the electric field, by the definition of the fields strength tensor, explicitly:
 
 $$
 E^a_i = \partial_0 A^a_i - \partial_i A^a_0 - f^{abc}A^b_0 A^c_i \tag{1.2.2}
