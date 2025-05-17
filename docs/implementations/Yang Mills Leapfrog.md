@@ -114,7 +114,7 @@ $$
 \vec\nabla\cdot E^a = -J^a_0 + \Sigma_\nu g f^{abc} A^b_0 F^c_{\nu\mu} \tag{1.3.7}
 $$
 
-Which is Gauss's Law in a Yang-Mills theory.
+This is Gauss's Law in a Yang-Mills theory.
 
 ### Gauge Potential Temporal Component Handling
 
