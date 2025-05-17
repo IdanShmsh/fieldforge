@@ -1,6 +1,6 @@
 # Gauge Field Evolution - Yang-Mills Leapfrog
 
-Recommended: [⇥ *Gauge Evolution - Pipeline Operation*](../compute_pipeline_operations/gauge_evolution.md)
+Recommended: [⇥ *Gauge Evolution*](../compute_pipeline_operations/gauge_evolution.md)
 
 ## Brief
 
