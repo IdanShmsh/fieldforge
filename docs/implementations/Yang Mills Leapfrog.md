@@ -239,7 +239,7 @@ $$
 The value of $\partial_0 A^a_\mu$ has also been worked out in the theory development above (eq. $1.2.3$) for the spatial axes $\mu = \{1,2,3\}$, thus the expression describing it can be substituted into the relation in eq. $2.1.2$ to finally obtain the evolution of $(A^a_\mu)^{n+1}$:
 
 $$
-\boxed{(A_\mu^a)^{n+1} = (A_\mu^a)^{n-1} + 2\Delta t ((E^a_\mu)^{n+1} + \partial_\mu (A^a_0)^n + f^{abc}(A^b_0)^n (A^c_\mu)^n)}
+\boxed{(A_\mu^a)^{n+1} = (A_\mu^a)^{n-1} + 2\Delta t \Big((E^a_\mu)^{n+1} + \partial_\mu (A^a_0)^n + f^{abc}(A^b_0)^n (A^c_\mu)^n\Big)}
 $$
 
 Lastly, as the temporal component of the gauge field $(A^a_0)^{n+1}$ is still yet to be handled, the relation developed for its temporal slope would be used in the same way:
