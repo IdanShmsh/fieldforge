@@ -100,7 +100,7 @@ $$
 \partial_0 E^a_i = J^a_i + (\vec \nabla\times B^a)_i - \Sigma_\nu g f^{abc} A^b_0 F^c_{\nu i}\tag{1.3.5}
 $$
 
-Which is Ampere's Law in a Yang-Mills theory.
+This is Ampere's Law in a Yang-Mills theory.
 
 The $\mu = 0$ case provides the following relation as well:
 
