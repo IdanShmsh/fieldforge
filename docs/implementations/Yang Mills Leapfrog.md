@@ -162,23 +162,25 @@ $$
 
 ## Temporal Alignment
 
-An initially hidden issue is found within this theoretical development, involving the dependency of the three fields $A^a_\mu$, $E^a_i$, and $B^a_i$ on each other, and their **temporal alignment**.
+An initially hidden issue is found within this theoretical development, involving the dependency of the three fields $A^a_\mu$, $E^a_i$, and $B^a_i$ on each other, and their temporal alignment.
+
+As laid out in [this writing](../Structure%20And%20Theory.md), the simulation persists 3-independent lattice buffers encoding the configuration of each field at 3 consecutive temporal instances: previous $(n-1)$, current $(n)$, next $(n-1)$.
 
 To ensure stability and correctness under leapfrog integration, one must take care that each field is evolved using quantities from appropriate temporal layers.
 
 In particular:
 
-- The **gauge potential** $A^a_\mu$ is updated from time step $n{-}1$ to $n{+}1$ using the electric field $E^a_\mu$ evaluated at time $n$.
-- The **electric field** $E^a_\mu$ is updated from $n{-}1$ to $n{+}1$ using the magnetic field $B^a_i$ and current $J^a_\mu$ evaluated at time $n$.
-- The **magnetic field** $B^a_i$ is computed directly from the field strength tensor $F^a_{\mu\nu}$, which in turn is derived from $A^a_\mu$.
+- The gauge potential $A^a_\mu$ is updated from time step $n{-}1$ to $n{+}1$ using the electric field $E^a_\mu$ evaluated at time $n$.
+- The electric field $E^a_\mu$ is updated from $n{-}1$ to $n{+}1$ using the magnetic field $B^a_i$ and current $J^a_\mu$ evaluated at time $n$.
+- The magnetic field $B^a_i$ is computed directly from the field strength tensor $F^a_{\mu\nu}$, which in turn is derived from $A^a_\mu$.
 
 Therefore, $B^a_i$ at time $n$ must be computed using $A^a_\mu$ at time $n$.
 
-This implies that the **magnetic field at time $n$** must be computed *after* the gauge field $A^a_\mu$ is evolved to that time step, and *before* it is used to update the electric field $E^a_\mu$ at the next time step - resulting in the necessity to either performing re-computations and/or split the evolution into a multiple-pass process (introducing memory overhead and forcing a less-flexible architecture).
+This implies that the magnetic field at time $n$ must be computed *after* the gauge field $A^a_\mu$ is evolved to that time step, and *before* it is used to update the electric field $E^a_\mu$ at the next time step - resulting in the necessity to either performing re-computations and/or split the evolution into a multiple-pass process (introducing memory overhead and forcing a less-flexible architecture).
 
 *Can a fully-accurate real-time update scheme be formulated without the tradeoffs outlined?*
 
-To maintain a *single-pass evolution*, without *recomputation* or *multiple synchronization steps*, the key insight is to *introduce an relative offset* between the temporal representation of the gauge potentials' lattice buffers and the field-strengths' lattice buffers. As laid out in [this writing](../Structure%20And%20Theory.md), the simulation persists 3-independent lattice buffers encoding the configuration of each field at 3 consecutive temporal instances: previous $(n-1)$, current $(n)$, next $(n-1)$.
+To maintain a single-pass evolution, without recomputation or multiple synchronization steps, the key insight is to *introduce a relative offset* between the temporal representation of the gauge potentials' lattice buffer and the field-strengths' lattice buffers.
 
 The relative temporal alignment between the different field buffers could be relaxed, letting the relative alignment between the fields could take the following form:
 
@@ -214,7 +216,7 @@ $$
 (F^a_{\mu\nu})^n=\partial_\mu (A_\nu^a)^n - \partial_\nu (A_\mu^a)^n - f^{abc} (A_\mu^b)^n (A_\nu^c)^n
 $$
 
-(Focusing on the temporal index $n$ explicitly expressing *from which instance the gauge-potentials $A^a_\mu$ are taken*.)
+(Focusing on the temporal index $n$ explicitly expressing *from which temporal instance the gauge-potentials $A^a_\mu$ are taken*.)
 
 The Magnetic-Field-Strengths $B^a_i$ would be trivially updated by writing the magnetic components of the field strength tensor computed on $(A^a)^n$ to the states $(B^a_i)^{n+1}$
 
