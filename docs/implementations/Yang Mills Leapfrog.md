@@ -22,7 +22,7 @@ $$
 
 Here:
 
-- $g$ is the coupling constant.
+- $g$ is the self-interaction coupling constant.
 - $f^{abc}$ are the structure constants of the Lie algebra associated with the gauge symmetry of the field.
 
 The equations of motion for $F_{\mu\nu}^a$ are:
