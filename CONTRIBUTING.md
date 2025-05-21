@@ -26,7 +26,7 @@ All contributions to FieldForge trivially follow a strict **review-based pull re
 
 1. **Fork** the repository and create a branch:
    ```bash
-   git checkout -b your-feature-name
+   git checkout -b branch-name
    ```
 
 2. **Make your changes**, ensuring they follow the code structure and documentation conventions listed above.
