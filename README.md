@@ -1,8 +1,10 @@
 # FieldForge
 
-**FieldForge** is a real-time simulation framework for evolving quantum fields as unobserved, unquantized dynamical entities on a discrete spacetime lattice. It enables direct, interactive encoding and execution of field-theoretic evolution laws — including spinor fields, gauge fields, and their couplings — entirely on the GPU via compute shaders bindings.
+FieldForge is a real-time simulation framework for evolving quantum fields as unobserved, unquantized dynamical entities on a discrete spacetime lattice. It enables direct, interactive encoding and execution of field-theoretic evolution laws taken directly from the standard model of quantum mechanics, including spinor fields, gauge fields, and their couplings, entirely on the GPU via compute shader bindings.
 
 FieldForge does not simulate measurement outcomes. It does not sample from probabilistic distributions. Instead, it exposes the underlying structure and evolution of quantum field dynamics as they would proceed in the absence of observation, quantization, or approximation. The simulation remains entirely classical and local, allowing full visual access to formal field behavior at the level of raw structure.
+
+The system is designed to support theory-backed implementations, allowing rapid iteration and testing of dynamic field behavior. While the architecture preserves fidelity to the underlying mathematics, FieldForge prioritizes interactivity and extensibility over high-precision numerical accuracy.
 
 ---
 
@@ -102,6 +104,14 @@ FieldForge is designed for:
 - **Experimental thinkers** testing structural extensions to known formalisms
 
 While no prior quantum field theory knowledge is required to run the system, the framework rewards those familiar with the formal language of spinors, gauge symmetry, and classical field evolution.
+
+---
+
+## Contributing
+
+FieldForge supports the development of new field-theory implementations through a modular system. Each implementation encodes a specific theoretical formalism and must adhere to FieldForge’s input-output conventions and temporal staggering model.
+
+To contribute a new implementation or module, refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for theoretical, structural, and technical guidelines.
 
 ---
 
