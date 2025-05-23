@@ -1,94 +1,129 @@
 # FieldForge
 
----
+**FieldForge** is a real-time simulation framework for evolving quantum fields as unobserved, unquantized dynamical entities on a discrete spacetime lattice. It enables direct, interactive encoding and execution of field-theoretic evolution laws — including spinor fields, gauge fields, and their couplings — entirely on the GPU via compute shaders bindings.
 
-## Table Of Contents
-
-- [Foundations & Intentions](#Foundations-&-Intentions)
-- [Gallery](#gallery)
-- [Structure And Theory](#structure-and-theory)
-  - [Architecture](#architecture)
-  - [Formalisms and Implementation](#formalisms-and-implementation)
+FieldForge does not simulate measurement outcomes. It does not sample from probabilistic distributions. Instead, it exposes the underlying structure and evolution of quantum field dynamics as they would proceed in the absence of observation, quantization, or approximation. The simulation remains entirely classical and local, allowing full visual access to formal field behavior at the level of raw structure.
 
 ---
 
-## Foundations & Intentions
+## Core Architecture
 
-***What would quantum fields look like if we could *see* them without *observing* them?***
+FieldForge is built around a modular lattice simulation pipeline with support for:
 
-FieldForge is a real-time simulation platform for exploring quantum fields - *visually*, *interactively*️, and *structurally*.
+- Persistent field buffers with leapfrog-staggered temporal updates
+- Independent evolution modules for spinor and gauge fields
+- Explicit current calculation for back-reaction coupling
+- Configurable regulation layers (e.g., amplitude constraints, energy density smoothing)
+- Shader-based interactivity (perturbations, pokes, boundary conditions)
 
-To make this possible, FieldForge intentionally abandons two defining features of quantum theory:
-
-- **No quantization** - fields are treated as continuous, *deterministic* entities.
-- **No measurement** - there is no collapse, no projection; the fields evolve *unobserved*.
-
-This means FieldForge is **not** a scientific modeling tool in the strict sense. Instead, it is:
-
-- A **research ground** for experimenting with quantum-inspired dynamics, symmetries, and interactions.
-- A **modular platform** for implementing and/or configuring any formulation, modification, or reinterpretation of quantum field behavior.
-- A **development environment** where simulation logic can be extended, replaced, or entirely reimagined — from first principles to visual output.
-
-FieldForge is designed for probing the structure of quantum fields without the constraints of measurement or quantization.
+Each pipeline process (e.g. fermion evolution, gauge evolution, current extraction) is implemented as an independent HLSL compute shader. The simulation is designed to support multiple interchangeable implementations per process, allowing exploration of new theories or dynamics within the same system.
 
 ---
 
-## Gallery
+## Implemented Theories and Features
 
-*The following were captured in real time using FieldForge*
+### Simulation Processes
 
-<img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/><img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/><img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/><img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+These are the real-time processes executed during simulation. Each one corresponds to a distinct standalone processes running on the GPU as an independent pipeline stage.
 
----
+- **Dirac Fermion Evolution** - Evolves a spinor-valued fermion field on the lattice using a leapfrog scheme derived from the Dirac equation. Spinor components are time-staggered to ensure second-order accuracy. Local gauge interactions are applied through parallel transport, ensuring gauge invariance across discrete neighbor accesses.
 
-## Structure And Theory
+- **Yang-Mills Gauge Evolution** - Evolves non-Abelian gauge fields using discretized Yang-Mills equations. Electric and magnetic field components are offset in time and updated using the field strength tensor. Self-interactions are implemented via the Lie algebra structure, and coupling to matter fields occurs through dynamically computed currents.
 
-### Architecture
+- **Barriers (Reflective and Absorbing)** - Static boundary structures placed within the simulation domain. These walls interrupt field propagation either by reflecting field components or absorbing energy, allowing spatial shaping of wave behavior.
 
-FieldForge has a *modular architecture*, allowing the same underlying theoretical processes to be explored through a variety of technical implementations. These implementations can differ in complexity, approximation schemes, and optimization strategies, providing flexibility to suit various research interests and computational capabilities. At its core, FieldForge employs a structured compute-shader pipeline, offering precise, real-time control over the simulation’s runtime behavior.
+- **Poking (Real-Time Perturbations)** - Fields may be perturbed during simulation by localized external input. This enables the injection of disturbances such as impulses, waves, or pulses, allowing users to observe reactive behavior and response propagation in real time.
 
-Central to FieldForge’s computational approach are its field lattice buffers, which store discrete field states at each lattice site.
+### Core Capabilities
 
-Each lattice site encodes:
+These elements form the backbone of FieldForge’s theoretical engine. They provide the definitions, structures, and mathematical mechanisms required for the simulation’s high-fidelity evolution and internal coherence.
 
-- **Fermion fields**: represented as color-charged Dirac spinors, structured as arrays of 12 complex numbers (4 spinor components × 3 color charge components).
-- **Gauge fields** / **Electric Field Strengths** / **Magnetic Field Strengths**: stored as sets of 12 4-vectors, each corresponding to a one of the 12 gauge symmetries of the Standard Model.
+- **Fermion Current Extraction** - Computes the gauge-covariant Dirac current $\bar{\psi} \gamma^\mu \psi$, a key quantity used to drive gauge field evolution. Currents are calculated with geometric consistency, ensuring correct transformation under gauge symmetries and proper conservation in coupled systems.
 
-FieldForge maintains dedicated lattice buffers to store the states of these fields across three consecutive temporal instances: 'previous', 'current', and 'next'. This structured buffering enables stable, accurate time-evolution of the simulated fields.
+- **Wilson Formalism (Geometric Gauge Transport)** - Describes gauge interaction through parallel transport between adjacent lattice sites. Link variables encode local gauge transformations, ensuring that neighbor comparisons and current extractions remain gauge covariant. This formalism is central to all interaction logic and supports both abelian and non-abelian symmetries.
 
-Simulation parameters governing runtime conditions are explicitly defined. For instance:
+- **Dirac Formalism (Spinor Structure)** - Provides the algebraic backbone for spinor field dynamics. Includes gamma matrix contraction rules, spinor symmetry properties, and the structural representation of spin and Lorentz transformations. This formalism defines how spinor states evolve, interact, and transform under symmetry operations.
 
-- Spatial Dimensions: Number of lattice points along each axis (width, height, depth) defining the simulation volume.
-- Spatial and Temporal Resolution: The fundamental spatial discretization (dx) and temporal discretization (dt) scales, determining simulation granularity.
-- Interaction Strengths: Coupling constants governing the strength of gauge field self-interactions.
-- Field Density Limits: Constraints on fermion and gauge field amplitudes, ensuring numerical stability.
-- Field Visibility and Rendering: Settings for selectively visualizing fields and controlling visual brightness in real-time rendering.
-- Configured Properties Of Fermion Fields: masses, rendering base colors, coupling constants.
+- **Yang-Mills Formalism (Gauge Field Theory)** - Encodes the structure of interacting gauge fields. Includes the full tensorial definition of the field strength, non-commutative gauge potentials, and structure constants of the underlying Lie algebra. Supports both free-field evolution and interaction with matter via covariant derivatives and currents.
 
-### Formalisms and Implementation
+### Non-Formal Accessories
 
-FieldForge simulations enforce theoretical constraints by calculating states for subsequent temporal instances from well-defined dynamical equations and theoretical formalisms.
+While not strictly part of the theoretical engine, these utility modules support visualization, numerical conditioning, and diagnostic clarity.
 
-***- Example***
+- **Field Blurring** - A local spatial smoothing operator that reduces sharp discontinuities and approximates coarse-grained dynamics. Often used to visualize average field motion or to regularize chaotic evolutions.
 
-The dynamics of a free fermion field are given by the Dirac equation, from which, one explicitly obtains a time-derivative relation:
+- **Field Denoising** - A selective filtering process that preserves global structure while removing localized oscillations. Improves visual legibility and simulation clarity during high-frequency interaction phases.
 
-$$
-(i \gamma^\mu \partial_\mu - m)\psi = 0 \implies \partial_0 \psi = \gamma^0(im - \gamma^i \partial_i)\psi
-$$
+- **Energy Computations** - Calculates the energy density of fermionic and gauge configurations throughout the lattice. Useful for diagnostic monitoring, global conservation checks, and implementation of amplitude-based regulation mechanisms.
 
-In FieldForge, this theoretical relation might be realized through numerically approximating the right hand side via computations performed on the current lattice configuration, and then choosing an appropriate fermion state for the next time step such that the temporal derivative computed using a finite difference involving it remains consistent with the outlined theoretical relation.
+- **Field Differentials** - Computes spatial gradients of both fermionic and gauge fields. These are optionally gauge-corrected and serve roles in energy density regulation, interaction modeling, and dynamic slope analysis.
 
-Gauge field evolution and Dirac–Gauge interactions will follow a similar conceptual translation from theory to numerical implementation. Gauge fields require dedicated caching of electric and magnetic field strengths, continuously updated to maintain consistency and gauge invariance.
-
-Interaction terms are naturally embedded by upgrading simple finite-difference derivatives to gauge-covariant derivatives, typically implemented through combinations of finite differences and Wilson lines, thus faithfully preserving gauge symmetry throughout the simulation.
-
-The above illustrates merely a single approach for an implementation of dynamics in FieldForge, though, as mentioned - any working approach compatible with FieldForge's generic infrastructure is allowed.
-
-[⇥ Read More About: Structure and Theory](docs/theory/Structure%20And%20Theory.md)
+Each implementation is derived directly from formal field equations and discretized to preserve local structure. No numerical diffusion or stabilizing noise is used.
 
 ---
 
-### Authors
+## Foundational Assumptions
+
+FieldForge operates under the following foundational constraints:
+
+- **Unquantized fields:** All field variables are continuous and deterministic. There are no probability amplitudes, path integrals, or operator algebra.
+- **Unmeasured dynamics:** The system evolves as if never observed. There is no collapse, no projection, no Born rule.
+- **Explicit theories:** Every field behavior is implemented by a specific, derivable equation encoded as a discrete numerical update.
+- **Composability:** The simulation structure is modular. New dynamics may be encoded by swapping or extending implementation shaders without modifying the core.
+
+This philosophical framework positions FieldForge not as a tool for predictive modeling, but as a platform for *structural exploration* — a space where the inner logic of quantum field dynamics is made accessible and manipulable.
+
+---
+
+## Visual Demonstration
+
+FieldForge includes a real-time visual interface that renders the live state of the simulated fields. Fields can be externally perturbed to explore their response, or left to evolve freely to exhibit emergent structure.
+
+The gallery below shows live captures from FieldForge simulations:
+
+<p align="center">
+  <img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/>
+  <img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/>
+  <img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/>
+  <img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+</p>
+
+Each frame is fully determined by the encoded theory — no randomness, no noise, no render approximations.
+
+---
+
+## Intended Use
+
+FieldForge is designed for:
+
+- **Theoretical physicists** exploring new structures in field evolution
+- **Simulation developers** implementing real-time lattice physics
+- **Educators** seeking visual demonstrations of field behavior
+- **Experimental thinkers** testing structural extensions to known formalisms
+
+While no prior quantum field theory knowledge is required to run the system, the framework rewards those familiar with the formal language of spinors, gauge symmetry, and classical field evolution.
+
+---
+
+## Learn More
+
+[⇥ Theory & Discretization](docs/theory/Structure%20And%20Theory.md)
+
+[⇥ Contributing](CONTRIBUTING.md)
+
+[⇥ Fermion Evolution Spec](docs/fermion_evolution.md)
+
+[⇥ Gauge Evolution Spec](docs/gauge_evolution.md)
+
+---
+
+## Licensing
+
+- Simulation Code: **GPLv3**
+- Documentation & Visual Assets: **CC BY-NC 4.0**
+
+---
+
+## Author
 
 [Idan Shemesh](https://github.com/IdanShmsh)
