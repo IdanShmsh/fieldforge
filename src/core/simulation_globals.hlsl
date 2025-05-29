@@ -63,9 +63,9 @@ GaugeLatticeBuffer next_magnetic_strengths_lattice_buffer;
 
 // Storing the dynamic poke input data for the simulation
 RWStructuredBuffer<SimulationPokeData> simulation_pokes_buffer;
-// Storing the dynamic poke input data for the simulation
+// Storing the dynamic barrier data for the simulation
 RWStructuredBuffer<SimulationBarrierInformation> simulation_barriers_buffer;
-// Storing the dynamic poke input data for the simulation
+// Storing the dynamic fermion modes data for the simulation
 RWStructuredBuffer<FermionModeData> fermion_modes_buffer;
 
 // Some intrinsic values the simulation needs an allocated global memory for - at least 64 units
