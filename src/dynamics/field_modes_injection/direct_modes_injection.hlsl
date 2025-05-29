@@ -20,8 +20,8 @@ namespace FieldModesInjection
         {
             uint field_index = uint(mode_data[0] - 1);
             float amplitude = mode_data[1];
-            float3 mode_position = float3(mode_data[2], mode_data[3], mode_data[4]);
-            float3 momentum_vector = float3(mode_data[5], mode_data[6], mode_data[7]);
+            float3 origin = float3(mode_data[2], mode_data[3], mode_data[4]);
+            float3 wave_vector = float3(mode_data[5], mode_data[6], mode_data[7]);
             float3 spin_vector = float3(mode_data[8], mode_data[9], mode_data[10]);
             uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
             FermionFieldProperties field_properties = fermion_field_properties[field_index];
@@ -29,12 +29,12 @@ namespace FieldModesInjection
             FermionFieldState current_state = crnt_fermions_lattice_buffer[buffer_index];
             FermionFieldState previous_state = prev_fermions_lattice_buffer[buffer_index];
             FermionFieldState new_state;
-            DiracFormalism::construct_spin_state(spin_vector, momentum_vector, field_mass, new_state);
-            float2 position_phase = amplitude * ComplexNumbersMath::cxp(float2(0, dot(momentum_vector, position - mode_position)));
+            DiracFormalism::construct_spin_state(spin_vector, wave_vector, field_mass, new_state);
+            float2 position_phase = amplitude * ComplexNumbersMath::cxp(float2(0, dot(wave_vector, position - origin)));
             FermionFieldStateMath::scl(new_state, position_phase, new_state);
             FermionFieldStateMath::sum(current_state, new_state, new_state);
             crnt_fermions_lattice_buffer[buffer_index] = new_state;
-            float2 time_phase = ComplexNumbersMath::cxp(float2(0, field_mass * sqrt(dot(momentum_vector, momentum_vector) + field_mass * field_mass) * simulation_temporal_unit));
+            float2 time_phase = ComplexNumbersMath::cxp(float2(0, sqrt(dot(wave_vector, wave_vector) + field_mass * field_mass) * simulation_temporal_unit));
             FermionFieldStateMath::scl(new_state, time_phase, new_state);
             FermionFieldStateMath::sum(previous_state, new_state, new_state);
             prev_fermions_lattice_buffer[buffer_index] = new_state;
