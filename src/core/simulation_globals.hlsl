@@ -25,7 +25,7 @@
 #endif
 
 #ifndef FERMION_MODES_BUFFER_LENGTH
-#define FERMION_MODES_BUFFER_LENGTH 512
+#define FERMION_MODES_BUFFER_LENGTH 1024
 #endif
 
 // Storing the simulation runtime properties
