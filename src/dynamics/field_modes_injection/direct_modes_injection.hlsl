@@ -18,7 +18,7 @@ namespace FieldModesInjection
         // • Writes directly to the simulation's lattice buffers
         void inject_fermion_mode(float3 position, FermionModeData mode_data)
         {
-            uint field_index = uint(mode_data[0]);
+            uint field_index = uint(mode_data[0] - 1);
             float amplitude = mode_data[1];
             float3 mode_position = float3(mode_data[2], mode_data[3], mode_data[4]);
             float3 momentum_vector = float3(mode_data[5], mode_data[6], mode_data[7]);
@@ -49,7 +49,7 @@ namespace FieldModesInjection
             for (uint i = 0; i < FERMION_MODES_BUFFER_LENGTH; i++)
             {
                 FermionModeData mode_data = fermion_modes_buffer[i];
-                if (mode_data[0] < 0) return;
+                if (mode_data[0] < 1) return;
                 inject_fermion_mode(position, mode_data);
             }
         }
