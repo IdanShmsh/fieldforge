@@ -1,5 +1,9 @@
 # Gauge Evolution
 
+This category of compute shaders operates in FieldForge's compute-pipeline to perform evolution updates on gauge fields. Multiple interchangeable implementations may exist, each encoding a different evolution strategy or interaction model, but all must adhere to the guidelines below to ensure compatibility with the global simulation architecture.
+
+---
+
 ### Implementation Guidelines
 
 #### Always Should
