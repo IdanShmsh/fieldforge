@@ -44,7 +44,7 @@ namespace SimulationToScreenSpace
     // This function performs trilinear interpolation in 3D space.
     void _interpolate_3d(float3 position, float2 values[8], out float2 result)
     {
-        float2 fraction = position - floor(position);
+        float3 fraction = position - floor(position);
         float2 v000 = values[0];
         float2 v001 = values[1];
         float2 v010 = values[2];
