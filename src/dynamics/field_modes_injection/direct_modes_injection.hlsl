@@ -33,7 +33,7 @@ namespace FieldModesInjection
 
             DiracFormalism::construct_spin_state(spin_vector, wave_vector, field_mass, new_state);
             float3 delta_position = position - origin;
-            float2 position_phase = amplitude * ComplexNumbersMath::cxp(float2(dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, position - origin)));
+            float2 position_phase = amplitude * ComplexNumbersMath::cxp(float2(-dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, position - origin)));
             FermionFieldStateMath::scl(new_state, position_phase, new_state);
 
             FermionFieldState current_state = crnt_fermions_lattice_buffer[buffer_index];
