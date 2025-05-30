@@ -42,6 +42,39 @@ namespace SimulationToScreenSpace
     }
 
     // This function performs trilinear interpolation in 3D space.
+    void _interpolate_3d(float3 position, float2 values[8], out float2 result)
+    {
+        float2 fraction = position - floor(position);
+        float2 v000 = values[0];
+        float2 v001 = values[1];
+        float2 v010 = values[2];
+        float2 v011 = values[3];
+        float2 v100 = values[4];
+        float2 v101 = values[5];
+        float2 v110 = values[6];
+        float2 v111 = values[7];
+        #if SPATIAL_DIMENSIONALITY > 2
+        float2 v00 = lerp(v000, v001, fraction.z);
+        float2 v01 = lerp(v010, v011, fraction.z);
+        float2 v10 = lerp(v100, v101, fraction.z);
+        float2 v11 = lerp(v110, v111, fraction.z);
+        #else
+        float3 v00 = v000;
+        float3 v01 = v010;
+        float3 v10 = v100;
+        float3 v11 = v110;
+        #endif
+        #if SPATIAL_DIMENSIONALITY > 1
+        float2 v0 = lerp(v00, v01, fraction.y);
+        float2 v1 = lerp(v10, v11, fraction.y);
+        #else
+        float3 v0 = v00;
+        float3 v1 = v10;
+        #endif
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    // This function performs trilinear interpolation in 3D space.
     void _interpolate_3d(float3 position, float3 values[8], out float3 result)
     {
         float3 fraction = position - floor(position);
@@ -138,6 +171,39 @@ namespace SimulationToScreenSpace
         values[5] = FermionFieldStateMath::norm(fermions_lattice_buffer[index]);
         index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), fermoin_field_index);
         values[7] = FermionFieldStateMath::norm(fermions_lattice_buffer[index]);
+    }
+
+    // This function gathers the phases of 8 fermion fields at lattice positions representing the 8 corners of a cube
+    // that surrounds the specified position.
+    // * Side Effects:
+    // • Reads directly from the simulation's lattice buffers
+    void _gather_8_fermion_phases(float3 position, uint fermoin_field_index, FermionLatticeBuffer fermions_lattice_buffer, out float2 values[8])
+    {
+        float3 index_floor = floor(position);
+        float3 index_ceil = ceil(position);
+        uint index;
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), fermoin_field_index);
+        values[0] = fermions_lattice_buffer[index][0];
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), fermoin_field_index);
+        values[4] = fermions_lattice_buffer[index][0];
+        #if SPATIAL_DIMENSIONALITY < 2
+        return;
+        #endif
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), fermoin_field_index);
+        values[2] = fermions_lattice_buffer[index][0];
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), fermoin_field_index);
+        values[6] = fermions_lattice_buffer[index][0];
+        #if SPATIAL_DIMENSIONALITY < 3
+        return;
+        #endif
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), fermoin_field_index);
+        values[1] = fermions_lattice_buffer[index][0];
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), fermoin_field_index);
+        values[3] = fermions_lattice_buffer[index][0];
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), fermoin_field_index);
+        values[5] = fermions_lattice_buffer[index][0];
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), fermoin_field_index);
+        values[7] = fermions_lattice_buffer[index][0];
     }
 
     // This function gathers the Dirac norms of 8 fermion fields at lattice positions representing the 8 corners of a cube
@@ -246,6 +312,17 @@ namespace SimulationToScreenSpace
         float3 clamped_position = SimulationDataOps::clamp_position(position);
         _gather_8_fermion_norms(clamped_position, spinor_field_index, field_buffer, values);
         _interpolate_3d(position, values, state_norm);
+    }
+
+    // This function computes the phase of the fermion field at a given non-integer position in the simulation space.
+    // * Side Effects:
+    // • Reads directly from the simulation's lattice buffers
+    void get_fermion_field_phase(float3 position, uint spinor_field_index, FermionLatticeBuffer field_buffer, out float2 state_phase)
+    {
+        float2 values[8];
+        float3 clamped_position = SimulationDataOps::clamp_position(position);
+        _gather_8_fermion_phases(clamped_position, spinor_field_index, field_buffer, values);
+        _interpolate_3d(position, values, state_phase);
     }
 
     // This function computes the Dirac norm of the fermion field at a given non-integer position in the simulation space.
