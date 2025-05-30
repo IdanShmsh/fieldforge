@@ -1,10 +1,13 @@
 /// -----------------------------------------------------------------------------------------------
 /// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
 /// -----------------------------------------------------------------------------------------------
-/// This pipeline operation renders the gauge potentials within the xy-plane of the simulation by
-/// summing over colors whose RGB-channels are set to be proportional to the potentials' vector
-/// components at that position.
-Shader "Custom/gauge_potentials_rendering_2d"
+/// This pipeline operation renders the fermion fields within the xy-plane of the simulation by
+/// coloring pixels as a linear combination of the colors configured to each fermion field weighted
+/// proportional to the field's norm at that position.
+/// Lattice positions are interpolated to pixel coordinates.
+/// The screen coordinates are aligned such that the screen boundaries align exactly with the simulation
+/// boundaries.
+Shader "Custom/fermion_norms_rendering_2d"
 {
     Properties
     {
@@ -26,7 +29,7 @@ Shader "Custom/gauge_potentials_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/gauge_fields_coloring.hlsl"
+            #include "../../../src/visuals/fermion_field_coloring.hlsl"
 
             struct appdata
             {
@@ -55,13 +58,13 @@ Shader "Custom/gauge_potentials_rendering_2d"
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = rendered_color;
-                color += GaugeFieldColoring::compute_gauge_potentials_color(position, prev_gauge_potentials_lattice_buffer);
-                color += GaugeFieldColoring::compute_gauge_potentials_color(position, crnt_gauge_potentials_lattice_buffer);
+                color += FermionFieldColoring::compute_fermion_fields_norm_color(position, prev_fermions_lattice_buffer);
+                color += FermionFieldColoring::compute_fermion_fields_norm_color(position, crnt_fermions_lattice_buffer);
                 color[3] = 1;
                 return color;
             }
             ENDCG
         }
     }
-    FallBack "Diffuse"
+    FallBack Off
 }
