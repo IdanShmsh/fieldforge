@@ -21,25 +21,34 @@ namespace FieldForge
         private ComputeManager _computeManager;
         private PokesManager _pokesManager;
         private BarriersManager _barriersManager;
+        private FermionModesManager _fermionModesManager;
+
+        public int frame = 0;
 
         private void Start()
         {
             SetupComputeManager();
             SetupPokesManager();
             SetupBarriersManager();
+            SetupFermionModesManager();
             LoadCommandBuffer();
             _computeManager.SetInt("simulation_field_mask", simulationInterface.fieldsMask.Binary);
+            frame = 0;
         }
 
         private void Update()
         {
             _pokesManager.ApplyPokes();
             _barriersManager.ApplyBarriers();
+            _fermionModesManager.ApplyFermionModes();
+
+            frame++;
         }
 
         public ComputeManager ComputeManager => _computeManager;
         public PokesManager PokesManager => _pokesManager;
         public BarriersManager BarriersManager => _barriersManager;
+        public FermionModesManager FermionModesManager => _fermionModesManager;
 
         private void OnDestroy()
         {
@@ -77,6 +86,11 @@ namespace FieldForge
         private void SetupBarriersManager()
         {
             _barriersManager = new BarriersManager(_computeManager);
+        }
+
+        private void SetupFermionModesManager()
+        {
+            _fermionModesManager = new FermionModesManager(_computeManager);
         }
 
         private void LoadCommandBuffer()
