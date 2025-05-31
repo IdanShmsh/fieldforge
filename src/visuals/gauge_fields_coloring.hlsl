@@ -32,6 +32,36 @@ namespace GaugeFieldColoring
         saturate(color);
         return color;
     }
+
+    // This function computes the color associated with a dial pointing along the spacial direction of the gauge potential associated
+    // with a given symmetry index at a given position.
+    // * Side Effects:
+    // • Reads directly from the simulation's lattice buffers
+    float4 compute_gauge_potential_vector_dial_color(float3 position, uint symmetry_index, GaugeLatticeBuffer buffer)
+    {
+        if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) return float4(0, 0, 0, 0);
+        float3 rounded_position = round(position);
+        float3 delta_position = position - rounded_position;
+        float offset = length(delta_position);
+        if (offset == 0) return float4(0, 0, 0, 0);
+        uint buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(rounded_position);
+        float4 field_potential = buffer[buffer_index][symmetry_index];
+        float field_potential_norm_sqrd = dot(field_potential, field_potential);
+        if (field_potential_norm_sqrd < 0.000001) return float4(0, 0, 0, 0);
+        float cross_product = length(cross(field_potential.yzw, delta_position)) / field_potential_norm_sqrd;
+        return float4(1, 1, 1, 1) * exp(-cross_product * cross_product);
+    }
+
+    // This function computes the combined color of all gauge potentials at a given position, represented as vector dials.
+    // * Side Effects:
+    // • Reads directly from the simulation's lattice buffers
+    float4 compute_gauge_potentials_vector_dial_color(float3 position, GaugeLatticeBuffer buffer)
+    {
+        float4 color = float4(0, 0, 0, 0);
+        for (uint a = 0; a < 12; a++) color += compute_gauge_potential_vector_dial_color(position, a, buffer);
+        saturate(color);
+        return color;
+    }
 }
 
 #endif
