@@ -1,0 +1,24 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#define BLURRING_KERNEL_RADIUS 2
+
+#include "../../../src/dynamics/field_modes_injection/direct_modes_injection.hlsl"
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation iterates all modes submitted in the designated modes buffer and injects them to the
+/// simulation's associated fields.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    FieldModesInjection::DirectModesInjection::inject_fermion_modes(position);
+}

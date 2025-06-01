@@ -10,6 +10,7 @@
 #include "structures/fermion_field_properties.hlsl"
 #include "structures/simulation_poke_data.hlsl"
 #include "structures/simulation_barrier_data.hlsl"
+#include "structures/fermion_mode_data.hlsl"
 
 #ifndef SPATIAL_DIMENSIONALITY
 #define SPATIAL_DIMENSIONALITY 3
@@ -25,6 +26,10 @@
 
 #ifndef BARRIERS_BUFFER_LENGTH
 #define BARRIERS_BUFFER_LENGTH 16
+#endif
+
+#ifndef FERMION_MODES_BUFFER_LENGTH
+#define FERMION_MODES_BUFFER_LENGTH 1024
 #endif
 
 // Storing the simulation runtime properties
@@ -62,9 +67,10 @@ GaugeLatticeBuffer next_magnetic_strengths_lattice_buffer;
 
 // Storing the dynamic poke input data for the simulation
 RWStructuredBuffer<SimulationPokeData> simulation_pokes_buffer;
-
-// Storing the dynamic poke input data for the simulation
+// Storing the dynamic barrier data for the simulation
 RWStructuredBuffer<SimulationBarrierInformation> simulation_barriers_buffer;
+// Storing the dynamic fermion modes data for the simulation
+RWStructuredBuffer<FermionModeData> fermion_modes_buffer;
 
 // Some intrinsic values the simulation needs an allocated global memory for - at least 64 units
 RWStructuredBuffer<int> global_intrinsics : register(u0);

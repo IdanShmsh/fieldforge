@@ -69,4 +69,9 @@ namespace FieldForge
     {
         public int barrierStrength, barrierWidth, barrierRadius, p1_x, p1_y, p1_z, p2_x, p2_y, p2_z, barrierMask;
     }
+
+    public struct FermionModeData
+    {
+        public float fieldIndex, amplitude, originX, originY, originZ ,waveVectorX, waveVectorY, waveVectorZ, spinStateX, spinStateY, spinStateZ, inverseGaussianWidthX, inverseGaussianWidthY, inverseGaussianWidthZ;
+    }
 }

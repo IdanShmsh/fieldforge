@@ -154,8 +154,8 @@ namespace DiracFormalism
         return state_norm;
     }
 
-    // Construct a relativistic fermion state with a specified angular momentum vector, in an inertial frame given by a
-    // specified momentum and mass
+    // Construct a relativistic fermion state with a specified angular momentum vector (associated with the particle's rest frame
+    // angular momentum state), in an inertial frame given by a specified momentum and mass
     void construct_spin_state(float3 spin_vector, float3 momentum, float mass, out FermionFieldState constructed_fermion_state)
     {
         FermionFieldStateOps::empty(constructed_fermion_state);
