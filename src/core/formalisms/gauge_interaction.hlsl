@@ -61,7 +61,7 @@ namespace GaugeInteraction
             FermionFieldState symmetry_transformed_state;
             _apply_symmetry_generator(symmetry_index, fermion_state, weak_partner_state, field_index, symmetry_transformed_state);
 
-            for (uint mu = 0; mu < 3; mu++)
+            for (uint mu = 0; mu < 4; mu++)
             {
                 FermionFieldState gamma_transformed_state;
                 DiracFormalism::apply_gamma(symmetry_transformed_state, mu, gamma_transformed_state);
