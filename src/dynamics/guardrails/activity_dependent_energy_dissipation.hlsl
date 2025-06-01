@@ -25,7 +25,7 @@ namespace Guardrails
         // • Writes directly to the simulation's lattice buffers
         void _scale_fermion_fields(float3 position, float scale_factor, FermionLatticeBuffer fermion_lattice_buffer)
         {
-            for (uint field_index = 0; field_index < 8; field_index++)
+            for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
             {
                 uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
                 FermionFieldState fermion_state = fermion_lattice_buffer[lattice_buffer_index];

@@ -67,7 +67,7 @@ namespace SimulationBarriersProcessing
         {
             FermionFieldState empty_fermion_state;
             FermionFieldStateOps::empty(empty_fermion_state);
-            for (uint fermion_field_index = 0; fermion_field_index < 8; fermion_field_index++)
+            for (uint fermion_field_index = 0; fermion_field_index < FERMION_FIELDS_COUNT; fermion_field_index++)
             {
                 if (_barrier_active_for_field(barrier_application_data.barrier_mask, fermion_field_index) == 0) continue;
                 uint fermion_lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, fermion_field_index);

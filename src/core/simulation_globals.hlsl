@@ -16,6 +16,10 @@
 #define SPATIAL_DIMENSIONALITY 3
 #endif
 
+#ifndef FERMION_FIELDS_COUNT
+#define FERMION_FIELDS_COUNT 8
+#endif
+
 #ifndef POKES_BUFFER_LENGTH
 #define POKES_BUFFER_LENGTH 16
 #endif

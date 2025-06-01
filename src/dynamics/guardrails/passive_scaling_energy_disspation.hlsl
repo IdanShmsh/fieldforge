@@ -17,7 +17,7 @@ namespace Guardrails
         // • Writes directly to the simulation's lattice buffers
         void dissipate_spinor_fields_energy(float3 position, float scaling_factor)
         {
-            for (uint field_index = 0; field_index < 8; field_index++)
+            for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
             {
                 if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
                 uint bufferIndex = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);

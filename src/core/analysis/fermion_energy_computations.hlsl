@@ -56,7 +56,7 @@ namespace FermionEnergyComputations
     float compute_energy_density(float3 position)
     {
         float total_energy = 0;
-        for (uint fieldIndex = 0; fieldIndex < 8; fieldIndex++) total_energy += compute_energy_density(position, fieldIndex);
+        for (uint fieldIndex = 0; fieldIndex < FERMION_FIELDS_COUNT; fieldIndex++) total_energy += compute_energy_density(position, fieldIndex);
         return total_energy;
     }
 }
