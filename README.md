@@ -85,25 +85,12 @@ The gallery below shows live captures from FieldForge simulations:
   <img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
   <img src="assets/gifs/fermion_phases_and_dials.gif" width="300" alt="Free Fermion Fields"/>
   <img src="assets/gifs/gauge_vector_potential.gif" width="300" alt="Free Fermion Fields"/>
-  <img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/>
   <img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/>
   <img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/>
+  <img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/>
 </p>
 
 Each frame is fully determined by the encoded theory — no randomness, no noise, no render approximations.
-
----
-
-## Intended Use
-
-FieldForge is designed for:
-
-- **Theoretical physicists** exploring new structures in field evolution
-- **Simulation developers** implementing real-time lattice physics
-- **Educators** seeking visual demonstrations of field behavior
-- **Experimental thinkers** testing structural extensions to known formalisms
-
-While no prior quantum field theory knowledge is required to run the system, the framework rewards those familiar with the formal language of spinors, gauge symmetry, and classical field evolution.
 
 ---
 
