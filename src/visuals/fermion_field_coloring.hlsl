@@ -86,7 +86,7 @@ namespace FermionFieldColoring
         float spin_state_norm = length(fermion_spin_state);
         if (spin_state_norm < 0.01) return float4(0, 0, 0, 0);
         float cross_product = length(cross(fermion_spin_state, delta_position)) / (spin_state_norm * spin_state_norm);
-        return (float4(1, 1, 1, 1) + field_properties.color) * exp(-cross_product * cross_product);
+        return (float4(1, 1, 1, 1) + field_properties.color) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
     }
 
     // This function computes the combined color of all fermion fields at a given position associated with a dial located

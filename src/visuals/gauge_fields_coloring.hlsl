@@ -49,7 +49,7 @@ namespace GaugeFieldColoring
         float field_potential_norm_sqrd = dot(field_potential, field_potential);
         if (field_potential_norm_sqrd < 0.000001) return float4(0, 0, 0, 0);
         float cross_product = length(cross(field_potential.yzw, delta_position)) / field_potential_norm_sqrd;
-        return float4(1, 1, 1, 1) * exp(-cross_product * cross_product);
+        return float4(1, 1, 1, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
     }
 
     // This function computes the combined color of all gauge potentials at a given position, represented as vector dials.
