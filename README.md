@@ -52,13 +52,13 @@ These elements form the backbone of FieldForge’s theoretical engine. They prov
 
 While not strictly part of the theoretical engine, these utility modules support visualization, numerical conditioning, and diagnostic clarity.
 
-- **Field Blurring** - A local spatial smoothing operator that reduces sharp discontinuities and approximates coarse-grained dynamics. Often used to visualize average field motion or to regularize chaotic evolutions.
+- **Field Blurring** - Local spatial smoothing operators that reduces sharp discontinuities and approximates coarse-grained dynamics. Often used to visualize average field motion or to regularize chaotic evolutions.
 
-- **Field Denoising** - A selective filtering process that preserves global structure while removing localized oscillations. Improves visual legibility and simulation clarity during high-frequency interaction phases.
+- **Field Denoising** - Selective filtering processes that preserves global structure while removing localized oscillations. Improves visual legibility and simulation clarity during high-frequency interaction phases.
 
-- **Energy Computations** - Calculates the energy density of fermionic and gauge configurations throughout the lattice. Useful for diagnostic monitoring, global conservation checks, and implementation of amplitude-based regulation mechanisms.
+- **Energy Manipulation** - Tools for adjusting the energy density of fields, either by scaling amplitudes or redistributing energy across the lattice. Useful for exploring stability and response to perturbations.
 
-Each implementation is derived directly from formal field equations and discretized to preserve local structure. No numerical diffusion or stabilizing noise is used.
+Each implementation is derived directly from formal field equations and discretized to preserve local structure.
 
 ---
 
