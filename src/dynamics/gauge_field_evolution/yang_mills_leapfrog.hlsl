@@ -108,8 +108,6 @@ namespace GaugeFieldsEvolution
         {
             // Align the magnetic field with the gauge field
             YangMillsFormalism::field_strength_magnetic(evolution_data.gauge_field_strength_tensor, next_magnetic_field_strength);
-
-            next_magnetic_field_strength[0] = float4(0, 0, 0, 5);
         }
 
         // Evolve the gauge field given the evolution data
