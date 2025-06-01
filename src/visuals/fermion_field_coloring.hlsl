@@ -63,7 +63,7 @@ namespace FermionFieldColoring
     float4 compute_fermion_fields_phase_color(float3 position, FermionLatticeBuffer buffer)
     {
         float4 color = float4(0, 0, 0, 0);
-        for (uint i = 0; i < 8; i++) color += compute_fermion_field_phase_color(position, i, buffer);
+        for (uint i = 0; i < FERMION_FIELDS_COUNT; i++) color += compute_fermion_field_phase_color(position, i, buffer);
         saturate(color);
         return color;
     }
@@ -96,7 +96,7 @@ namespace FermionFieldColoring
     float4 compute_fermion_fields_spin_dial_color(float3 position, FermionLatticeBuffer buffer)
     {
         float4 color = float4(0, 0, 0, 0);
-        for (uint i = 0; i < 8; i++) color += compute_fermion_field_spin_dial_color(position, i, buffer);
+        for (uint i = 0; i < FERMION_FIELDS_COUNT; i++) color += compute_fermion_field_spin_dial_color(position, i, buffer);
         saturate(color);
         return color;
     }
