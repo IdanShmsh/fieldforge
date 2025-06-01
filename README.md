@@ -84,10 +84,12 @@ FieldForge includes a real-time visual interface that renders the live state of 
 The gallery below shows live captures from FieldForge simulations:
 
 <p align="center">
+  <img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <img src="assets/gifs/fermion_phases_and_dials.gif" width="300" alt="Free Fermion Fields"/>
+  <img src="assets/gifs/gauge_vector_potential.gif" width="300" alt="Free Fermion Fields"/>
   <img src="assets/gifs/free_fermion_fields.gif" width="300" alt="Free Fermion Fields"/>
   <img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/>
   <img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/>
-  <img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
 </p>
 
 Each frame is fully determined by the encoded theory — no randomness, no noise, no render approximations.
