@@ -58,8 +58,6 @@ While not strictly part of the theoretical engine, these utility modules support
 
 - **Energy Computations** - Calculates the energy density of fermionic and gauge configurations throughout the lattice. Useful for diagnostic monitoring, global conservation checks, and implementation of amplitude-based regulation mechanisms.
 
-- **Field Differentials** - Computes spatial gradients of both fermionic and gauge fields. These are optionally gauge-corrected and serve roles in energy density regulation, interaction modeling, and dynamic slope analysis.
-
 Each implementation is derived directly from formal field equations and discretized to preserve local structure. No numerical diffusion or stabilizing noise is used.
 
 ---
