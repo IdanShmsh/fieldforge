@@ -9,32 +9,32 @@
 
 #include "../../../src/core/ops/simulation_data_ops.hlsl"
 
-// This function is used to load the current fermion field state at a given position and field index into the rendering buffers
+// This function is used to load the previous fermion field state at a given position and field index into the rendering buffers
 void load_fermion_field(float3 position, uint field_index)
 {
     uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
-    rend_fermions_lattice_buffer[lattice_buffer_index] = crnt_fermions_lattice_buffer[lattice_buffer_index];
+    rend_fermions_lattice_buffer[lattice_buffer_index] = prev_fermions_lattice_buffer[lattice_buffer_index];
 }
 
-// This function is used to load the current fermion field states at a given position into the rendering buffers
+// This function is used to load the previous fermion field states at a given position into the rendering buffers
 void load_fermion_fields(float3 position)
 {
     for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++) load_fermion_field(position, field_index);
 }
 
-// This function is used to load the current gauge field states at a given position into the rendering buffers
+// This function is used to load the previous gauge field states at a given position into the rendering buffers
 void load_gauge_fields(float3 position)
 {
     uint lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
-    rend_gauge_potentials_lattice_buffer[lattice_buffer_index] = crnt_gauge_potentials_lattice_buffer[lattice_buffer_index];
-    rend_electric_strengths_lattice_buffer[lattice_buffer_index] = crnt_electric_strengths_lattice_buffer[lattice_buffer_index];
-    rend_magnetic_strengths_lattice_buffer[lattice_buffer_index] = crnt_magnetic_strengths_lattice_buffer[lattice_buffer_index];
+    rend_gauge_potentials_lattice_buffer[lattice_buffer_index] = prev_gauge_potentials_lattice_buffer[lattice_buffer_index];
+    rend_electric_strengths_lattice_buffer[lattice_buffer_index] = prev_electric_strengths_lattice_buffer[lattice_buffer_index];
+    rend_magnetic_strengths_lattice_buffer[lattice_buffer_index] = prev_magnetic_strengths_lattice_buffer[lattice_buffer_index];
 }
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
-/// This pipeline operation loads the current state of the simulation into the rendering buffers.
+/// This pipeline operation loads the previous state of the simulation into the rendering buffers.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {

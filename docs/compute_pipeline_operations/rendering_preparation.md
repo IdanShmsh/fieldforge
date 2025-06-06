@@ -24,7 +24,55 @@ This category of compute shaders operates in FieldForge's compute-pipeline to pe
 
 ##### Description
 
-This operation loads the current state of the entire simulation into all rendering buffers.
+This operation loads the current state of the entire simulation into all rendering buffers (overwriting everything).
+
+##### Optimizations
+
+No trade-off inducing optimizations.
+
+##### Theoretical Documentation
+
+*Nothing So Far*
+
+---
+
+#### [Load Previous State](../../shaders/compute/rendering_preparation/prepare_rendering-load_prev_state.compute)
+
+##### Description
+
+This operation loads the previous state of the entire simulation into all rendering buffers (overwriting everything).
+
+##### Optimizations
+
+No trade-off inducing optimizations.
+
+##### Theoretical Documentation
+
+*Nothing So Far*
+
+---
+
+#### [Add Current State](../../shaders/compute/rendering_preparation/prepare_rendering-add_crnt_state.compute)
+
+##### Description
+
+This operation adds the current state of the entire simulation to all rendering buffers via a normalized weighted sum (average by default).
+
+##### Optimizations
+
+No trade-off inducing optimizations.
+
+##### Theoretical Documentation
+
+*Nothing So Far*
+
+---
+
+#### [Add Previous State](../../shaders/compute/rendering_preparation/prepare_rendering-add_prev_state.compute)
+
+##### Description
+
+This operation adds the previous state of the entire simulation to all rendering buffers via a normalized weighted sum (average by default).
 
 ##### Optimizations
 
