@@ -67,7 +67,7 @@ GaugeLatticeBuffer rend_electric_strengths_lattice_buffer; // A lattice prepared
 GaugeLatticeBuffer prev_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer crnt_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer next_magnetic_strengths_lattice_buffer;
-GaugeLatticeBuffer rend_magnetic_strengths_lattice_buffer;
+GaugeLatticeBuffer rend_magnetic_strengths_lattice_buffer; // A lattice prepared for rendering
 
 // Storing the dynamic poke input data for the simulation
 RWStructuredBuffer<SimulationPokeData> simulation_pokes_buffer;
