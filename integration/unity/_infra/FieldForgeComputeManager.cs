@@ -234,19 +234,19 @@ namespace FieldForge
             material.SetBuffer("prev_fermions_lattice_buffer", _buffers.PrevSpinorLatticeBuffer);
             material.SetBuffer("crnt_fermions_lattice_buffer", _buffers.CrntSpinorLatticeBuffer);
             material.SetBuffer("next_fermions_lattice_buffer", _buffers.NextSpinorLatticeBuffer);
-            material.SetBuffer("rend_fermions_lattice_buffer", _buffers.NextSpinorLatticeBuffer);
+            material.SetBuffer("rend_fermions_lattice_buffer", _buffers.RendSpinorLatticeBuffer);
             material.SetBuffer("prev_gauge_potentials_lattice_buffer", _buffers.PrevGaugeLatticeBuffer);
             material.SetBuffer("crnt_gauge_potentials_lattice_buffer", _buffers.CrntGaugeLatticeBuffer);
             material.SetBuffer("next_gauge_potentials_lattice_buffer", _buffers.NextGaugeLatticeBuffer);
-            material.SetBuffer("rend_gauge_potentials_lattice_buffer", _buffers.NextGaugeLatticeBuffer);
+            material.SetBuffer("rend_gauge_potentials_lattice_buffer", _buffers.RendGaugeLatticeBuffer);
             material.SetBuffer("prev_electric_strengths_lattice_buffer", _buffers.PrevElectricStrengthsLatticeBuffer);
             material.SetBuffer("crnt_electric_strengths_lattice_buffer", _buffers.CrntElectricStrengthsLatticeBuffer);
             material.SetBuffer("next_electric_strengths_lattice_buffer", _buffers.NextElectricStrengthsLatticeBuffer);
-            material.SetBuffer("rend_electric_strengths_lattice_buffer", _buffers.NextElectricStrengthsLatticeBuffer);
+            material.SetBuffer("rend_electric_strengths_lattice_buffer", _buffers.RendElectricStrengthsLatticeBuffer);
             material.SetBuffer("prev_magnetic_strengths_lattice_buffer", _buffers.PrevMagneticStrengthsLatticeBuffer);
             material.SetBuffer("crnt_magnetic_strengths_lattice_buffer", _buffers.CrntMagneticStrengthsLatticeBuffer);
             material.SetBuffer("next_magnetic_strengths_lattice_buffer", _buffers.NextMagneticStrengthsLatticeBuffer);
-            material.SetBuffer("rend_magnetic_strengths_lattice_buffer", _buffers.NextMagneticStrengthsLatticeBuffer);
+            material.SetBuffer("rend_magnetic_strengths_lattice_buffer", _buffers.RendMagneticStrengthsLatticeBuffer);
             material.SetBuffer("global_intrinsics", _buffers.GlobalIntrinsicsBuffer);
 
             foreach (var property in properties)
