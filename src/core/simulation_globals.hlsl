@@ -53,17 +53,21 @@ RWStructuredBuffer<FermionFieldProperties> fermion_field_properties;
 FermionLatticeBuffer prev_fermions_lattice_buffer;
 FermionLatticeBuffer crnt_fermions_lattice_buffer;
 FermionLatticeBuffer next_fermions_lattice_buffer;
+FermionLatticeBuffer rend_fermions_lattice_buffer; // A lattice prepared for rendering
 // Storing the state lattice of the gauge fields (3 buffers - previous, current, next)
 GaugeLatticeBuffer prev_gauge_potentials_lattice_buffer;
 GaugeLatticeBuffer crnt_gauge_potentials_lattice_buffer;
 GaugeLatticeBuffer next_gauge_potentials_lattice_buffer;
+GaugeLatticeBuffer rend_gauge_potentials_lattice_buffer; // A lattice prepared for rendering
 // Storing the state lattice of the gauge fields' strength
 GaugeLatticeBuffer prev_electric_strengths_lattice_buffer;
 GaugeLatticeBuffer crnt_electric_strengths_lattice_buffer;
 GaugeLatticeBuffer next_electric_strengths_lattice_buffer;
+GaugeLatticeBuffer rend_electric_strengths_lattice_buffer; // A lattice prepared for rendering
 GaugeLatticeBuffer prev_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer crnt_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer next_magnetic_strengths_lattice_buffer;
+GaugeLatticeBuffer rend_magnetic_strengths_lattice_buffer;
 
 // Storing the dynamic poke input data for the simulation
 RWStructuredBuffer<SimulationPokeData> simulation_pokes_buffer;

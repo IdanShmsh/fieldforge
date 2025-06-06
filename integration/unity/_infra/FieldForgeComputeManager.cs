@@ -68,18 +68,22 @@ namespace FieldForge
             _buffers.PrevSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
             _buffers.CrntSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
             _buffers.NextSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
+            _buffers.RendSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
 
             _buffers.PrevGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.CrntGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.NextGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
+            _buffers.RendGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
             _buffers.PrevElectricStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.CrntElectricStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.NextElectricStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
+            _buffers.RendElectricStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
             _buffers.PrevMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.CrntMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.NextMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
+            _buffers.RendMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
             _buffers.GlobalIntrinsicsBuffer = CreateStructuredBuffer(globalIntrinsicsBufferSize, typeof(float));
             _buffers.SimulationPokesBuffer = CreateStructuredBuffer(simulationPokesBufferSize, typeof(SimulationPokeInformation));
@@ -171,12 +175,15 @@ namespace FieldForge
             shader.SetBuffer(kernel, "prev_fermions_lattice_buffer", _buffers.PrevSpinorLatticeBuffer);
             shader.SetBuffer(kernel, "crnt_fermions_lattice_buffer", _buffers.CrntSpinorLatticeBuffer);
             shader.SetBuffer(kernel, "next_fermions_lattice_buffer", _buffers.NextSpinorLatticeBuffer);
+            shader.SetBuffer(kernel, "rend_fermions_lattice_buffer", _buffers.RendSpinorLatticeBuffer);
             shader.SetBuffer(kernel, "prev_gauge_potentials_lattice_buffer", _buffers.PrevGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "crnt_gauge_potentials_lattice_buffer", _buffers.CrntGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "next_gauge_potentials_lattice_buffer", _buffers.NextGaugeLatticeBuffer);
+            shader.SetBuffer(kernel, "rend_gauge_potentials_lattice_buffer", _buffers.RendGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "prev_electric_strengths_lattice_buffer", _buffers.PrevElectricStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "crnt_electric_strengths_lattice_buffer", _buffers.CrntElectricStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "next_electric_strengths_lattice_buffer", _buffers.NextElectricStrengthsLatticeBuffer);
+            shader.SetBuffer(kernel, "rend_electric_strengths_lattice_buffer", _buffers.RendElectricStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "prev_magnetic_strengths_lattice_buffer", _buffers.PrevMagneticStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "crnt_magnetic_strengths_lattice_buffer", _buffers.CrntMagneticStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "next_magnetic_strengths_lattice_buffer", _buffers.NextMagneticStrengthsLatticeBuffer);
@@ -290,10 +297,10 @@ namespace FieldForge
 
     public struct ComputeBuffers
     {
-        public GraphicsBuffer PrevSpinorLatticeBuffer, CrntSpinorLatticeBuffer, NextSpinorLatticeBuffer;
-        public GraphicsBuffer PrevGaugeLatticeBuffer, CrntGaugeLatticeBuffer, NextGaugeLatticeBuffer;
-        public GraphicsBuffer PrevElectricStrengthsLatticeBuffer, CrntElectricStrengthsLatticeBuffer, NextElectricStrengthsLatticeBuffer;
-        public GraphicsBuffer PrevMagneticStrengthsLatticeBuffer, CrntMagneticStrengthsLatticeBuffer, NextMagneticStrengthsLatticeBuffer;
+        public GraphicsBuffer PrevSpinorLatticeBuffer, CrntSpinorLatticeBuffer, NextSpinorLatticeBuffer, RendSpinorLatticeBuffer;
+        public GraphicsBuffer PrevGaugeLatticeBuffer, CrntGaugeLatticeBuffer, NextGaugeLatticeBuffer, RendGaugeLatticeBuffer;
+        public GraphicsBuffer PrevElectricStrengthsLatticeBuffer, CrntElectricStrengthsLatticeBuffer, NextElectricStrengthsLatticeBuffer, RendElectricStrengthsLatticeBuffer;
+        public GraphicsBuffer PrevMagneticStrengthsLatticeBuffer, CrntMagneticStrengthsLatticeBuffer, NextMagneticStrengthsLatticeBuffer, RendMagneticStrengthsLatticeBuffer;
         public GraphicsBuffer SimulationPokesBuffer, SimulationBarriersBuffer, FermionModesBuffer;
         public GraphicsBuffer FermionFieldPropertiesBuffer;
         public GraphicsBuffer GlobalIntrinsicsBuffer;
@@ -303,15 +310,19 @@ namespace FieldForge
             PrevSpinorLatticeBuffer?.Release();
             CrntSpinorLatticeBuffer?.Release();
             NextSpinorLatticeBuffer?.Release();
+            RendSpinorLatticeBuffer?.Release();
             PrevGaugeLatticeBuffer?.Release();
             CrntGaugeLatticeBuffer?.Release();
             NextGaugeLatticeBuffer?.Release();
+            RendGaugeLatticeBuffer?.Release();
             PrevElectricStrengthsLatticeBuffer?.Release();
             CrntElectricStrengthsLatticeBuffer?.Release();
             NextElectricStrengthsLatticeBuffer?.Release();
+            RendElectricStrengthsLatticeBuffer?.Release();
             PrevMagneticStrengthsLatticeBuffer?.Release();
             CrntMagneticStrengthsLatticeBuffer?.Release();
             NextMagneticStrengthsLatticeBuffer?.Release();
+            RendMagneticStrengthsLatticeBuffer?.Release();
             SimulationPokesBuffer?.Release();
             SimulationBarriersBuffer?.Release();
             FermionModesBuffer?.Release();
