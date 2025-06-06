@@ -210,64 +210,64 @@ namespace SimulationToScreenSpace
     // that surrounds the specified position.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
-    void _gather_8_fermion_dirac_norms(float3 position, uint spinorFieldIndex, FermionLatticeBuffer fieldBuffer, out float values[8])
+    void _gather_8_fermion_dirac_norms(float3 position, uint spinor_field_index, FermionLatticeBuffer field_buffer, out float values[8])
     {
         float3 index_floor = floor(position);
         float3 index_ceil = ceil(position);
         uint index;
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), spinorFieldIndex);
-        values[0] = DiracFormalism::dirac_norm(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), spinorFieldIndex);
-        values[4] = DiracFormalism::dirac_norm(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), spinor_field_index);
+        values[0] = DiracFormalism::dirac_norm(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), spinor_field_index);
+        values[4] = DiracFormalism::dirac_norm(field_buffer[index]);
         #if SPATIAL_DIMENSIONALITY < 2
         return;
         #endif
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), spinorFieldIndex);
-        values[2] = DiracFormalism::dirac_norm(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), spinorFieldIndex);
-        values[6] = DiracFormalism::dirac_norm(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), spinor_field_index);
+        values[2] = DiracFormalism::dirac_norm(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), spinor_field_index);
+        values[6] = DiracFormalism::dirac_norm(field_buffer[index]);
         #if SPATIAL_DIMENSIONALITY < 3
         return;
         #endif
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), spinorFieldIndex);
-        values[1] = DiracFormalism::dirac_norm(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), spinorFieldIndex);
-        values[3] = DiracFormalism::dirac_norm(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), spinorFieldIndex);
-        values[5] = DiracFormalism::dirac_norm(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), spinorFieldIndex);
-        values[7] = DiracFormalism::dirac_norm(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), spinor_field_index);
+        values[1] = DiracFormalism::dirac_norm(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), spinor_field_index);
+        values[3] = DiracFormalism::dirac_norm(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), spinor_field_index);
+        values[5] = DiracFormalism::dirac_norm(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), spinor_field_index);
+        values[7] = DiracFormalism::dirac_norm(field_buffer[index]);
     }
 
     // This function gathers the spin states of 8 fermion field states at lattice positions representing the 8 corners of a cube
     // that surrounds the specified position.
-    void _gather_8_fermion_spin_states(float3 position, uint spinorFieldIndex, FermionLatticeBuffer fieldBuffer, out float3 values[8])
+    void _gather_8_fermion_spin_states(float3 position, uint spinor_field_index, FermionLatticeBuffer field_buffer, out float3 values[8])
     {
         float3 index_floor = floor(position);
         float3 index_ceil = ceil(position);
         uint index;
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), spinorFieldIndex);
-        values[0] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), spinorFieldIndex);
-        values[4] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), spinor_field_index);
+        values[0] = DiracFormalism::obtain_spin_state(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), spinor_field_index);
+        values[4] = DiracFormalism::obtain_spin_state(field_buffer[index]);
         #if SPATIAL_DIMENSIONALITY < 2
         return;
         #endif
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), spinorFieldIndex);
-        values[2] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), spinorFieldIndex);
-        values[6] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), spinor_field_index);
+        values[2] = DiracFormalism::obtain_spin_state(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), spinor_field_index);
+        values[6] = DiracFormalism::obtain_spin_state(field_buffer[index]);
         #if SPATIAL_DIMENSIONALITY < 3
         return;
         #endif
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), spinorFieldIndex);
-        values[1] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), spinorFieldIndex);
-        values[3] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), spinorFieldIndex);
-        values[5] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
-        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), spinorFieldIndex);
-        values[7] = DiracFormalism::obtain_spin_state(fieldBuffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), spinor_field_index);
+        values[1] = DiracFormalism::obtain_spin_state(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), spinor_field_index);
+        values[3] = DiracFormalism::obtain_spin_state(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), spinor_field_index);
+        values[5] = DiracFormalism::obtain_spin_state(field_buffer[index]);
+        index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), spinor_field_index);
+        values[7] = DiracFormalism::obtain_spin_state(field_buffer[index]);
     }
 
     // This function gathers the gauge potential norms of 8 gauge potential states associated with a specified symmetry index at lattice

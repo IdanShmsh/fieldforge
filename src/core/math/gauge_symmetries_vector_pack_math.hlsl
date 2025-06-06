@@ -80,7 +80,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Perform a linear combination between all associated vectors in a pair of gauge-symmetries-vector-packs
-    void scl_sum(GaugeSymmetriesVectorPack vector_pack1, float scalar1, GaugeSymmetriesVectorPack vector_pack2, float scalar2, out GaugeSymmetriesVectorPack result)
+    void scl_sum(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, float scalar1, float scalar2, out GaugeSymmetriesVectorPack result)
     {
         result[0] = vector_pack1[0] * scalar1 + vector_pack2[0] * scalar2;
         result[1] = vector_pack1[1] * scalar1 + vector_pack2[1] * scalar2;
