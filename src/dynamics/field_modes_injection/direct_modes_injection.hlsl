@@ -40,8 +40,10 @@ namespace FieldModesInjection
             FermionFieldStateMath::sum(current_state, new_state, new_state);
             crnt_fermions_lattice_buffer[buffer_index] = new_state;
 
-            float2 time_phase = ComplexNumbersMath::cxp(float2(0, sqrt(dot(wave_vector, wave_vector) + field_mass * field_mass) * simulation_temporal_unit));
-            FermionFieldStateMath::scl(new_state, time_phase, new_state);
+            FermionFieldState time_finite_difference;
+            FermionFieldStateMath::scl(new_state, float2(0, sqrt(dot(wave_vector, wave_vector) + field_mass * field_mass) * simulation_temporal_unit), time_finite_difference);
+            DiracFormalism::gamma0(time_finite_difference, time_finite_difference);
+            FermionFieldStateMath::sum(new_state, time_finite_difference, new_state);
 
             FermionFieldState previous_state = prev_fermions_lattice_buffer[buffer_index];
             FermionFieldStateMath::sum(previous_state, new_state, new_state);
