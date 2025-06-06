@@ -69,6 +69,10 @@ GaugeLatticeBuffer crnt_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer next_magnetic_strengths_lattice_buffer;
 GaugeLatticeBuffer rend_magnetic_strengths_lattice_buffer; // A lattice prepared for rendering
 
+// Lattices used for temporary storage of fermion and gauge states
+FermionLatticeBuffer temp_fermions_lattice_buffer;
+GaugeLatticeBuffer temp_gauge_lattice_buffer;
+
 // Storing the dynamic poke input data for the simulation
 RWStructuredBuffer<SimulationPokeData> simulation_pokes_buffer;
 // Storing the dynamic barrier data for the simulation

@@ -58,17 +58,17 @@ namespace FieldForge
             _buffers.FermionFieldPropertiesBuffer.SetData(_simulationData.FermionFieldProperties);
 
             int latticeSize = _simulationData.simulationWidth * _simulationData.simulationHeight * _simulationData.simulationDepth;
-            int spinorBufferSize = latticeSize * _simulationData.FermionFieldProperties.Length;
+            int fermionsBufferSize = latticeSize * _simulationData.FermionFieldProperties.Length;
             int gaugeBufferSize = latticeSize;
             int simulationPokesBufferSize = 16;
             int simulationBarriersBufferSize = 16;
             int fermionModesBufferSize = 1024;
             int globalIntrinsicsBufferSize = 128;
 
-            _buffers.PrevSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
-            _buffers.CrntSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
-            _buffers.NextSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
-            _buffers.RendSpinorLatticeBuffer = CreateStructuredBuffer(spinorBufferSize, typeof(FermionFieldState));
+            _buffers.PrevFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
+            _buffers.CrntFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
+            _buffers.NextFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
+            _buffers.RendFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
 
             _buffers.PrevGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.CrntGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
@@ -84,6 +84,9 @@ namespace FieldForge
             _buffers.CrntMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.NextMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.RendMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
+
+            _buffers.TempFermionsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(FermionFieldState));
+            _buffers.TempGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
             _buffers.GlobalIntrinsicsBuffer = CreateStructuredBuffer(globalIntrinsicsBufferSize, typeof(float));
             _buffers.SimulationPokesBuffer = CreateStructuredBuffer(simulationPokesBufferSize, typeof(SimulationPokeInformation));
@@ -172,10 +175,10 @@ namespace FieldForge
             shader.SetBuffer(kernel, "simulation_barriers_buffer", _buffers.SimulationBarriersBuffer);
             shader.SetBuffer(kernel, "fermion_modes_buffer", _buffers.FermionModesBuffer);
 
-            shader.SetBuffer(kernel, "prev_fermions_lattice_buffer", _buffers.PrevSpinorLatticeBuffer);
-            shader.SetBuffer(kernel, "crnt_fermions_lattice_buffer", _buffers.CrntSpinorLatticeBuffer);
-            shader.SetBuffer(kernel, "next_fermions_lattice_buffer", _buffers.NextSpinorLatticeBuffer);
-            shader.SetBuffer(kernel, "rend_fermions_lattice_buffer", _buffers.RendSpinorLatticeBuffer);
+            shader.SetBuffer(kernel, "prev_fermions_lattice_buffer", _buffers.PrevFermionsLatticeBuffer);
+            shader.SetBuffer(kernel, "crnt_fermions_lattice_buffer", _buffers.CrntFermionsLatticeBuffer);
+            shader.SetBuffer(kernel, "next_fermions_lattice_buffer", _buffers.NextFermionsLatticeBuffer);
+            shader.SetBuffer(kernel, "rend_fermions_lattice_buffer", _buffers.RendFermionsLatticeBuffer);
             shader.SetBuffer(kernel, "prev_gauge_potentials_lattice_buffer", _buffers.PrevGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "crnt_gauge_potentials_lattice_buffer", _buffers.CrntGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "next_gauge_potentials_lattice_buffer", _buffers.NextGaugeLatticeBuffer);
@@ -188,6 +191,8 @@ namespace FieldForge
             shader.SetBuffer(kernel, "crnt_magnetic_strengths_lattice_buffer", _buffers.CrntMagneticStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "next_magnetic_strengths_lattice_buffer", _buffers.NextMagneticStrengthsLatticeBuffer);
             shader.SetBuffer(kernel, "rend_magnetic_strengths_lattice_buffer", _buffers.RendMagneticStrengthsLatticeBuffer);
+            shader.SetBuffer(kernel, "temp_fermions_lattice_buffer", _buffers.TempFermionsLatticeBuffer);
+            shader.SetBuffer(kernel, "temp_gauge_lattice_buffer", _buffers.TempGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "global_intrinsics", _buffers.GlobalIntrinsicsBuffer);
 
             foreach (var property in properties)
@@ -231,10 +236,10 @@ namespace FieldForge
             material.SetBuffer("simulation_barriers_buffer", _buffers.SimulationBarriersBuffer);
             material.SetBuffer("fermion_modes_buffer", _buffers.FermionModesBuffer);
 
-            material.SetBuffer("prev_fermions_lattice_buffer", _buffers.PrevSpinorLatticeBuffer);
-            material.SetBuffer("crnt_fermions_lattice_buffer", _buffers.CrntSpinorLatticeBuffer);
-            material.SetBuffer("next_fermions_lattice_buffer", _buffers.NextSpinorLatticeBuffer);
-            material.SetBuffer("rend_fermions_lattice_buffer", _buffers.RendSpinorLatticeBuffer);
+            material.SetBuffer("prev_fermions_lattice_buffer", _buffers.PrevFermionsLatticeBuffer);
+            material.SetBuffer("crnt_fermions_lattice_buffer", _buffers.CrntFermionsLatticeBuffer);
+            material.SetBuffer("next_fermions_lattice_buffer", _buffers.NextFermionsLatticeBuffer);
+            material.SetBuffer("rend_fermions_lattice_buffer", _buffers.RendFermionsLatticeBuffer);
             material.SetBuffer("prev_gauge_potentials_lattice_buffer", _buffers.PrevGaugeLatticeBuffer);
             material.SetBuffer("crnt_gauge_potentials_lattice_buffer", _buffers.CrntGaugeLatticeBuffer);
             material.SetBuffer("next_gauge_potentials_lattice_buffer", _buffers.NextGaugeLatticeBuffer);
@@ -247,6 +252,8 @@ namespace FieldForge
             material.SetBuffer("crnt_magnetic_strengths_lattice_buffer", _buffers.CrntMagneticStrengthsLatticeBuffer);
             material.SetBuffer("next_magnetic_strengths_lattice_buffer", _buffers.NextMagneticStrengthsLatticeBuffer);
             material.SetBuffer("rend_magnetic_strengths_lattice_buffer", _buffers.RendMagneticStrengthsLatticeBuffer);
+            material.SetBuffer("temp_fermions_lattice_buffer", _buffers.TempFermionsLatticeBuffer);
+            material.SetBuffer("temp_gauge_lattice_buffer", _buffers.TempGaugeLatticeBuffer);
             material.SetBuffer("global_intrinsics", _buffers.GlobalIntrinsicsBuffer);
 
             foreach (var property in properties)
@@ -302,8 +309,8 @@ namespace FieldForge
 
     public struct ComputeBuffers
     {
-        public GraphicsBuffer PrevSpinorLatticeBuffer, CrntSpinorLatticeBuffer, NextSpinorLatticeBuffer, RendSpinorLatticeBuffer;
-        public GraphicsBuffer PrevGaugeLatticeBuffer, CrntGaugeLatticeBuffer, NextGaugeLatticeBuffer, RendGaugeLatticeBuffer;
+        public GraphicsBuffer PrevFermionsLatticeBuffer, CrntFermionsLatticeBuffer, NextFermionsLatticeBuffer, RendFermionsLatticeBuffer, TempFermionsLatticeBuffer;
+        public GraphicsBuffer PrevGaugeLatticeBuffer, CrntGaugeLatticeBuffer, NextGaugeLatticeBuffer, RendGaugeLatticeBuffer, TempGaugeLatticeBuffer;
         public GraphicsBuffer PrevElectricStrengthsLatticeBuffer, CrntElectricStrengthsLatticeBuffer, NextElectricStrengthsLatticeBuffer, RendElectricStrengthsLatticeBuffer;
         public GraphicsBuffer PrevMagneticStrengthsLatticeBuffer, CrntMagneticStrengthsLatticeBuffer, NextMagneticStrengthsLatticeBuffer, RendMagneticStrengthsLatticeBuffer;
         public GraphicsBuffer SimulationPokesBuffer, SimulationBarriersBuffer, FermionModesBuffer;
@@ -312,10 +319,10 @@ namespace FieldForge
 
         public void Release()
         {
-            PrevSpinorLatticeBuffer?.Release();
-            CrntSpinorLatticeBuffer?.Release();
-            NextSpinorLatticeBuffer?.Release();
-            RendSpinorLatticeBuffer?.Release();
+            PrevFermionsLatticeBuffer?.Release();
+            CrntFermionsLatticeBuffer?.Release();
+            NextFermionsLatticeBuffer?.Release();
+            RendFermionsLatticeBuffer?.Release();
             PrevGaugeLatticeBuffer?.Release();
             CrntGaugeLatticeBuffer?.Release();
             NextGaugeLatticeBuffer?.Release();
@@ -328,6 +335,8 @@ namespace FieldForge
             CrntMagneticStrengthsLatticeBuffer?.Release();
             NextMagneticStrengthsLatticeBuffer?.Release();
             RendMagneticStrengthsLatticeBuffer?.Release();
+            TempFermionsLatticeBuffer?.Release();
+            TempGaugeLatticeBuffer?.Release();
             SimulationPokesBuffer?.Release();
             SimulationBarriersBuffer?.Release();
             FermionModesBuffer?.Release();
