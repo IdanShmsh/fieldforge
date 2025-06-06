@@ -6,10 +6,6 @@ This category of compute shaders operates in FieldForge's compute-pipeline to pe
 
 #### Always Should
 
-### Implementation Guidelines
-
-#### Always Should
-
 - Loop field buffers - `crnt_...` --> `prev_...`, `next_...` --> `crnt_...`, `<reset>` --> `next_...` ...
 - Update global intrinsics buffer - `global_intrinsics[GI_FRAME_COUNT] += 1;` ...
 
