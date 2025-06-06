@@ -54,8 +54,7 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = rendered_color;
-                color += GaugeFieldColoring::compute_gauge_potentials_vector_dial_color(position, prev_magnetic_strengths_lattice_buffer);
-                color += GaugeFieldColoring::compute_gauge_potentials_vector_dial_color(position, crnt_magnetic_strengths_lattice_buffer);
+                color += GaugeFieldColoring::compute_gauge_potentials_vector_dial_color(position, rend_magnetic_strengths_lattice_buffer);
                 color[3] = 1;
                 return color;
             }
