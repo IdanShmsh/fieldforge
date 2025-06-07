@@ -129,9 +129,15 @@ namespace FieldForge
                 {
                     ComputeShader shaderItem = computeShader.ShaderItem;
                     ShaderProperty[] properties = computeShader.ShaderProperties;
-                    int mainKernel = shaderItem.FindKernel("CSMain");
-                    ConfigureComputeShader(shaderItem, properties, mainKernel);
-                    CommandBuffer.DispatchCompute(shaderItem, mainKernel, numberOfThreadGroups.x, numberOfThreadGroups.y, numberOfThreadGroups.z);
+                    int pass = 0;
+                    while (true)
+                    {
+                        int kernel;
+                        try { kernel = shaderItem.FindKernel("Pass" + pass); }
+                        catch (ArgumentException e) { break; }
+                        ConfigureComputeShader(shaderItem, properties, kernel);
+                        CommandBuffer.DispatchCompute(shaderItem, kernel, numberOfThreadGroups.x, numberOfThreadGroups.y, numberOfThreadGroups.z);
+                    }
                 }
             }
 
