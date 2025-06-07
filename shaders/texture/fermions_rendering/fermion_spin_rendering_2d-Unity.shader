@@ -56,21 +56,22 @@ Shader "Custom/fermion_spin_rendering_2d"
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 0);
+                float3 rounded_position = round(position);
+                float3 delta_position = position - rounded_position;
+                float offset = length(delta_position);
+                if (offset == 0) return rendered_color;
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
                     if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
-                    float3 rounded_position = round(position);
-                    float3 delta_position = position - rounded_position;
-                    float offset = length(delta_position);
-                    if (offset == 0) return float4(0, 0, 0, 0);
                     FermionFieldProperties field_properties = fermion_field_properties[field_index];
                     uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(rounded_position, field_index);
                     FermionFieldState fermion_state = rend_fermions_lattice_buffer[buffer_index];
                     float3 fermion_spin_state = DiracFormalism::obtain_spin_state(fermion_state);
                     float spin_state_norm = length(fermion_spin_state);
-                    if (spin_state_norm < 0.01) return float4(0, 0, 0, 0);
-                    float cross_product = length(cross(fermion_spin_state, delta_position)) / (spin_state_norm * spin_state_norm);
-                    color += (float4(1, 1, 1, 1) + field_properties.color) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                    if (spin_state_norm == 0) return float4(0, 0, 0, 0);
+                    fermion_spin_state *= 25 / spin_state_norm;
+                    float cross_product = length(cross(fermion_spin_state, delta_position));
+                    color += simulation_brightness * field_properties.color * spin_state_norm * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
                 saturate(color);
