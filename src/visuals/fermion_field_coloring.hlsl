@@ -53,7 +53,7 @@ namespace FermionFieldColoring
         float3 p = abs(frac(hue + k) * 6.0 - 3.0);
         float3 rgb = lerp(k.xxx, saturate(p - k.xxx), 1.0);
         float norm_factor = 1 - exp(-abs(state_norm));
-        float4 color = (0.5 * field_properties.color + float4(rgb, 1.0)) * simulation_brightness * norm_factor;
+        float4 color = float4(rgb, 1.0) * simulation_brightness * norm_factor;
         saturate(color);
         return color;
     }
