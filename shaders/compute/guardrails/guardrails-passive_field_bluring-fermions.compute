@@ -1,0 +1,29 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/guardrails/passive_field_blurring.hlsl"
+
+float standard_deviation;
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation applies local blurring, the same way everywhere and to all fermion fields in the simulation, using
+/// a 3x3x3 gaussian kernel.
+/// Properties:
+/// • standard_deviation (float)
+///   This parameter <standard_deviation> represents the standard deviation of the gaussian kernel used for blurring.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    standard_deviation = standard_deviation ? standard_deviation : 0.25f;
+
+    float3 position = float3(dispatch_thread_id);
+    Guardrails::PassiveFieldBlurring::blur_fermion_fields(position, standard_deviation, crnt_fermions_lattice_buffer, temp_fermions_lattice_buffer);
+}

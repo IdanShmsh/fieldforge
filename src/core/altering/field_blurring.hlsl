@@ -12,11 +12,12 @@
 /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
 namespace FieldBlurring
 {
-    // Blur the fermion fields at a given position with a specified kernel radius and standard deviation
+    // Blur the fermion fields at a given position with a specified kernel radius and standard deviation from a specified
+    // fermion lattice buffer to a specified target fermion lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_fermion_fields_3x3x3(float3 position, float standard_deviation, FermionLatticeBuffer fermion_lattice_buffer)
+    void blur_fermion_fields_3x3x3(float3 position, float standard_deviation, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
     {
         for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
         {
@@ -32,21 +33,21 @@ namespace FieldBlurring
                 float weight = CommonMath::gaussian(offset, standard_deviation);
                 total_weight += weight;
                 uint neighbor_index = SimulationDataOps::get_fermion_lattice_buffer_index(position + offset, field_index);
-                FermionFieldState neighbor = fermion_lattice_buffer[neighbor_index];
+                FermionFieldState neighbor = source_lattice_buffer[neighbor_index];
                 FermionFieldState weighted;
                 FermionFieldStateMath::rscl(neighbor, weight, weighted);
                 FermionFieldStateMath::sum(fermion_state, weighted, fermion_state);
             }
             FermionFieldStateMath::rscl(fermion_state, 1.0 / total_weight, fermion_state);
-            fermion_lattice_buffer[center_index] = fermion_state;
+            target_lattice_buffer[center_index] = fermion_state;
         }
     }
 
-    // Blur the gauge fields at a given position with a specified kernel radius and standard deviation
+    // Blur the gauge fields at a given position with a specified kernel radius and standard deviation from a specified source gauge lattice buffer to a specified target one.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_gauge_fields_3x3x3(float3 position, float standard_deviation, GaugeLatticeBuffer gauge_lattice_buffer)
+    void blur_gauge_fields_3x3x3(float3 position, float standard_deviation, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
     {
         uint center_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
         GaugeSymmetriesVectorPack state;
@@ -60,13 +61,13 @@ namespace FieldBlurring
             float weight = CommonMath::gaussian(offset, standard_deviation);
             total_weight += weight;
             uint neighbor_index = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
-            GaugeSymmetriesVectorPack neighbor = gauge_lattice_buffer[neighbor_index];
+            GaugeSymmetriesVectorPack neighbor = source_lattice_buffer[neighbor_index];
             GaugeSymmetriesVectorPack weighted;
             GaugeSymmetriesVectorPackMath::scl(neighbor, weight, weighted);
             GaugeSymmetriesVectorPackMath::sum(state, weighted, state);
         }
         GaugeSymmetriesVectorPackMath::scl(state, 1.0 / total_weight, state);
-        gauge_lattice_buffer[center_index] = state;
+        target_lattice_buffer[center_index] = state;
     }
 }
 

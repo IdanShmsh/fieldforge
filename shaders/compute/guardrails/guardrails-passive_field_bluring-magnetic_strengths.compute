@@ -14,20 +14,16 @@ float standard_deviation;
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
-/// This pipeline operation applies local blurring, the same way everywhere and to all fields in the simulation, using
-/// a 3x3x3 gaussian kernel.
+/// This pipeline operation applies local blurring, the same way everywhere and to all magnetic strength fields in the
+/// simulation, using a 3x3x3 gaussian kernel.
 /// Properties:
-/// • kernel_center (float)
-///   This parameter <kernel_center> is the value associated with the center of the kernel.
-///   The blurring kernel is constructed as a 3x3x3 gaussian kernel accordingly.
+/// • standard_deviation (float)
+///   This parameter <standard_deviation> represents the standard deviation of the gaussian kernel used for blurring.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     standard_deviation = standard_deviation ? standard_deviation : 0.25f;
 
     float3 position = float3(dispatch_thread_id);
-    Guardrails::PassiveFieldBlurring::blur_fermion_fields(position, standard_deviation, crnt_fermions_lattice_buffer);
-    Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_gauge_potentials_lattice_buffer);
-    Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_electric_strengths_lattice_buffer);
-    Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_magnetic_strengths_lattice_buffer);
+    Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_magnetic_strengths_lattice_buffer, temp_gauge_lattice_buffer);
 }

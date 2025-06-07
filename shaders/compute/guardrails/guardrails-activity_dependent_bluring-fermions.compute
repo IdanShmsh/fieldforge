@@ -17,7 +17,7 @@ float radius_cap;
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
-/// This pipeline operation applies a blurring effect to the fields (blurring the field state components (not the norms))
+/// This pipeline operation applies a blurring effect to the fermion fields (blurring the field state components (not the norms))
 /// with a blurring radius directly proportional to the energy density of the fields at the position in which the
 /// blurring takes place.
 /// Properties:
@@ -31,5 +31,5 @@ void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
     radius_cap = radius_cap ? radius_cap : 2.0f;
 
     float3 position = float3(dispatch_thread_id);
-    Guardrails::ActivityDependentEnergyDissipation::energy_density_dependent_blurring(position, activity_energy_scale, radius_cap);
+    Guardrails::ActivityDependentEnergyDissipation::fermions_energy_density_dependent_blurring(position, activity_energy_scale, radius_cap, crnt_fermions_lattice_buffer, temp_fermions_lattice_buffer);
 }

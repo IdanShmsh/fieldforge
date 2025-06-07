@@ -1,0 +1,32 @@
+#pragma kernel CSMain
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/guardrails/passive_field_denoising.hlsl"
+
+float spatial_std;
+float range_std;
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation applies bilateral denoising to the electric strength fields (denoising the field state components (not the norms))
+/// Properties:
+/// • spatial_std (float)
+///   This parameter <spatial_std> represents the 'spatial_weight' parameter associated with the bilateral denoising algorithm.
+/// • range_std (float)
+///   This parameter <range_std> represents the 'range_weight' parameter associated with the bilateral denoising algorithm.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    spatial_std = spatial_std ? spatial_std : 1.0f;
+    range_std = range_std ? range_std : 0.25f;
+
+    float3 position = float3(dispatch_thread_id);
+    Guardrails::PassiveFieldDenoising::bilateral_denoise_gauge_fields(position, spatial_std, range_std, crnt_electric_strengths_lattice_buffer, temp_gauge_lattice_buffer);
+}
