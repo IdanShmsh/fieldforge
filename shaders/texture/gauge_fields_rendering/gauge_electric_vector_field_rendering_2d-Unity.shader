@@ -25,7 +25,7 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/gauge_fields_coloring.hlsl"
+            #include "../../../src/core/analysis/field_interpolations.hlsl"
 
             struct appdata
             {
