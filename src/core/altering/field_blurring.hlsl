@@ -34,9 +34,7 @@ namespace FieldBlurring
                 total_weight += weight;
                 uint neighbor_index = SimulationDataOps::get_fermion_lattice_buffer_index(position + offset, field_index);
                 FermionFieldState neighbor = source_lattice_buffer[neighbor_index];
-                FermionFieldState weighted;
-                FermionFieldStateMath::rscl(neighbor, weight, weighted);
-                FermionFieldStateMath::sum(fermion_state, weighted, fermion_state);
+                FermionFieldStateMath::rscl_sum(fermion_state, neighbor, 1, weight, fermion_state);
             }
             FermionFieldStateMath::rscl(fermion_state, 1.0 / total_weight, fermion_state);
             target_lattice_buffer[center_index] = fermion_state;
@@ -62,9 +60,7 @@ namespace FieldBlurring
             total_weight += weight;
             uint neighbor_index = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
             GaugeSymmetriesVectorPack neighbor = source_lattice_buffer[neighbor_index];
-            GaugeSymmetriesVectorPack weighted;
-            GaugeSymmetriesVectorPackMath::scl(neighbor, weight, weighted);
-            GaugeSymmetriesVectorPackMath::sum(state, weighted, state);
+            GaugeSymmetriesVectorPackMath::scl_sum(state, neighbor, 1, weight, state);
         }
         GaugeSymmetriesVectorPackMath::scl(state, 1.0 / total_weight, state);
         target_lattice_buffer[center_index] = state;

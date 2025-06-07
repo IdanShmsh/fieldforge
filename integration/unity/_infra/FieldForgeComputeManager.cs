@@ -85,7 +85,7 @@ namespace FieldForge
             _buffers.NextMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
             _buffers.RendMagneticStrengthsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
-            _buffers.TempFermionsLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(FermionFieldState));
+            _buffers.TempFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
             _buffers.TempGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
             _buffers.GlobalIntrinsicsBuffer = CreateStructuredBuffer(globalIntrinsicsBufferSize, typeof(float));

@@ -58,7 +58,7 @@ Shader "Custom/fermion_norms_rendering_2d"
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = rendered_color;
-                color += FermionFieldColoring::compute_fermion_fields_norm_color(position, rend_fermions_lattice_buffer);
+                color += FermionFieldColoring::compute_fermion_fields_norm_color(position, crnt_fermions_lattice_buffer);
                 color[3] = 1;
                 return color;
             }
