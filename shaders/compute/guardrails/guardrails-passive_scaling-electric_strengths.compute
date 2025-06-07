@@ -1,0 +1,30 @@
+#pragma kernel Pass0
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/guardrails/passive_scaling.hlsl"
+
+float scale_reduction_factor;
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation uniformly scales down the electric strength fields in the simulation by the same fraction
+/// at every position in the simulation.
+/// Properties:
+/// • scale_reduction_factor (float)
+///   This parameter <scale_reduction_factor> is the fraction taken away from the fields as they are scaled down every frame
+///   via this compute shader execution.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    scale_reduction_factor = scale_reduction_factor ? scale_reduction_factor : 0.005f;
+
+    float3 position = float3(dispatch_thread_id);
+    Guardrails::PassiveScaling::scale_gauge_fields_down(position, scale_reduction_factor, crnt_electric_strengths_lattice_buffer);
+}

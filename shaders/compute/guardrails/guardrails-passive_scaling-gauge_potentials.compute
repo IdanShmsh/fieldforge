@@ -7,24 +7,24 @@
 
 #define SPATIAL_DIMENSIONALITY 3
 
-#include "../../../src/dynamics/guardrails/passive_scaling_energy_disspation.hlsl"
+#include "../../../src/dynamics/guardrails/passive_scaling.hlsl"
 
-float dissipating_factor;
+float scale_reduction_factor;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
-/// This pipeline operation applies energy dissipation to the simulation, by scaling down the fermion and gauge fields
-/// by the same fraction at every position in the simulation.
+/// This pipeline operation uniformly scales down the gauge potential fields in the simulation by the same fraction
+/// at every position in the simulation.
 /// Properties:
-/// • dissipating_factor (float)
-///   This parameter <dissipating_factor> is the fraction taken away from the fields as they are scaled down every frame
+/// • scale_reduction_factor (float)
+///   This parameter <scale_reduction_factor> is the fraction taken away from the fields as they are scaled down every frame
 ///   via this compute shader execution.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    dissipating_factor = dissipating_factor ? dissipating_factor : 0.005f;
+    scale_reduction_factor = scale_reduction_factor ? scale_reduction_factor : 0.005f;
 
     float3 position = float3(dispatch_thread_id);
-    Guardrails::PassiveScalingEnergyDissipation::dissipate_energy(position, dissipating_factor);
+    Guardrails::PassiveScaling::scale_gauge_fields_down(position, scale_reduction_factor, crnt_gauge_potentials_lattice_buffer);
 }

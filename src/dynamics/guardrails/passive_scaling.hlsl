@@ -9,19 +9,20 @@ namespace Guardrails
 {
     /// Implementation of passive energy dissipation capabilities.
     /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
-    namespace PassiveScalingEnergyDissipation
+    namespace PassiveScaling
     {
         // This function is used to scale all fermion fields at a given position by a given scale factor
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void dissipate_spinor_fields_energy(float3 position, float scaling_factor)
+        void scale_fermion_fields_down(float3 position, float scale_reduction_factor, FermionLatticeBuffer lattice_buffer)
         {
+            float scaling_factor = 1 - scale_reduction_factor;
             for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
             {
                 if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
                 uint bufferIndex = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
-                FermionFieldStateMath::rscl(crnt_fermions_lattice_buffer[bufferIndex], scaling_factor, crnt_fermions_lattice_buffer[bufferIndex]);
+                FermionFieldStateMath::rscl(lattice_buffer[bufferIndex], scaling_factor, lattice_buffer[bufferIndex]);
             }
         }
 
@@ -29,22 +30,11 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void dissipate_gauge_fields_energy(float3 position, float scaling_factor)
+        void scale_gauge_fields_down(float3 position, float scale_reduction_factor, GaugeLatticeBuffer lattice_buffer)
         {
+            float scaling_factor = 1 - scale_reduction_factor;
             uint bufferIndex = SimulationDataOps::get_gauge_lattice_buffer_index(position);
-            GaugeSymmetriesVectorPackMath::scl(crnt_gauge_potentials_lattice_buffer[bufferIndex], scaling_factor, crnt_gauge_potentials_lattice_buffer[bufferIndex]);
-            GaugeSymmetriesVectorPackMath::scl(crnt_electric_strengths_lattice_buffer[bufferIndex], scaling_factor, crnt_electric_strengths_lattice_buffer[bufferIndex]);
-            GaugeSymmetriesVectorPackMath::scl(crnt_magnetic_strengths_lattice_buffer[bufferIndex], scaling_factor, crnt_magnetic_strengths_lattice_buffer[bufferIndex]);
-        }
-
-        // This function is used to dissipate energy from all fields at a given position
-        // * Side Effects:
-        // • Reads directly from the simulation's lattice buffers
-        void dissipate_energy(float3 position, float energy_dissipation_factor)
-        {
-            float scaling_factor = 1 - energy_dissipation_factor;
-            dissipate_spinor_fields_energy(position, scaling_factor);
-            dissipate_gauge_fields_energy(position, scaling_factor);
+            GaugeSymmetriesVectorPackMath::scl(lattice_buffer[bufferIndex], scaling_factor, lattice_buffer[bufferIndex]);
         }
     }
 }

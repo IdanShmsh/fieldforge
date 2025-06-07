@@ -14,7 +14,7 @@ float standard_deviation;
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
-/// This pipeline operation applies local blurring, the same way everywhere and to all magnetic strength fields in the
+/// This pipeline operation applies local blurring, the same way everywhere and to the magnetic strength fields in the
 /// simulation, using a 3x3x3 gaussian kernel.
 /// Properties:
 /// • standard_deviation (float)

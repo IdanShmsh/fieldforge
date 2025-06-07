@@ -85,6 +85,21 @@ namespace SimulationDataOps
             field_properties.su3_interaction_coupling
         );
     }
+
+    void copy_buffer_information_at_position(float3 position, FermionLatticeBuffer from_buffer, FermionLatticeBuffer to_buffer)
+    {
+        for (uint field_index = 0 ; field_index < FERMION_FIELDS_COUNT; field_index++)
+        {
+            uint index = get_fermion_lattice_buffer_index(position, field_index);
+            to_buffer[index] = from_buffer[index];
+        }
+    }
+
+    void copy_buffer_information_at_position(float3 position, GaugeLatticeBuffer from_buffer, GaugeLatticeBuffer to_buffer)
+    {
+        uint index = get_gauge_lattice_buffer_index(position);
+        to_buffer[index] = from_buffer[index];
+    }
 }
 
 #endif

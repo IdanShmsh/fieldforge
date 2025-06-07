@@ -14,7 +14,7 @@ namespace Guardrails
     /// Implementation of an activity-dependent field blurring.
     /// Allows performing field blurring with a radius directly proportional on the local activity of the fields.
     /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
-    namespace ActivityDependentEnergyDissipation
+    namespace ActivityDependentBlurring
     {
         // Apply an energy density-dependent blurring to the fermion fields at a given position
         // with a specified energy scale, from a specified source fermion lattice buffer to a specified target one.
