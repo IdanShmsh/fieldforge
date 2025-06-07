@@ -14,13 +14,13 @@ Guardrails are allowed to do anything plausible.
 
 ---
 
-#### [Activity Dependent Blurring](../../shaders/compute/guardrails/guardrails-activity_dependent_bluring.compute)
+#### Activity Dependent Blurring
 
 By: [Idan Shemesh](https://github.com/IdanShmsh)
 
 ##### Description
 
-This guardrail technique blurs the fields in the simulation by applying a local gaussian kernel to them. The blur radius applied to a region is directly proportional to the local energy density in it - blurring more aggressively in active regions of the simulation.
+This guardrail technique blurs the appropriate fields in the simulation by applying a local gaussian kernel to them. The blur radius applied to a region is directly proportional to the local energy density in it - blurring more aggressively in active regions of the simulation.
 
 ##### Optimizations
 
@@ -32,13 +32,13 @@ No trade-off inducing optimizations.
 
 ---
 
-#### [Activity Dependent Energy Dissipation](../../shaders/compute/guardrails/guardrails-activity_dependent_energy_dissipation.compute)
+#### Activity Dependent Sclaing
 
 By: [Idan Shemesh](https://github.com/IdanShmsh)
 
 ##### Description
 
-This guardrail technique dissipates energy from the simulation only by applying a positive-definite scale factor to the fields within it. The scale factor applied to a region is directly proportional to the local energy density in it - dissipating energy more aggressively in active regions of the simulation.
+This guardrail technique applies a positive-definite scale factor to the proper fields. The scale factor applied to a region is directly proportional to the local energy density in it - dissipating energy more aggressively in active regions of the simulation.
 
 ##### Optimizations
 
@@ -50,7 +50,7 @@ No trade-off inducing optimizations.
 
 ---
 
-#### [Passive Bilateral Field Denoising](../../shaders/compute/guardrails/guardrails-passive_bilateral_field_denoising.compute)
+#### Passive Bilateral Field Denoising
 
 By: [Idan Shemesh](https://github.com/IdanShmsh)
 
@@ -68,7 +68,7 @@ No trade-off inducing optimizations.
 
 ---
 
-#### [Passive Field Blurring](../../shaders/compute/guardrails/guardrails-passive_field_bluring.compute)
+#### Passive Field Blurring
 
 By: [Idan Shemesh](https://github.com/IdanShmsh)
 
@@ -86,13 +86,13 @@ No trade-off inducing optimizations.
 
 ---
 
-#### [Passive Scaling Energy Dissipation](../../shaders/compute/guardrails/guardrails-passive_scaling_energy_dissipation.compute)
+#### Passive Scaling
 
 By: [Idan Shemesh](https://github.com/IdanShmsh)
 
 ##### Description
 
-This guardrail technique dissipates energy from the simulation only by applying a positive-definite scale factor to the fields within it uniformly in every local region.
+This guardrail technique applies a positive-definite scale factor to the fields within it uniformly in every local region.
 
 ##### Optimizations
 
