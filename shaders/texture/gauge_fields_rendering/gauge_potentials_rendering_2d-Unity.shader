@@ -60,11 +60,11 @@ Shader "Custom/gauge_potentials_rendering_2d"
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
                 {
                     if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
-                    float4 field_potential = state[symmetry_index];
-                    float ampliude = length(field_potential);
-                    if (ampliude == 0) return float4(0, 0, 0, 0);
-                    field_potential *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
-                    color += abs(float4(field_potential[1], field_potential[3], field_potential[2], field_potential[0]));
+                    float4 field_state = state[symmetry_index];
+                    float ampliude = length(field_state);
+                    if (ampliude == 0) continue;
+                    field_state *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
+                    color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
                 }
                 color[3] = 1;
                 saturate(color);

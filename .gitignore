@@ -1,2 +1,3 @@
 *.meta
 __IGNORE__*
+shaders/texture/fermions_rendering/_custom_fermion_2d-Unity.shader

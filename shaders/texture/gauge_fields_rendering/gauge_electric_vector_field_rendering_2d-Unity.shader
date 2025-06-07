@@ -63,12 +63,14 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
                 {
                     if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
-                    float4 field_potential = state[symmetry_index];
-                    float field_potential_norm_sqrd = dot(field_potential, field_potential);
-                    if (field_potential_norm_sqrd < 0.000001) return float4(0, 0, 0, 0);
-                    float cross_product = length(cross(field_potential.yzw, delta_position)) / field_potential_norm_sqrd;
+                    float4 field_state = state[symmetry_index];
+                    field_state[0] = 0;
+                    float field_state_length = length(field_state);
+                    if (field_state_length == 0) continue;
+                    field_state *= 25 / field_state_length;
+                    float cross_product = length(cross(field_state.yzw, delta_position));
                     float3 symmetry_color = CommonMath::hsv2rgb(float3(symmetry_index / 12.0f, 0.5f, 1));
-                    color += float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                    color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
                 saturate(color);
