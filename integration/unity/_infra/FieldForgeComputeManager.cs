@@ -129,14 +129,16 @@ namespace FieldForge
                 {
                     ComputeShader shaderItem = computeShader.ShaderItem;
                     ShaderProperty[] properties = computeShader.ShaderProperties;
-                    int pass = 0;
+
+                    int passIndex = 0;
                     while (true)
                     {
-                        int kernel;
-                        try { kernel = shaderItem.FindKernel("Pass" + pass); }
-                        catch (ArgumentException e) { break; }
+                        string kernelName = $"Pass{passIndex}";
+                        if (!shaderItem.HasKernel(kernelName)) break;
+                        int kernel = shaderItem.FindKernel(kernelName);
                         ConfigureComputeShader(shaderItem, properties, kernel);
                         CommandBuffer.DispatchCompute(shaderItem, kernel, numberOfThreadGroups.x, numberOfThreadGroups.y, numberOfThreadGroups.z);
+                        passIndex++;
                     }
                 }
             }
