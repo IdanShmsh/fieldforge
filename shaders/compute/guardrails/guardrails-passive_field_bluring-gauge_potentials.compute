@@ -1,4 +1,5 @@
 #pragma kernel Pass0
+#pragma kernel Pass1
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -26,4 +27,11 @@ void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 
     float3 position = float3(dispatch_thread_id);
     Guardrails::PassiveFieldBlurring::blur_gauge_fields(position, standard_deviation, crnt_gauge_potentials_lattice_buffer, temp_gauge_lattice_buffer);
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    SimulationDataOps::copy_buffer_information_at_position(position, temp_gauge_lattice_buffer, crnt_gauge_potentials_lattice_buffer);
 }

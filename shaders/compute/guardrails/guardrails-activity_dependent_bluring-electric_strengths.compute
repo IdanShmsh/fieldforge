@@ -1,4 +1,5 @@
 #pragma kernel Pass0
+#pragma kernel Pass1
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -32,4 +33,11 @@ void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 
     float3 position = float3(dispatch_thread_id);
     Guardrails::ActivityDependentEnergyDissipation::gauge_energy_density_dependent_blurring(position, activity_energy_scale, radius_cap, crnt_electric_strengths_lattice_buffer, temp_gauge_lattice_buffer);
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    SimulationDataOps::copy_buffer_information_at_position(position, temp_gauge_lattice_buffer, crnt_electric_strengths_lattice_buffer);
 }
