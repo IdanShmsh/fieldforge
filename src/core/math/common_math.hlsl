@@ -81,6 +81,18 @@ namespace CommonMath
     {
         return gaussian(length(x), stddev);
     }
+
+    float3 hsv2rgb(float3 hsv)
+    {
+        float h = hsv.x;
+        float s = hsv.y;
+        float v = hsv.z;
+        float3 k = float3(1.0, 2.0 / 3.0, 1.0 / 3.0);
+        float3 p = abs(frac(h + k) * 6.0 - 3.0);
+        float3 rgb = lerp(k.xxx, saturate(p - k.xxx), 1.0);
+        rgb = lerp(float3(1.0, 1.0, 1.0), rgb, s);
+        return v * rgb;
+    }
 }
 
 #endif

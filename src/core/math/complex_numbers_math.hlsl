@@ -70,6 +70,11 @@ namespace ComplexNumbersMath
     {
         return prd(v1, w1) + prd(v2, w2);
     }
+
+    float phase(float2 a)
+    {
+        return atan2(a.y, a.x);
+    }
 }
 
 #endif

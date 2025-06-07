@@ -26,7 +26,7 @@ Shader "Custom/gauge_potentials_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/gauge_fields_coloring.hlsl"
+            #include "../../../src/core/analysis/field_interpolations.hlsl"
 
             struct appdata
             {
@@ -54,10 +54,21 @@ Shader "Custom/gauge_potentials_rendering_2d"
             {
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
-                float4 color = rendered_color;
-                color += GaugeFieldColoring::compute_gauge_potentials_color(position, rend_gauge_potentials_lattice_buffer);
+                GaugeSymmetriesVectorPack state;
+                FieldInterpolations::get_gauge_state_in_position(position, rend_gauge_potentials_lattice_buffer, state);
+                float4 color = float4(0, 0, 0, 0);
+                for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
+                {
+                    if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
+                    float4 field_potential = state[symmetry_index];
+                    float ampliude = length(field_potential);
+                    if (ampliude == 0) return float4(0, 0, 0, 0);
+                    field_potential *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
+                    color += abs(float4(field_potential[1], field_potential[3], field_potential[2], field_potential[0]));
+                }
                 color[3] = 1;
-                return color;
+                saturate(color);
+                return rendered_color + color;
             }
             ENDCG
         }

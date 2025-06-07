@@ -29,7 +29,7 @@ Shader "Custom/fermion_norms_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/fermion_field_coloring.hlsl"
+            #include "../../../src/core/analysis/field_interpolations.hlsl"
 
             struct appdata
             {
@@ -57,10 +57,19 @@ Shader "Custom/fermion_norms_rendering_2d"
             {
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
-                float4 color = rendered_color;
-                color += FermionFieldColoring::compute_fermion_fields_norm_color(position, rend_fermions_lattice_buffer);
+                float4 color = float4(0, 0, 0, 0);
+                for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
+                {
+                    if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
+                    FermionFieldProperties field_properties = fermion_field_properties[field_index];
+                    FermionFieldState state;
+                    FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
+                    float norm = FermionFieldStateMath::norm(state);
+                    color += field_properties.color * norm * simulation_brightness;
+                }
                 color[3] = 1;
-                return color;
+                saturate(color);
+                return rendered_color + color;
             }
             ENDCG
         }

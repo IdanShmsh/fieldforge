@@ -2,10 +2,12 @@
 /// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
 /// -----------------------------------------------------------------------------------------------
 /// This pipeline operation renders the fermion fields within the xy-plane of the simulation by
-/// coloring pixels to indicate the spin state of fermions at that position.
+/// coloring pixels as a linear combination of the colors configured to each fermion field weighted
+/// proportional to the field's computed dirac norm at that position.
+/// Lattice positions are interpolated to pixel coordinates.
 /// The screen coordinates are aligned such that the screen boundaries align exactly with the simulation
 /// boundaries.
-Shader "Custom/fermion_spin_rendering_2d"
+Shader "Custom/fermion_dirac_norms_rendering_2d"
 {
     Properties
     {
@@ -59,18 +61,11 @@ Shader "Custom/fermion_spin_rendering_2d"
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
                     if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
-                    float3 rounded_position = round(position);
-                    float3 delta_position = position - rounded_position;
-                    float offset = length(delta_position);
-                    if (offset == 0) return float4(0, 0, 0, 0);
                     FermionFieldProperties field_properties = fermion_field_properties[field_index];
-                    uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(rounded_position, field_index);
-                    FermionFieldState fermion_state = rend_fermions_lattice_buffer[buffer_index];
-                    float3 fermion_spin_state = DiracFormalism::obtain_spin_state(fermion_state);
-                    float spin_state_norm = length(fermion_spin_state);
-                    if (spin_state_norm < 0.01) return float4(0, 0, 0, 0);
-                    float cross_product = length(cross(fermion_spin_state, delta_position)) / (spin_state_norm * spin_state_norm);
-                    color += (float4(1, 1, 1, 1) + field_properties.color) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                    FermionFieldState state;
+                    FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
+                    float norm = abs(DiracFormalism::dirac_norm(state));
+                    color += field_properties.color * norm * simulation_brightness;
                 }
                 color[3] = 1;
                 saturate(color);

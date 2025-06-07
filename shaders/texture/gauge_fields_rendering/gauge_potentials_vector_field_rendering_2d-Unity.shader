@@ -25,7 +25,7 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/gauge_fields_coloring.hlsl"
+            #include "../../../src/core/analysis/field_interpolations.hlsl"
 
             struct appdata
             {
@@ -53,10 +53,26 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
             {
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
-                float4 color = rendered_color;
-                color += GaugeFieldColoring::compute_gauge_potentials_vector_dial_color(position, rend_gauge_potentials_lattice_buffer);
+                float4 color = float4(0, 0, 0, 0);
+                float3 rounded_position = round(position);
+                float3 delta_position = position - rounded_position;
+                float offset = length(delta_position);
+                if (offset == 0) return float4(0, 0, 0, 0);
+                uint buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(rounded_position);
+                GaugeSymmetriesVectorPack state = rend_gauge_potentials_lattice_buffer[buffer_index];
+                for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
+                {
+                    if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
+                    float4 field_potential = state[symmetry_index];
+                    float field_potential_norm_sqrd = dot(field_potential, field_potential);
+                    if (field_potential_norm_sqrd < 0.000001) return float4(0, 0, 0, 0);
+                    float cross_product = length(cross(field_potential.yzw, delta_position)) / field_potential_norm_sqrd;
+                    float3 symmetry_color = CommonMath::hsv2rgb(float3(symmetry_index / 12.0f, 0.5f, 1));
+                    color += float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                }
                 color[3] = 1;
-                return color;
+                saturate(color);
+                return rendered_color + color;
             }
             ENDCG
         }
