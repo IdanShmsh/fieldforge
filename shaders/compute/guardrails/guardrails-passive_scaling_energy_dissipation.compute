@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -21,7 +21,7 @@ float dissipating_factor;
 ///   This parameter <dissipating_factor> is the fraction taken away from the fields as they are scaled down every frame
 ///   via this compute shader execution.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     dissipating_factor = dissipating_factor ? dissipating_factor : 0.005f;
 

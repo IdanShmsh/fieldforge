@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -60,7 +60,7 @@ void update_global_intrinsics()
 /// This pipeline operation performs all actions involved in a "simulation step" - actions crucial for happening
 /// every frame to make sure the simulation and its internal data is updated correctly.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
     loop_fermion_fields(position);

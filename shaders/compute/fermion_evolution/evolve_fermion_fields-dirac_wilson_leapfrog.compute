@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -19,7 +19,7 @@
 /// values in the current and previous time-steps, represent a local structure which satisfies the Dirac equation with
 /// no approximations up to the numerical precision of the machine running the simulation.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
     FermionFieldEvolution::DiracWilsonLeapfrog::fermion_evolution(position);

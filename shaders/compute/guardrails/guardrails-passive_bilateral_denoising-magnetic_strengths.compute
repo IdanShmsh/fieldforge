@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -22,7 +22,7 @@ float range_std;
 /// • range_std (float)
 ///   This parameter <range_std> represents the 'range_weight' parameter associated with the bilateral denoising algorithm.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     spatial_std = spatial_std ? spatial_std : 1.0f;
     range_std = range_std ? range_std : 0.25f;

@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -25,7 +25,7 @@ float radius_cap;
 ///   This parameter <activity_energy_scale> is incorporated via the blurring radius calculation as:
 ///   blurring_radius = sqrt(1 + pow(energy_density / <activity_energy_scale>, 2)) - 1
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     activity_energy_scale = activity_energy_scale ? activity_energy_scale : 10.0f;
     radius_cap = radius_cap ? radius_cap : 2.0f;

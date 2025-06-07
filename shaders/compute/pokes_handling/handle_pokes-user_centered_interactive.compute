@@ -1,4 +1,4 @@
-#pragma kernel CSMain
+#pragma kernel Pass0
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
@@ -17,7 +17,7 @@
 /// as "user-centered interactive pokes" - applied with a structure that makes the fields behave in a humanly intuitive
 /// way - makes it seem "as if the fields have been swiped by a finger".
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
-void CSMain(uint3 dispatch_thread_id : SV_DispatchThreadID)
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     float3 position = float3(dispatch_thread_id);
     SimulationPokesProcessing::UserCenteredInteractive::process_pokes(position);
