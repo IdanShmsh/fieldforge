@@ -1,5 +1,5 @@
-#ifndef GUARDRAILS_PASSIVE_SCALING_ENERGY_DISSIPATION
-#define GUARDRAILS_PASSIVE_SCALING_ENERGY_DISSIPATION
+#ifndef GUARDRAILS_PASSIVE_SCALING_SCALING
+#define GUARDRAILS_PASSIVE_SCALING_SCALING
 
 #include "../../core/math/gauge_symmetries_vector_pack_math.hlsl"
 #include "../../core/math/fermion_field_state_math.hlsl"

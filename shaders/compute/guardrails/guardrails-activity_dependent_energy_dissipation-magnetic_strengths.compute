@@ -9,7 +9,7 @@
 
 #define BLURRING_KERNEL_RADIUS 2
 
-#include "../../../src/dynamics/guardrails/activity_dependent_energy_dissipation.hlsl"
+#include "../../../src/dynamics/guardrails/activity_dependent_scaling.hlsl"
 
 float activity_energy_scale;
 

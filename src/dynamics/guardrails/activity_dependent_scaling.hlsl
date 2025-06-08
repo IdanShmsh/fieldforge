@@ -1,5 +1,5 @@
-#ifndef ACTIVITY_DEPENDENT_ENERGY_DISSIPATION
-#define ACTIVITY_DEPENDENT_ENERGY_DISSIPATION
+#ifndef ACTIVITY_DEPENDENT_SCALING
+#define ACTIVITY_DEPENDENT_SCALING
 
 #include "../../core/analysis/fermion_energy_computations.hlsl"
 #include "../../core/analysis/gauge_energy_computations.hlsl"

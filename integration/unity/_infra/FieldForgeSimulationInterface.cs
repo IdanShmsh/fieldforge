@@ -14,7 +14,7 @@ namespace FieldForge
         [SerializeField] public SimulationData simulationData = new SimulationData(){
             simulationWidth = 128,
             simulationHeight = 128,
-            simulationDepth = 0,
+            simulationDepth = 1,
             simulationTemporalUnit = 0.05f,
             simulationSpatialUnit = 0.1f,
             simulationNonAbelianSelfInteraction = 0.1f,
