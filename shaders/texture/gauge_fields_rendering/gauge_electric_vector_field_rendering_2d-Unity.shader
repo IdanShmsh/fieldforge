@@ -62,7 +62,7 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
                 GaugeSymmetriesVectorPack state = rend_electric_strengths_lattice_buffer[buffer_index];
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
                 {
-                    if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
+                    if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
                     float4 field_state = state[symmetry_index];
                     field_state[0] = 0;
                     float field_state_length = length(field_state);

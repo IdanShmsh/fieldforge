@@ -82,7 +82,7 @@ namespace GaugeFieldsEvolution
                     YangMillsFormalism::field_strength_column(evolution_data.gauge_field_strength_tensor, mu, mu_field_strength_column);
                     for (uint a = 0; a < 12; a++)
                     {
-                        if (!SimulationDataOps::is_gauge_field_active(a)) continue;
+                        if (!SimulationDataOps::is_gauge_symmetry_active(a)) continue;
                         for (uint n = 0; n < 4; n++) electric_strength_temporal_slope[a][mu] -= YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, mu_field_strength_column, a, 0, n);
                     }
                 }
@@ -118,7 +118,7 @@ namespace GaugeFieldsEvolution
 
             for (uint a = 0; a < 12; a++)
             {
-                if (!SimulationDataOps::is_gauge_field_active(a)) continue;
+                if (!SimulationDataOps::is_gauge_symmetry_active(a)) continue;
                 // Add the gradient of the temporal component of the gauge potential's temporal slope
                 temporal_slope[a].yzw += transpose(evolution_data.gauge_potential_jacobians[a])[0].yzw;
                 // Incorporate self-interaction via commuting the field state

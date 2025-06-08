@@ -1,5 +1,5 @@
-#ifndef SPINOR_FIELD_STATE_DIFFERENTIALS
-#define SPINOR_FIELD_STATE_DIFFERENTIALS
+#ifndef FERMION_FIELD_STATE_DIFFERENTIALS
+#define FERMION_FIELD_STATE_DIFFERENTIALS
 
 #include "../ops/simulation_data_ops.hlsl"
 #include "../simulation_globals.hlsl"

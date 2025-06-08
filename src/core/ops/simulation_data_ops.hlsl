@@ -70,7 +70,7 @@ namespace SimulationDataOps
     }
 
     // Check if a gauge field is active in the simulation
-    bool is_gauge_field_active(uint field_index)
+    bool is_gauge_symmetry_active(uint field_index)
     {
         return is_simulation_field_active(field_index + FERMION_FIELDS_COUNT);
     }

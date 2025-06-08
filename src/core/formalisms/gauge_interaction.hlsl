@@ -40,8 +40,8 @@ namespace GaugeInteraction
         GaugeSymmetriesVectorPackOps::empty(fermion_gauge_currents);
         if (!SimulationDataOps::is_fermion_field_active(field_index)) return;
 
-        uint spinorFieldBufferIndex = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
-        FermionFieldState fermion_state = fermion_lattice_buffer[spinorFieldBufferIndex];
+        uint fermion_lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
+        FermionFieldState fermion_state = fermion_lattice_buffer[fermion_lattice_buffer_index];
         if (FermionFieldStateOps::is_zero(fermion_state, 1e-2)) return;
 
         uint weak_partner_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index ^ 1);
@@ -54,7 +54,7 @@ namespace GaugeInteraction
         for (uint symmetry_index = 0; symmetry_index < 12; symmetry_index++)
         {
             fermion_gauge_currents[symmetry_index] = float4(0, 0, 0, 0);
-            if (!SimulationDataOps::is_gauge_field_active(symmetry_index)) continue;
+            if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
             float charge = _get_gauge_charge(symmetry_index, props);
             if (charge == 0) continue;
 

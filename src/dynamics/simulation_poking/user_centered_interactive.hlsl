@@ -112,7 +112,7 @@ namespace SimulationPokesProcessing
                     if (randomly_chosen_participating_field <= 0) break;
                 }
 
-                // Get the buffer index of the spinor field for the given position and field index
+                // Get the buffer index of the fermion field for the given position and field index
                 float field_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, random_field_index);
 
                 // Obtain the current state
@@ -137,7 +137,7 @@ namespace SimulationPokesProcessing
                 FermionFieldStateMath::sum(crnt_field_state, crnt_new_fermion_state, crnt_new_fermion_state);
                 FermionFieldStateMath::sum(prev_field_state, prev_new_fermion_state, prev_new_fermion_state);
 
-                // Write the new spinor state to the buffer
+                // Write the new fermion state to the buffer
                 crnt_fermions_lattice_buffer[field_buffer_index] = crnt_new_fermion_state;
                 prev_fermions_lattice_buffer[field_buffer_index] = prev_new_fermion_state;
             }
