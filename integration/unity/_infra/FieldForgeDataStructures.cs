@@ -5,7 +5,7 @@ using UnityEngine;
 namespace FieldForge
 {
     [Serializable]
-    public struct SimulationData
+    public class SimulationData
     {
         [Min(1)] public int simulationWidth;
         [Min(1)] public int simulationHeight;

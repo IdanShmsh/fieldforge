@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace FieldForge
 {
-    public class InputsHandler2D : SimulationInteractiveBehavior
+    public class MousePoking2D : SimulationInteractiveBehavior
     {
         [SerializeField] uint pokeStrength = 1000;
         [SerializeField] uint pokeRadius = 3;
