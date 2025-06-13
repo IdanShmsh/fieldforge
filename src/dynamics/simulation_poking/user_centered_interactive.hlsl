@@ -9,7 +9,6 @@
 #include "../../core/simulation_globals.hlsl"
 
 
-// TODO - this needs to be modified: made concise, optimized, and polished.
 namespace SimulationPokesProcessing
 {
     /// Implementation of pokes application as user-centered interactive pokes - i.e. pokes applied with a
@@ -77,6 +76,26 @@ namespace SimulationPokesProcessing
             return (poke_mask & 1 << global_field_index) != 0 ? 1 : 0;
         }
 
+        float _poking_profile(PokeApplicationCache poke_application_data)
+        {
+            float r = poke_application_data.normalized_distance_from_poking_sweep;
+            return exp(-r * r);
+        }
+
+        void _fermion_state(PokeApplicationCache poke_application_data, out FermionFieldState new_fermion_state)
+        {
+            float mass = 1; // since a random field is chosen, the effective mass involved in the fermion state construction would be hardcoded
+            float3 spin_vector = poke_application_data.sweep_delta;
+            spin_vector.z = 1;
+            DiracFormalism::construct_spin_state(normalize(spin_vector), poke_application_data.sweep_delta, mass, new_fermion_state);
+        }
+
+        float4 _gauge_vector(PokeApplicationCache poke_application_data)
+        {
+            float4 gauge_vector = float4(1, poke_application_data.distance_vector_to_poke_sweep);
+            return normalize(gauge_vector);
+        }
+
         // Apply a poke to the fermion fields at a given position given its poke data cache
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
@@ -84,62 +103,31 @@ namespace SimulationPokesProcessing
         void _apply_poke_to_fermion_fields(float3 position, PokeApplicationCache poke_application_data)
         {
             int number_of_poke_participating_fermion_fields = 0;
-            // TODO - this can be done much more effectively / if even
             for (int i = 0; i < FERMION_FIELDS_COUNT; i++) number_of_poke_participating_fermion_fields += _poking_active_for_field(poke_application_data.poke_mask, i);
-
             if (number_of_poke_participating_fermion_fields == 0) return;
-
-            // https://www.desmos.com/3d/qd6dwwgmwv - TODO - polish this
-            float poke_strength_at_position = 0.25 * exp(-pow(8 * (poke_application_data.normalized_distance_from_poking_sweep - 1) , 2)) + exp(-pow(poke_application_data.normalized_distance_from_poking_sweep / 1.5, 2));
-
-            // Construct an appropriate spin state associated with the sweep
-            float mass = 1; // since a random field is chosen, the effective mass involved in the fermion state construction would be hardcoded
-            float3 spin_vector = poke_application_data.sweep_delta;
-            spin_vector.z = 1;
+            float poke_strength_at_position = poke_application_data.poking_strength * _poking_profile(poke_application_data);
             FermionFieldState new_fermion_state;
-            DiracFormalism::construct_spin_state(normalize(spin_vector), poke_application_data.sweep_delta, mass, new_fermion_state);
-
-            // add the norm to 5 random fermion fields
+            _fermion_state(poke_application_data, new_fermion_state);
             for (uint i = 0; i < 5; i++)
             {
                 // Obtain a random field index for the poke data - associated with a given unique raw poke data (ensuring all points affected by the same poke affect the same field)
                 float randomly_chosen_participating_field = round(_get_random_number_for_poke_data(poke_application_data.raw_poke_data, i + 1)) % number_of_poke_participating_fermion_fields + 1;
-                // The field index given is transformed to an appropriate field index participating in the poke as specified by the mask
                 uint random_field_index;
                 for (random_field_index = 0; random_field_index < FERMION_FIELDS_COUNT; random_field_index++)
                 {
                     randomly_chosen_participating_field -= _poking_active_for_field(poke_application_data.poke_mask, random_field_index);
                     if (randomly_chosen_participating_field <= 0) break;
                 }
-
-                // Get the buffer index of the fermion field for the given position and field index
                 float field_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, random_field_index);
-
-                // Obtain the current state
                 FermionFieldState crnt_field_state = crnt_fermions_lattice_buffer[field_buffer_index];
                 FermionFieldState prev_field_state = prev_fermions_lattice_buffer[field_buffer_index];
-
-                // Obtain the current state's norm
-                float crnt_state_norm = FermionFieldStateMath::norm_sqrd(crnt_field_state);
-                float prev_state_norm = FermionFieldStateMath::norm_sqrd(prev_field_state);
-
-                // The effect the poke has in a position is proportional to the overall strength of the poke, the strength of the poke at the position, and inversely proportional to the current state's norm to prevent poking from blowing up the field
-                float crnt_poke_effect_at_position = poke_strength_at_position * poke_application_data.poking_strength / (crnt_state_norm + 1);
-                float prev_poke_effect_at_position = poke_strength_at_position * poke_application_data.poking_strength / (prev_state_norm + 1);
-
-                FermionFieldState crnt_new_fermion_state, prev_new_fermion_state;
-
-                // The effect is implemented by scaling the spin state added to the field accordingly
-                FermionFieldStateMath::rscl(new_fermion_state, crnt_poke_effect_at_position, crnt_new_fermion_state);
-                FermionFieldStateMath::rscl(new_fermion_state, prev_poke_effect_at_position, prev_new_fermion_state);
-
-                // Interpolate between the current and the spin state
-                FermionFieldStateMath::sum(crnt_field_state, crnt_new_fermion_state, crnt_new_fermion_state);
-                FermionFieldStateMath::sum(prev_field_state, prev_new_fermion_state, prev_new_fermion_state);
-
-                // Write the new fermion state to the buffer
-                crnt_fermions_lattice_buffer[field_buffer_index] = crnt_new_fermion_state;
-                prev_fermions_lattice_buffer[field_buffer_index] = prev_new_fermion_state;
+                float field_norm_sqrd = FermionFieldStateMath::norm_sqrd(crnt_field_state);
+                FermionFieldState added_field_state;
+                FermionFieldStateMath::rscl(new_fermion_state, poke_strength_at_position / (1 + field_norm_sqrd), added_field_state);
+                FermionFieldStateMath::sum(crnt_field_state, added_field_state, crnt_field_state);
+                FermionFieldStateMath::sum(prev_field_state, added_field_state, prev_field_state);
+                crnt_fermions_lattice_buffer[field_buffer_index] = crnt_field_state;
+                prev_fermions_lattice_buffer[field_buffer_index] = prev_field_state;
             }
         }
 
@@ -149,58 +137,17 @@ namespace SimulationPokesProcessing
         // • Writes directly to the simulation's lattice buffers
         void _apply_poke_to_gauge_fields(float3 position, PokeApplicationCache poke_application_data)
         {
-            // https://www.desmos.com/3d/qd6dwwgmwv
-            float poke_strength_at_position = exp(-pow(2 * poke_application_data.normalized_distance_from_poking_sweep, 2));
-
-            // Construct a gauge potential along the sweep direction
-            float4 potential_addition = float4(1, 0, 0, 0);
-            potential_addition.yzw = poke_application_data.sweep_delta;
-            /// By the temporal component being >0, this normalizes the sweep delta while retaining an increasing relation between the sweep and the spatial spin state's sizes
-            normalize(potential_addition);
-
-            // Get the buffer index of the gauge field state
+            float poke_strength_at_position = poke_application_data.poking_strength * _poking_profile(poke_application_data);
+            float4 potential_addition = _gauge_vector(poke_application_data);
             uint gauge_lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
-
-            // Obtain the current state
             GaugeSymmetriesVectorPack crnt_potentials_pack = crnt_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index];
             GaugeSymmetriesVectorPack prev_potentials_pack = prev_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index];
-
-            GaugeSymmetriesVectorPack masked_crnt_potentials_pack, masked_prev_potentials_pack;
-            GaugeSymmetriesVectorPackOps::apply_mask(poke_application_data.poke_mask,crnt_potentials_pack, masked_crnt_potentials_pack);
-            GaugeSymmetriesVectorPackOps::apply_mask(poke_application_data.poke_mask,prev_potentials_pack, masked_prev_potentials_pack);
-
-            // Obtain the current state's norm
-            float crnt_gauge_field_norm = GaugeSymmetriesVectorPackMath::norm_sqrd(masked_crnt_potentials_pack);
-            float prev_gauge_field_norm = GaugeSymmetriesVectorPackMath::norm_sqrd(masked_prev_potentials_pack);
-
-            // Compute a phase along the swipe direction
-            float phase_factor = cos(dot(position - poke_application_data.poking_position, poke_application_data.sweep_delta) / (dot(poke_application_data.sweep_delta, poke_application_data.sweep_delta) + 1));
-
-            // The effect the poke has in a position is proportional to the overall strength of the poke, the strength of the poke at the position, and inversely proportional to the current state's norm to implement norm limitation
-            float crnt_poke_effect_at_position = poke_strength_at_position * phase_factor * poke_application_data.poking_strength / (crnt_gauge_field_norm + 1);
-            float prev_poke_effect_at_position = poke_strength_at_position * phase_factor * poke_application_data.poking_strength / (prev_gauge_field_norm + 1);
-
-            // That effect is implemented by scaling the gauge potential added to the field accordingly
-            float4 crntGaugeChange = potential_addition * crnt_poke_effect_at_position;
-            float4 prevGaugeChange = potential_addition * prev_poke_effect_at_position;
-
-            GaugeSymmetriesVectorPackOps::apply_mask(poke_application_data.poke_mask,crnt_potentials_pack, masked_crnt_potentials_pack);
-            GaugeSymmetriesVectorPackOps::apply_mask(poke_application_data.poke_mask,prev_potentials_pack, masked_prev_potentials_pack);
-
-            // Initialize a new gauge field state
-            GaugeSymmetriesVectorPack crntNewGaugeState = crnt_potentials_pack;
-            GaugeSymmetriesVectorPack prevNewGaugeState = prev_potentials_pack;
-
-            // Add the gauge potential to the gauge field state (with the mask incorporated)
-            for (int a = 0; a < 12; a++)
-            {
-                crntNewGaugeState[a] = crnt_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, FERMION_FIELDS_COUNT + a) * crntGaugeChange;
-                prevNewGaugeState[a] = prev_potentials_pack[a] + _poking_active_for_field(poke_application_data.poke_mask, FERMION_FIELDS_COUNT + a) * prevGaugeChange;
-            }
-
-            // Write the new gauge field state to the buffer
-            crnt_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index] = crntNewGaugeState;
-            prev_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index] = prevNewGaugeState;
+            GaugeSymmetriesVectorPack added_gauge_state;
+            for (uint i = 0; i < 12; i++) added_gauge_state[i] = poke_strength_at_position * potential_addition / (1 + length(crnt_potentials_pack[i]));
+            GaugeSymmetriesVectorPackMath::sum(crnt_potentials_pack, added_gauge_state, crnt_potentials_pack);
+            GaugeSymmetriesVectorPackMath::sum(prev_potentials_pack, added_gauge_state, prev_potentials_pack);
+            crnt_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index] = crnt_potentials_pack;
+            prev_gauge_potentials_lattice_buffer[gauge_lattice_buffer_index] = prev_potentials_pack;
         }
 
         // Process a single poke at a given position
