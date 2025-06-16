@@ -68,7 +68,6 @@ Shader "Custom/fermion_dirac_norms_rendering_2d"
                     color += field_properties.color * norm * simulation_brightness;
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

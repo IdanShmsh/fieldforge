@@ -71,7 +71,6 @@ Shader "Custom/fermion_phases_and_dirac_norms_rendering_2d"
                     color += field_properties.color * state_norm * state_norm * simulation_brightness;
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

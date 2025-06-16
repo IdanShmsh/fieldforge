@@ -64,14 +64,13 @@ Shader "Custom/fermion_phases_and_norms_rendering_2d"
                     FermionFieldProperties field_properties = fermion_field_properties[field_index];
                     FermionFieldState state;
                     FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
-                    float state_norm = FermionFieldStateMath::norm(state);
+                    float state_norm = FermionFieldStateMath::norm_sqrd(state);
                     float state_phase = ComplexNumbersMath::phase(state[0]);
                     float3 hsv = float3(state_phase / (2.0 * 3.14159265), 1.0, state_norm);
                     color += float4(CommonMath::hsv2rgb(hsv) * simulation_brightness, 0);
                     color += field_properties.color * state_norm * state_norm * simulation_brightness;
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

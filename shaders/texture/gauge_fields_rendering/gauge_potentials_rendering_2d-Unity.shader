@@ -27,6 +27,7 @@ Shader "Custom/gauge_potentials_rendering_2d"
             #define SPATIAL_DIMENSIONALITY 3
 
             #include "../../../src/core/analysis/field_interpolations.hlsl"
+            #include "../../../src/core/simulation_globals.hlsl"
 
             struct appdata
             {
@@ -67,7 +68,6 @@ Shader "Custom/gauge_potentials_rendering_2d"
                     color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

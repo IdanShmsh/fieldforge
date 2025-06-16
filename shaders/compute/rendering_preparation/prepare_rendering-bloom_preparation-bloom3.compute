@@ -1,0 +1,87 @@
+#pragma kernel Pass0
+#pragma kernel Pass1
+#pragma kernel Pass2
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#define BLUR_RADIUS 3
+#define KERNEL_DIAMETER (2*BLUR_RADIUS + 1)
+#define KERNEL_SIZE (KERNEL_DIAMETER*KERNEL_DIAMETER*KERNEL_DIAMETER)
+
+#include "../../../src/core/simulation_globals.hlsl"
+
+RWStructuredBuffer<int> bloom_lattice_buffer;
+RWStructuredBuffer<int> bloom_lattice_temp_buffer;
+
+uint get_bloom_buffer_index(uint3 bloom_lattice_position, uint color_channel)
+{
+    uint3 coarse_size = uint3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
+    uint index = ((color_channel * coarse_size.z + bloom_lattice_position.z) * coarse_size.y +  bloom_lattice_position.y) * coarse_size.x + bloom_lattice_position.x;
+    return index;
+}
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation prepares a dedicated bloom lattice buffer by blurring it with a 3D Gaussian kernel
+/// with radius = 3.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    uint3 bloom_lattice_position = dispatch_thread_id / 4;
+    bloom_lattice_temp_buffer[get_bloom_buffer_index(bloom_lattice_position, 0)] = 0;
+    bloom_lattice_temp_buffer[get_bloom_buffer_index(bloom_lattice_position, 1)] = 0;
+    bloom_lattice_temp_buffer[get_bloom_buffer_index(bloom_lattice_position, 2)] = 0;
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    int3 bloom_posisition = int3(dispatch_thread_id) / 4;
+    int3 coarse_size = int3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
+    uint local_x = dispatch_thread_id.x & 3;
+    uint local_y = dispatch_thread_id.y & 3;
+    uint local_z = dispatch_thread_id.z & 3;
+    uint local_idx = local_x * 16 + local_y * 4 + local_z;
+    for (uint sample_idx = local_idx; sample_idx < KERNEL_SIZE; sample_idx += THREAD_GROUP_SIZE)
+    {
+        int3 offset = int3(
+            int(sample_idx % KERNEL_DIAMETER) - BLUR_RADIUS,
+            int((sample_idx / KERNEL_DIAMETER) % KERNEL_DIAMETER) - BLUR_RADIUS,
+            int(sample_idx / (KERNEL_DIAMETER * KERNEL_DIAMETER)) - BLUR_RADIUS
+        );
+        float weight = sqrt(BLUR_RADIUS * BLUR_RADIUS - dot(offset, offset));
+        uint3 neighbor_position = clamp(bloom_posisition + offset, int3(0, 0, 0), coarse_size - 1);
+        for (uint channel = 0; channel < 3; channel++)
+        {
+            uint srcIndex = get_bloom_buffer_index(neighbor_position, channel);
+            int value = bloom_lattice_buffer[srcIndex];
+            int contrib = (int)(value * weight);
+            uint dst_index = get_bloom_buffer_index(bloom_posisition, channel);
+            InterlockedAdd(bloom_lattice_temp_buffer[dst_index], contrib);
+        }
+    }
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass2(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    int3 bloom_position = int3(dispatch_thread_id) / 4;
+    uint local_x = dispatch_thread_id.x & 3;
+    uint local_y = dispatch_thread_id.y & 3;
+    uint local_z = dispatch_thread_id.z & 3;
+    uint local_idx = local_x * 16 + local_y * 4 + local_z;
+    if (local_idx != 0) return;
+    for (uint channel = 0; channel < 3; channel++)
+    {
+        uint idx = get_bloom_buffer_index((uint3)bloom_position, channel);
+        int sum = bloom_lattice_temp_buffer[idx];
+        int avg = sum / KERNEL_SIZE;
+        bloom_lattice_buffer[idx] = avg;
+    }
+}

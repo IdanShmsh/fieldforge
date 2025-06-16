@@ -69,7 +69,6 @@ Shader "Custom/fermion_phases_rendering_2d"
                     color += float4(CommonMath::hsv2rgb(hsv) * simulation_brightness, 0);
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

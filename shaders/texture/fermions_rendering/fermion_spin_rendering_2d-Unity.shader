@@ -74,7 +74,6 @@ Shader "Custom/fermion_spin_rendering_2d"
                     color += simulation_brightness * field_properties.color * spin_state_norm * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG

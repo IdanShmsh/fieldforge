@@ -1,0 +1,79 @@
+#pragma kernel Pass0
+#pragma kernel Pass1
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/core/math/fermion_field_state_math.hlsl"
+#include "../../../src/core/math/gauge_symmetries_vector_pack_math.hlsl"
+#include "../../../src/core/ops/simulation_data_ops.hlsl"
+
+RWStructuredBuffer<int> bloom_lattice_buffer;
+
+float3 get_fermion_color_at_position(float3 position, uint field_index)
+{
+    uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
+    FermionFieldState fermion_field_state = crnt_fermions_lattice_buffer[lattice_buffer_index];
+    float norm_sqrd = FermionFieldStateMath::norm_sqrd(fermion_field_state);
+    float phase = ComplexNumbersMath::phase(fermion_field_state[0]);
+    float3 color = 2 * CommonMath::hsv2rgb(float3(phase / (2.0 * 3.14159265), 1.0, norm_sqrd));
+    color += fermion_field_properties[field_index].color.xyz;
+    color += float3(1, 1, 1);
+    color *= 0.25;
+    color *= 1 - exp(-norm_sqrd);
+    return color;
+}
+
+float3 get_fermions_color_at_position(float3 position)
+{
+    float3 color = float3(0, 0, 0);
+    for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++) color += get_fermion_color_at_position(position, field_index);
+    color /= float(FERMION_FIELDS_COUNT);
+    return color;
+}
+
+uint get_bloom_buffer_index(uint3 bloom_lattice_position, uint color_channel)
+{
+    uint3 coarse_size = uint3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
+    uint index = ((color_channel * coarse_size.z + bloom_lattice_position.z) * coarse_size.y +  bloom_lattice_position.y) * coarse_size.x + bloom_lattice_position.x;
+    return index;
+}
+
+void add_color_to_bloom_lattice(uint3 bloom_lattice_position, float3 color_addition)
+{
+    for (uint color_channel = 0; color_channel < 3; color_channel++)
+    {
+        uint bloom_buffer_index = get_bloom_buffer_index(bloom_lattice_position, color_channel);
+        int channel_value = color_addition[color_channel] * 255;
+        channel_value *= simulation_brightness;
+        InterlockedAdd(bloom_lattice_buffer[bloom_buffer_index], channel_value);
+    }
+}
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation prepares a dedicated bloom lattice buffer with color intensities related to the phases
+/// of the simulation's fermions.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    uint3 bloom_lattice_position = dispatch_thread_id / 4;
+    bloom_lattice_buffer[get_bloom_buffer_index(bloom_lattice_position, 0)] = 0;
+    bloom_lattice_buffer[get_bloom_buffer_index(bloom_lattice_position, 1)] = 0;
+    bloom_lattice_buffer[get_bloom_buffer_index(bloom_lattice_position, 2)] = 0;
+}
+
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    float3 color_addition = float3(0, 0, 0);
+    color_addition += get_fermions_color_at_position(position);
+    uint3 bloom_lattice_position = dispatch_thread_id / 4;
+    add_color_to_bloom_lattice(bloom_lattice_position, color_addition);
+}

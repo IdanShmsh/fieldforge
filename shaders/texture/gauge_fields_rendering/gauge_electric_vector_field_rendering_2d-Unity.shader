@@ -73,7 +73,6 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
                     color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
-                saturate(color);
                 return rendered_color + color;
             }
             ENDCG
