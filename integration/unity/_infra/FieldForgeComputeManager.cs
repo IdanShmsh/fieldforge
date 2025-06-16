@@ -1,6 +1,7 @@
 // FieldForge.ComputeManager.cs (Modified to support optional MP4 recording)
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.Mathematics;
 using UnityEngine;
@@ -24,6 +25,8 @@ namespace FieldForge
 
         private readonly int3 THREAD_GROUP_SIZE = new int3(64, 1, 1);
 
+        private readonly Dictionary<string, GraphicsBuffer> _dedicatedBuffers = new();
+
         public ComputeManager(SimulationData simulationData, ConfigurableShaderEntry<ComputeShader>[] computeShaders, ConfigurableShaderEntry<Shader>[] renderShaders, int computePasses, RenderTexture targetTexture, IVideoRecorder videoRecorder = null)
         {
             _simulationData = simulationData;
@@ -43,6 +46,8 @@ namespace FieldForge
             _tempTexture1.Release();
             _tempTexture2.Release();
             _videoRecorder?.Dispose();
+            foreach (var buffer in _dedicatedBuffers.Values) buffer?.Release();
+            _dedicatedBuffers.Clear();
         }
 
         public void Initialize()
@@ -88,10 +93,37 @@ namespace FieldForge
             _buffers.TempFermionsLatticeBuffer = CreateStructuredBuffer(fermionsBufferSize, typeof(FermionFieldState));
             _buffers.TempGaugeLatticeBuffer = CreateStructuredBuffer(gaugeBufferSize, typeof(GaugeSymmetriesVectorPack));
 
-            _buffers.GlobalIntrinsicsBuffer = CreateStructuredBuffer(globalIntrinsicsBufferSize, typeof(float));
+            _buffers.GlobalIntrinsicsBuffer = CreateStructuredBuffer(globalIntrinsicsBufferSize, typeof(int));
             _buffers.SimulationPokesBuffer = CreateStructuredBuffer(simulationPokesBufferSize, typeof(SimulationPokeInformation));
             _buffers.SimulationBarriersBuffer = CreateStructuredBuffer(simulationBarriersBufferSize, typeof(SimulationBarrierInformation));
             _buffers.FermionModesBuffer = CreateStructuredBuffer(fermionModesBufferSize, typeof(FermionModeData));
+
+            // Dedicated buffer creation
+            var neededBuffers = new Dictionary<string, DedicatedBuffersConfig.BufferDeclaration>();
+            foreach (var computeShader in _computeShaders)
+            {
+                if (!DedicatedBuffersConfig.ShaderDedicatedBuffers.TryGetValue(computeShader.ShaderItem.name, out var bufferDeclarations)) continue;
+                foreach (var decl in bufferDeclarations)
+                {
+                    if (neededBuffers.ContainsKey(decl.BufferName)) continue;
+                    neededBuffers[decl.BufferName] = decl;
+                }
+            }
+            foreach (var renderShader in _renderShaders)
+            {
+                if (!DedicatedBuffersConfig.ShaderDedicatedBuffers.TryGetValue(renderShader.ShaderItem.name, out var bufferDeclarations)) continue;
+                foreach (var decl in bufferDeclarations)
+                {
+                    if (neededBuffers.ContainsKey(decl.BufferName)) continue;
+                    neededBuffers[decl.BufferName] = decl;
+                }
+            }
+            foreach (var kvp in neededBuffers)
+            {
+                int size = kvp.Value.SizeCalculator(_simulationData);
+                var buffer = CreateStructuredBuffer(size, kvp.Value.DataType);
+                _dedicatedBuffers[kvp.Key] = buffer;
+            }
         }
 
         private GraphicsBuffer CreateStructuredBuffer(int count, Type type)
@@ -202,6 +234,7 @@ namespace FieldForge
             shader.SetBuffer(kernel, "temp_fermions_lattice_buffer", _buffers.TempFermionsLatticeBuffer);
             shader.SetBuffer(kernel, "temp_gauge_lattice_buffer", _buffers.TempGaugeLatticeBuffer);
             shader.SetBuffer(kernel, "global_intrinsics", _buffers.GlobalIntrinsicsBuffer);
+            foreach (var kvp in _dedicatedBuffers) shader.SetBuffer(kernel, kvp.Key, kvp.Value);
 
             foreach (var property in properties)
             {
@@ -263,6 +296,7 @@ namespace FieldForge
             material.SetBuffer("temp_fermions_lattice_buffer", _buffers.TempFermionsLatticeBuffer);
             material.SetBuffer("temp_gauge_lattice_buffer", _buffers.TempGaugeLatticeBuffer);
             material.SetBuffer("global_intrinsics", _buffers.GlobalIntrinsicsBuffer);
+            foreach (var kvp in _dedicatedBuffers) material.SetBuffer(kvp.Key, kvp.Value);
 
             foreach (var property in properties)
             {
