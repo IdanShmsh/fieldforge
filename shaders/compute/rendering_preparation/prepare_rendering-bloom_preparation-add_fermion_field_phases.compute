@@ -1,5 +1,4 @@
 #pragma kernel Pass0
-#pragma kernel Pass1
 
 #define THREAD_GROUP_SIZE_X 64
 #define THREAD_GROUP_SIZE_Y 1
