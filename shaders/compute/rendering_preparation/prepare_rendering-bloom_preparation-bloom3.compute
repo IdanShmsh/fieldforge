@@ -20,8 +20,8 @@ RWStructuredBuffer<int> bloom_lattice_temp_buffer;
 
 uint get_bloom_buffer_index(uint3 bloom_lattice_position, uint color_channel)
 {
-    uint3 coarse_size = uint3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
-    uint index = ((color_channel * coarse_size.z + bloom_lattice_position.z) * coarse_size.y +  bloom_lattice_position.y) * coarse_size.x + bloom_lattice_position.x;
+    uint3 bloom_lattice_size = uint3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
+    uint index = ((color_channel * bloom_lattice_size.z + bloom_lattice_position.z) * bloom_lattice_size.y +  bloom_lattice_position.y) * bloom_lattice_size.x + bloom_lattice_position.x;
     return index;
 }
 
@@ -42,8 +42,8 @@ void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    int3 bloom_posisition = int3(dispatch_thread_id) / 4;
-    int3 coarse_size = int3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
+    int3 bloom_position = int3(dispatch_thread_id) / 4;
+    int3 bloom_lattice_size = int3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
     uint local_x = dispatch_thread_id.x & 3;
     uint local_y = dispatch_thread_id.y & 3;
     uint local_z = dispatch_thread_id.z & 3;
@@ -56,13 +56,13 @@ void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
             int(sample_idx / (KERNEL_DIAMETER * KERNEL_DIAMETER)) - BLUR_RADIUS
         );
         float weight = sqrt(BLUR_RADIUS * BLUR_RADIUS - dot(offset, offset));
-        uint3 neighbor_position = clamp(bloom_posisition + offset, int3(0, 0, 0), coarse_size - 1);
+        uint3 neighbor_position = clamp(bloom_position + offset, int3(0, 0, 0), bloom_lattice_size - 1);
         for (uint channel = 0; channel < 3; channel++)
         {
-            uint srcIndex = get_bloom_buffer_index(neighbor_position, channel);
-            int value = bloom_lattice_buffer[srcIndex];
+            uint src_index = get_bloom_buffer_index(neighbor_position, channel);
+            int value = bloom_lattice_buffer[src_index];
             int contrib = (int)(value * weight);
-            uint dst_index = get_bloom_buffer_index(bloom_posisition, channel);
+            uint dst_index = get_bloom_buffer_index(bloom_position, channel);
             InterlockedAdd(bloom_lattice_temp_buffer[dst_index], contrib);
         }
     }
@@ -71,7 +71,7 @@ void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass2(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    int3 bloom_position = int3(dispatch_thread_id) / 4;
+    uint3 bloom_position = dispatch_thread_id / 4;
     uint local_x = dispatch_thread_id.x & 3;
     uint local_y = dispatch_thread_id.y & 3;
     uint local_z = dispatch_thread_id.z & 3;
@@ -79,7 +79,7 @@ void Pass2(uint3 dispatch_thread_id : SV_DispatchThreadID)
     if (local_idx != 0) return;
     for (uint channel = 0; channel < 3; channel++)
     {
-        uint idx = get_bloom_buffer_index((uint3)bloom_position, channel);
+        uint idx = get_bloom_buffer_index(bloom_position, channel);
         int sum = bloom_lattice_temp_buffer[idx];
         int avg = sum / KERNEL_SIZE;
         bloom_lattice_buffer[idx] = avg;

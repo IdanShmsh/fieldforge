@@ -34,10 +34,10 @@ namespace FieldForge
 
         public static readonly Dictionary<string, BufferDeclaration[]> ShaderDedicatedBuffers = new()
         {
-            ["prepare_rendering-bloom_preparation-add_fermion_field_norms"] = BLOOM_BUFFER_DECLARATIONS,
-            ["prepare_rendering-bloom_preparation-add_fermion_field_phases"] = BLOOM_BUFFER_DECLARATIONS,
-            ["prepare_rendering-bloom_preparation-load_fermion_field_norms"] = BLOOM_BUFFER_DECLARATIONS,
-            ["prepare_rendering-bloom_preparation-load_fermion_field_phases"] = BLOOM_BUFFER_DECLARATIONS,
+            ["prepare_rendering-bloom_preparation-add_fermion_norms"] = BLOOM_BUFFER_DECLARATIONS,
+            ["prepare_rendering-bloom_preparation-add_fermion_phases"] = BLOOM_BUFFER_DECLARATIONS,
+            ["prepare_rendering-bloom_preparation-load_fermion_norms"] = BLOOM_BUFFER_DECLARATIONS,
+            ["prepare_rendering-bloom_preparation-load_fermion_phases"] = BLOOM_BUFFER_DECLARATIONS,
             ["prepare_rendering-bloom_preparation-bloom3"] = BLOOM_BUFFER_DECLARATIONS,
             ["prepare_rendering-bloom_preparation-bloom6"] = BLOOM_BUFFER_DECLARATIONS,
             ["prepare_rendering-bloom_preparation-bloom9"] = BLOOM_BUFFER_DECLARATIONS,
