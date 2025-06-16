@@ -93,6 +93,126 @@ namespace CommonMath
         rgb = lerp(float3(1.0, 1.0, 1.0), rgb, s);
         return v * rgb;
     }
+
+    void interpolate_2d(float2 fraction, float values[4], out float result)
+    {
+        float v00 = values[0];
+        float v01 = values[1];
+        float v10 = values[2];
+        float v11 = values[3];
+        float v0 = lerp(v00, v01, fraction.y);
+        float v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_2d(float2 fraction, float2 values[4], out float2 result)
+    {
+        float2 v00 = values[0];
+        float2 v01 = values[1];
+        float2 v10 = values[2];
+        float2 v11 = values[3];
+        float2 v0 = lerp(v00, v01, fraction.y);
+        float2 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_2d(float2 fraction, float3 values[4], out float3 result)
+    {
+        float3 v00 = values[0];
+        float3 v01 = values[1];
+        float3 v10 = values[2];
+        float3 v11 = values[3];
+        float3 v0 = lerp(v00, v01, fraction.y);
+        float3 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_2d(float2 fraction, float4 values[4], out float4 result)
+    {
+        float4 v00 = values[0];
+        float4 v01 = values[1];
+        float4 v10 = values[2];
+        float4 v11 = values[3];
+        float4 v0 = lerp(v00, v01, fraction.y);
+        float4 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_3d(float3 fraction, float values[8], out float result)
+    {
+        float v000 = values[0];
+        float v001 = values[1];
+        float v010 = values[2];
+        float v011 = values[3];
+        float v100 = values[4];
+        float v101 = values[5];
+        float v110 = values[6];
+        float v111 = values[7];
+        float v00 = lerp(v000, v001, fraction.z);
+        float v01 = lerp(v010, v011, fraction.z);
+        float v10 = lerp(v100, v101, fraction.z);
+        float v11 = lerp(v110, v111, fraction.z);
+        float v0 = lerp(v00, v01, fraction.y);
+        float v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_3d(float3 fraction, float2 values[8], out float2 result)
+    {
+        float2 v000 = values[0];
+        float2 v001 = values[1];
+        float2 v010 = values[2];
+        float2 v011 = values[3];
+        float2 v100 = values[4];
+        float2 v101 = values[5];
+        float2 v110 = values[6];
+        float2 v111 = values[7];
+        float2 v00 = lerp(v000, v001, fraction.z);
+        float2 v01 = lerp(v010, v011, fraction.z);
+        float2 v10 = lerp(v100, v101, fraction.z);
+        float2 v11 = lerp(v110, v111, fraction.z);
+        float2 v0 = lerp(v00, v01, fraction.y);
+        float2 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_3d(float3 fraction, float3 values[8], out float3 result)
+    {
+        float3 v000 = values[0];
+        float3 v001 = values[1];
+        float3 v010 = values[2];
+        float3 v011 = values[3];
+        float3 v100 = values[4];
+        float3 v101 = values[5];
+        float3 v110 = values[6];
+        float3 v111 = values[7];
+        float3 v00 = lerp(v000, v001, fraction.z);
+        float3 v01 = lerp(v010, v011, fraction.z);
+        float3 v10 = lerp(v100, v101, fraction.z);
+        float3 v11 = lerp(v110, v111, fraction.z);
+        float3 v0 = lerp(v00, v01, fraction.y);
+        float3 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
+
+    void interpolate_3d(float3 fraction, float4 values[8], out float4 result)
+    {
+        float4 v000 = values[0];
+        float4 v001 = values[1];
+        float4 v010 = values[2];
+        float4 v011 = values[3];
+        float4 v100 = values[4];
+        float4 v101 = values[5];
+        float4 v110 = values[6];
+        float4 v111 = values[7];
+        float4 v00 = lerp(v000, v001, fraction.z);
+        float4 v01 = lerp(v010, v011, fraction.z);
+        float4 v10 = lerp(v100, v101, fraction.z);
+        float4 v11 = lerp(v110, v111, fraction.z);
+        float4 v0 = lerp(v00, v01, fraction.y);
+        float4 v1 = lerp(v10, v11, fraction.y);
+        result = lerp(v0, v1, fraction.x);
+    }
 }
 
 #endif
