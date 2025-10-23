@@ -239,7 +239,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergenceGradient(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_divergence_gradients)
+    void divergence_gradient(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_divergence_gradients)
     {
         GaugeSymmetriesVectorPackOps::empty(field_divergence_gradients);
         for (uint i = 0; i < 3; i++) for (uint j = 0; j < 3; j++)
@@ -254,9 +254,9 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergenceGradient(float3 position, out GaugeSymmetriesVectorPack field_divergence_gradients)
+    void divergence_gradient(float3 position, out GaugeSymmetriesVectorPack field_divergence_gradients)
     {
-        divergenceGradient(position, crnt_gauge_potentials_lattice_buffer, field_divergence_gradients);
+        divergence_gradient(position, crnt_gauge_potentials_lattice_buffer, field_divergence_gradients);
     }
 }
 

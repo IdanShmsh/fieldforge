@@ -4,7 +4,6 @@
 #include "../../core/formalisms/yang_mills_formalism.hlsl"
 #include "../../core/formalisms/gauge_interaction.hlsl"
 #include "../../core/ops/simulation_data_ops.hlsl"
-#include "../../core/ops/global_intrinsics_indieces.hlsl"
 
 const float electric_divergence_cleaning_factor = 0.3;
 
@@ -25,8 +24,9 @@ namespace GaugeFieldsEvolution
             GaugeSymmetriesVectorPack crnt_electric_strengths;
             GaugeSymmetriesVectorPack crnt_magnetic_strengths;
             GaugeFieldsJacobian gauge_potential_jacobians;
-            GaugeFieldStrength gauge_field_strength_tensor;
+            FieldStrengthTensor gauge_field_strength_tensor;
             GaugeFieldsDivergence prev_electric_strength_divergences;
+            GaugeSymmetriesVectorPack prev_electric_strength_divergence_gradients;
             GaugeSymmetriesVectorPack magnetic_strength_curls;
             GaugeSymmetriesVectorPack total_gauge_currents;
         };
@@ -55,6 +55,7 @@ namespace GaugeFieldsEvolution
 
             // The divergence of the electric field is computed for divergence cleaning
             GaugeSymmetriesVectorPackDifferentials::divergence(position, prev_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergences);
+            GaugeSymmetriesVectorPackDifferentials::divergence_gradient(position, prev_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergence_gradients);
 
             // The curl of the electric and magnetic fields are computed for their own evolution
             GaugeSymmetriesVectorPackDifferentials::curl(position, crnt_magnetic_strengths_lattice_buffer, evolution_data.magnetic_strength_curls);
@@ -71,7 +72,7 @@ namespace GaugeFieldsEvolution
             GaugeSymmetriesVectorPack electric_strength_temporal_slope;
 
             // Sum the total gauge currents and the magnetic curls to get the slope of the electric field
-            GaugeSymmetriesVectorPackMath::sum(evolution_data.total_gauge_currents, evolution_data.magnetic_strength_curls, electric_strength_temporal_slope);
+            GaugeSymmetriesVectorPackMath::sub(evolution_data.magnetic_strength_curls, evolution_data.total_gauge_currents, electric_strength_temporal_slope);
 
             // Self-interaction
             if (simulation_non_abelian_self_interaction)
@@ -83,7 +84,7 @@ namespace GaugeFieldsEvolution
                     for (uint a = 0; a < 12; a++)
                     {
                         if (!SimulationDataOps::is_gauge_symmetry_active(a)) continue;
-                        for (uint n = 0; n < 4; n++) electric_strength_temporal_slope[a][mu] -= YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, mu_field_strength_column, a, 0, n);
+                        for (uint nu = 0; nu < 4; nu++) electric_strength_temporal_slope[a][mu] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, mu_field_strength_column, a, 0, nu);
                     }
                 }
             }
@@ -95,12 +96,10 @@ namespace GaugeFieldsEvolution
             GaugeSymmetriesVectorPackMath::sum(evolution_data.prev_electric_strengths, electric_strength_temporal_slope, next_electric_strengths);
 
             // Perform divergence cleaning on the electric field
-            float4 cleaning_direction;
-            int cleaning_axis = global_intrinsics[GI_FRAME_COUNT] % SPATIAL_DIMENSIONALITY;
-            if (cleaning_axis == 0) cleaning_direction = float4(0, 1, 0, 0);
-            else if (cleaning_axis == 1) cleaning_direction = float4(0, 0, 1, 0);
-            else cleaning_direction = float4(0, 0, 0, 1);
-            [unroll] for (uint a = 0; a < 12; a++) next_electric_strengths[a] -= (evolution_data.prev_electric_strength_divergences[a] - evolution_data.total_gauge_currents[a][0]) * electric_divergence_cleaning_factor * cleaning_direction;
+            GaugeFieldsDivergence divergences = evolution_data.prev_electric_strength_divergences;
+            GaugeSymmetriesVectorPack divergence_gradients = evolution_data.prev_electric_strength_divergence_gradients;
+            GaugeSymmetriesVectorPack gauge_currents = evolution_data.total_gauge_currents;
+            [unroll] for (uint a = 0; a < 12; a++) next_electric_strengths[a] -= (divergences[a] - gauge_currents[a][0]) * electric_divergence_cleaning_factor * divergence_gradients[a];
         }
 
         // Evolve the magnetic gauge field given the evolution data
@@ -120,11 +119,11 @@ namespace GaugeFieldsEvolution
             {
                 if (!SimulationDataOps::is_gauge_symmetry_active(a)) continue;
                 // Add the gradient of the temporal component of the gauge potential's temporal slope
-                temporal_slope[a].yzw += transpose(evolution_data.gauge_potential_jacobians[a])[0].yzw;
+                temporal_slope[a].yzw = transpose(evolution_data.gauge_potential_jacobians[a])[0].yzw - temporal_slope[a].yzw;
                 // Incorporate self-interaction via commuting the field state
-                for (uint i = 1; i < 4; i++) temporal_slope[a][i] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, evolution_data.crnt_gauge_potentials, 0, i, a);
+                if (simulation_non_abelian_self_interaction) for (uint i = 0; i < 4; i++) temporal_slope[a][i] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, evolution_data.crnt_gauge_potentials, 0, i, a);
                 // Compute the temporal gradient of the temporal component of the gauge potential
-                temporal_slope[a][0] = evolution_data.gauge_potential_jacobians[a][1][1] + evolution_data.gauge_potential_jacobians[a][2][2] + evolution_data.gauge_potential_jacobians[a][3][3];
+                temporal_slope[a][0] = 0;//evolution_data.gauge_potential_jacobians[a][1][1] + evolution_data.gauge_potential_jacobians[a][2][2] + evolution_data.gauge_potential_jacobians[a][3][3];
             }
 
             // Weighing the slope with the temporal unit (\Delta t)
