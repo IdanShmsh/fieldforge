@@ -5,7 +5,7 @@
 #include "../../core/formalisms/gauge_interaction.hlsl"
 #include "../../core/ops/simulation_data_ops.hlsl"
 
-const float electric_divergence_cleaning_factor = 0.3;
+const float electric_divergence_cleaning_factor = 0.5;
 
 namespace GaugeFieldsEvolution
 {
@@ -54,8 +54,8 @@ namespace GaugeFieldsEvolution
             YangMillsFormalism::field_strength_tensor(evolution_data.crnt_gauge_potentials, evolution_data.gauge_potential_jacobians, evolution_data.gauge_field_strength_tensor);
 
             // The divergence of the electric field is computed for divergence cleaning
-            GaugeSymmetriesVectorPackDifferentials::divergence(position, prev_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergences);
-            GaugeSymmetriesVectorPackDifferentials::divergence_gradient(position, prev_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergence_gradients);
+            GaugeSymmetriesVectorPackDifferentials::divergence(position, crnt_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergences);
+            GaugeSymmetriesVectorPackDifferentials::divergence_gradient(position, crnt_electric_strengths_lattice_buffer, evolution_data.prev_electric_strength_divergence_gradients);
 
             // The curl of the electric and magnetic fields are computed for their own evolution
             GaugeSymmetriesVectorPackDifferentials::curl(position, crnt_magnetic_strengths_lattice_buffer, evolution_data.magnetic_strength_curls);
