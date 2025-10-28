@@ -48,14 +48,16 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
             }
 
             sampler2D _PreviousTex;
+            float _Granularity;
 
             float4 frag(v2f i) : SV_Target
             {
+                float granularity = _Granularity ? _Granularity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 0);
-                float3 rounded_position = round(position);
-                float3 delta_position = position - rounded_position;
+                float3 rounded_position = round(position / granularity) * granularity;
+                float3 delta_position = (position - rounded_position) / granularity;
                 float offset = length(delta_position);
                 if (offset == 0) return float4(0, 0, 0, 0);
                 uint buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(rounded_position);
