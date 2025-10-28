@@ -6,6 +6,7 @@ namespace FieldForge
     [Serializable]
     public class ConfigurableShaderEntry<T>
     {
+        [SerializeField] public bool Enabled = true;
         [SerializeField] public T ShaderItem;
         [SerializeField] public ShaderProperty[] ShaderProperties;
 

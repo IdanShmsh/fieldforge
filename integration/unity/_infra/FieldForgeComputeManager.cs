@@ -102,6 +102,7 @@ namespace FieldForge
             var neededBuffers = new Dictionary<string, DedicatedBuffersConfig.BufferDeclaration>();
             foreach (var computeShader in _computeShaders)
             {
+                if (!computeShader.Enabled) continue;
                 if (!DedicatedBuffersConfig.ShaderDedicatedBuffers.TryGetValue(computeShader.ShaderItem.name, out var bufferDeclarations)) continue;
                 foreach (var decl in bufferDeclarations)
                 {
@@ -111,6 +112,7 @@ namespace FieldForge
             }
             foreach (var renderShader in _renderShaders)
             {
+                if (!renderShader.Enabled) continue;
                 if (!DedicatedBuffersConfig.ShaderDedicatedBuffers.TryGetValue(renderShader.ShaderItem.name, out var bufferDeclarations)) continue;
                 foreach (var decl in bufferDeclarations)
                 {
@@ -138,6 +140,7 @@ namespace FieldForge
             {
                 Shader shader = _renderShaders[i].ShaderItem;
                 ShaderProperty[] shaderProperties = _renderShaders[i].ShaderProperties;
+                if (!_renderShaders[i].Enabled) { _renderMaterials[i] = null; continue; }
                 var material = new Material(shader);
                 ConfigureMaterial(material, shaderProperties);
                 _renderMaterials[i] = material;
@@ -159,6 +162,7 @@ namespace FieldForge
             {
                 foreach (var computeShader in _computeShaders)
                 {
+                    if (!computeShader.Enabled) continue;
                     ComputeShader shaderItem = computeShader.ShaderItem;
                     ShaderProperty[] properties = computeShader.ShaderProperties;
 
@@ -179,6 +183,7 @@ namespace FieldForge
 
             foreach (Material material in _renderMaterials)
             {
+                if (material == null) continue;
                 material.SetTexture("_PreviousTex", _tempTexture1);
                 CommandBuffer.Blit(_tempTexture1, _tempTexture2, material);
                 (_tempTexture1, _tempTexture2) = (_tempTexture2, _tempTexture1);
@@ -324,13 +329,13 @@ namespace FieldForge
         public void SetFloat(string floatName, float value)
         {
             foreach (var computeShader in _computeShaders) computeShader.ShaderItem.SetFloat(floatName, value);
-            foreach (var material in _renderMaterials) material.SetFloat(floatName, value);
+            foreach (var material in _renderMaterials) if (material != null) material.SetFloat(floatName, value);
         }
 
         public void SetInt(string intName, int value)
         {
             foreach (var computeShader in _computeShaders) computeShader.ShaderItem.SetInt(intName, value);
-            foreach (var material in _renderMaterials) material.SetInt(intName, value);
+            foreach (var material in _renderMaterials) if (material != null) material.SetInt(intName, value);
         }
 
         public ComputeBuffers GetBuffers()
