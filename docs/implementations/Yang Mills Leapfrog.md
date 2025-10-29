@@ -116,23 +116,29 @@ $$
 
 This is Gauss's Law in a Yang-Mills theory.
 
-### Gauge Potential Temporal Component Handling
+### Gauge Potential Temporal Component Handling (Gauge Fixing)
 
-Equation $1.2.3$ only handle's the spatial components of the gauge potential $A^a$ and leaves an ambiguity for the temporal component $A^a_0$.
+Equation $1.2.3$ only handle's the spatial components of the gauge potential $A^a$ and leaves a redundancy of allowed configurations for the temporal component $A^a_0$.
 
-For that the *Lorentz Gauge Fixing* technique is chosen:
+Gauge redundancies are handled using an explicitly chosen *gauge fixing technique*.
 
-$$
-\partial^\mu A^a_\mu = 0 \tag{1.4.3}
-$$
+##### Lorentz Gauge Fixing
 
-Leading to the relation:
+If the *Lorentz Gauge Fixing* technique is chosen:
 
 $$
-\partial^0 A^a_0 = \partial^i A^a_i \tag{1.4.4}
+\partial^\mu A^a_\mu = 0 \quad \to \quad \partial^0 A^a_0 = \partial^i A^a_i \tag{1.4.3}
 $$
 
-Which allows for the determination of the temporal slope of the temporal component of $A^a$ to be solved for, based on the spatial divergence of the field $A^a$.
+##### Temporal Gauge Fixing
+
+If the *Temporal Gauge Fixing* technique is chosen:
+
+$$
+A^a_0 = \partial^0 A^a_0 = 0 \tag{1.4.4}
+$$
+
+Both, among many others, allow for the singling out of a unique value for temporal component of the gauge potential $A^a$, resolving the redundancy.
 
 ## Discretization
 
@@ -194,6 +200,12 @@ Lastly, as the temporal component of the gauge field $(A^a_0)^{n+1}$ is still ye
 
 $$
 \boxed{(A_0^a)^{n+1} = (A_0^a)^{n-1} + 2\Delta t (\partial_i A^a_i)}
+$$
+
+Equivalently, instead of a Lorentz-gauge-fixing technique, the temporal component of the gauge potential can be merely set to zero - implementing "temporal-gauge-fixing":
+
+$$
+\boxed{(A_0^a)^{n} = 0 \quad ( \forall n )}
 $$
 
 ---
