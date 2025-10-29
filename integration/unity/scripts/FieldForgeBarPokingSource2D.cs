@@ -44,7 +44,6 @@ namespace FieldForge
             Vector2 pokingDelta = GetScreenSpaceDelta() / _screenSize * _simulationSize;
             Vector2 pokingPosition = GetScreenSpaceCenter() / _screenSize * _simulationSize + pokingDelta / 2; // > ( / _screenSize * _simulationSize; ) consider having some "simulation scale" parameter
             float pokeRadius = Mathf.Floor(GetScreenSpaceRadius() / _screenSize.x * _simulationSize.x);
-            Debug.Log(pokeStrength * math.cos((float)_pulseFrameCounter / pulseCooldown));
             return new SimulationPokeInformation
             {
                 pokeStrength = (int)pokeStrength,
