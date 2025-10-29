@@ -34,15 +34,16 @@ namespace FieldForge
             _touchTracker.Update();
             foreach (Touch touch in Input.touches)
             {
-                if (touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
-                {
-                    if (_touchTracker.IsTouchActive(touch.fingerId))
-                    {
-                        SimulationPokeInformation pokeInformation = ConstructCurrentPoke(touch.fingerId);
-                        simulationManager.PokesManager.SubmitPoke(pokeInformation);
-                    }
-                }
+                if (!(touch.phase == TouchPhase.Began && touch.phase == TouchPhase.Moved) ||
+                    !_touchTracker.IsTouchActive(touch.fingerId)) continue;
+                SubmitCurrentPoke(touch);
             }
+        }
+
+        private void SubmitCurrentPoke(Touch touch)
+        {
+            SimulationPokeInformation pokeInformation = ConstructCurrentPoke(touch.fingerId);
+            simulationManager.PokesManager.SubmitPoke(pokeInformation);
         }
 
         private SimulationPokeInformation ConstructCurrentPoke(int fingerId)
