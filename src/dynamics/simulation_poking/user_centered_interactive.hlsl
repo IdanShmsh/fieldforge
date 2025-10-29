@@ -90,18 +90,6 @@ namespace SimulationPokesProcessing
             DiracFormalism::construct_spin_state(normalize(spin_vector), poke_application_data.sweep_delta, mass, new_fermion_state);
         }
 
-        float4 _gauge_vector(PokeApplicationCache poke_application_data)
-        {
-            float4 gauge_vector = float4(1, poke_application_data.distance_vector_to_poke_sweep + poke_application_data.sweep_delta);
-            return normalize(gauge_vector);
-        }
-
-        float4 _electric_field_vector(PokeApplicationCache poke_application_data)
-        {
-            float4 field_vector = float4(1, poke_application_data.distance_vector_to_poke_sweep);
-            return normalize(field_vector);
-        }
-
         // Apply a poke to the fermion fields at a given position given its poke data cache
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
@@ -128,77 +116,100 @@ namespace SimulationPokesProcessing
                 FermionFieldState crnt_field_state = crnt_fermions_lattice_buffer[field_buffer_index];
                 FermionFieldState prev_field_state = prev_fermions_lattice_buffer[field_buffer_index];
                 float field_norm_sqrd = FermionFieldStateMath::norm_sqrd(crnt_field_state);
-                FermionFieldState added_field_state;
-                FermionFieldStateMath::rscl(new_fermion_state, poke_strength_at_position / (1 + field_norm_sqrd), added_field_state);
-                FermionFieldStateMath::sum(crnt_field_state, added_field_state, crnt_field_state);
-                FermionFieldStateMath::sum(prev_field_state, added_field_state, prev_field_state);
+                FermionFieldState electric_additiond_field_state;
+                FermionFieldStateMath::rscl(new_fermion_state, poke_strength_at_position / (1 + field_norm_sqrd), electric_additiond_field_state);
+                FermionFieldStateMath::sum(crnt_field_state, electric_additiond_field_state, crnt_field_state);
+                FermionFieldStateMath::sum(prev_field_state, electric_additiond_field_state, prev_field_state);
                 crnt_fermions_lattice_buffer[field_buffer_index] = crnt_field_state;
                 prev_fermions_lattice_buffer[field_buffer_index] = prev_field_state;
             }
         }
 
-        // Apply a poke to the gauge fields at a given position given its poke data cache
-        // * Side Effects:
-        // • Reads directly from the simulation's lattice buffers
-        // • Writes directly to the simulation's lattice buffers
-        void _apply_poke_to_gauge_fields(float3 position, PokeApplicationCache poke_application_data)
+        // ---- Gauge-field poke helpers (compact & expressive) ----
+        void _sweep_basis(float3 sweep_delta, out float3 direction_hat, out float sweep_length)
+        {
+            sweep_length = length(sweep_delta);
+            direction_hat = (sweep_length > 1e-6f) ? (sweep_delta / sweep_length) : float3(0,0,1);
+        }
+
+        void _gaussian_tube(float3 distance_vector, float poking_sigma, out float tube, out float3 tube_gradient)
+        {
+            float sigma_sq = max(poking_sigma * poking_sigma, 1e-6f);
+            float r2 = dot(distance_vector, distance_vector);
+            tube = exp(-r2 / (2.0f * sigma_sq));
+            tube_gradient = -(distance_vector / sigma_sq) * tube;
+        }
+
+        float3 _current_density(float charge_per_length, float delta_time, float3 direction_hat, float tube, float poking_sigma)
         {
             const float TWO_PI = 6.28318530718f;
+            float denom = max(TWO_PI * max(poking_sigma * poking_sigma, 1e-6f) * max(delta_time, 1e-6f), 1e-6f);
+            return (charge_per_length / denom) * direction_hat * tube;
+        }
 
-            // Unit-consistent finite-segment current (3D capsule):
-            // J_vol ≈ (q / (2π σ^2 L Δt)) * t_hat * exp(-r^2/(2σ^2))
-            float sweep_length = max(length(poke_application_data.sweep_delta), 1e-6);
-            float3 normalized_sweep = poke_application_data.sweep_delta / sweep_length;
-            float poking_radius = max(poke_application_data.poking_radius, 1e-6);
-            float poking_radius_sqrd = poking_radius * poking_radius;
-            float distance_from_poking_sweep_sqrd = dot(poke_application_data.distance_vector_to_poke_sweep, poke_application_data.distance_vector_to_poke_sweep);
-            float tube_profile = exp(-distance_from_poking_sweep_sqrd / (2.0f * poking_radius_sqrd));
-            float temporal_unit = max(simulation_temporal_unit, 1e-6);
-            float volumetric_current_normalization = poke_application_data.poking_strength / max(TWO_PI * poking_radius_sqrd * sweep_length * temporal_unit, 1e-6);
-            float3 current_density = volumetric_current_normalization * normalized_sweep * tube_profile;
+        void _build_field_increments(PokeApplicationCache poke_cache, out float3 electric_delta, out float3 magnetic_delta)
+        {
+            float3 direction_hat; float sweep_length;
+            _sweep_basis(poke_cache.sweep_delta, direction_hat, sweep_length);
 
-            float3 electric_field_increment = -(2.0f * temporal_unit) * current_density;
+            float poking_sigma = max(poke_cache.poking_radius, 1e-6f);
+            float3 distance_vector = poke_cache.distance_vector_to_poke_sweep;
+            float tube; float3 tube_gradient;
+            _gaussian_tube(distance_vector, poking_sigma, tube, tube_gradient);
 
-            float3 tube_profile_gradient = -(poke_application_data.distance_vector_to_poke_sweep / poking_radius_sqrd) * tube_profile;
-            float3 magnetic_field_increment = (2.0f * temporal_unit) * cross(normalized_sweep, tube_profile_gradient);
+            float delta_time = max(simulation_temporal_unit, 1e-6f);
+            float charge_per_length = poke_cache.poking_strength;
 
-            // Add a longitudinal (divergent) electric field so that div E ≈ rho for a Gaussian tube
-            // rho_vol = (poking_strength / (2π * poking_radius_sqrd * sweep_length)) * tube_profile
-            float rho0 = poke_application_data.poking_strength / max(TWO_PI * poking_radius_sqrd * sweep_length, 1e-6);
-            float r = max(poke_application_data.distance_from_poking_sweep, 1e-6);
-            float one_minus_exp = 1.0f - exp(-distance_from_poking_sweep_sqrd / (2.0f * poking_radius_sqrd));
-            float radial_E_magnitude = (rho0 * poking_radius_sqrd / r) * one_minus_exp;
-            float3 radial_direction = poke_application_data.distance_vector_to_poke_sweep / r;
-            float3 divergent_electric_increment = radial_E_magnitude * radial_direction;
-            electric_field_increment += divergent_electric_increment;
+            // Primary increments
+            float3 current_density = _current_density(charge_per_length, delta_time, direction_hat, tube, poking_sigma);
+            electric_delta = -(2.0f * delta_time) * current_density;
+            magnetic_delta = (2.0f * delta_time) * cross(direction_hat, tube_gradient);
 
-            uint gauge_lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
-            GaugeSymmetriesVectorPack crnt_electric_pack = crnt_electric_strengths_lattice_buffer[gauge_lattice_buffer_index];
-            GaugeSymmetriesVectorPack prev_electric_pack = prev_electric_strengths_lattice_buffer[gauge_lattice_buffer_index];
-            GaugeSymmetriesVectorPack crnt_magnetic_pack = crnt_magnetic_strengths_lattice_buffer[gauge_lattice_buffer_index];
-            GaugeSymmetriesVectorPack prev_magnetic_pack = prev_magnetic_strengths_lattice_buffer[gauge_lattice_buffer_index];
-            GaugeSymmetriesVectorPack added_magnetic_state, added_electric_state;
+            // Divergent E term (finite-radius line charge)
+            const float TWO_PI = 6.28318530718f;
+            float sigma_sq = max(poking_sigma * poking_sigma, 1e-6f);
+            float r2 = dot(distance_vector, distance_vector);
+            float r = max(sqrt(r2), 1e-6f);
+            float rho0 = charge_per_length / max(TWO_PI * sigma_sq, 1e-6f);
+            float one_minus_exp = 1.0f - exp(-r2 / (2.0f * sigma_sq));
+            float radial_electric_magnitude = (rho0 * sigma_sq / r) * one_minus_exp;
+            float3 radial_direction = distance_vector / r;
+            electric_delta += radial_electric_magnitude * radial_direction;
+        }
+
+        void _accumulate_gauge_packs(int poke_mask, float3 electric_delta, float3 magnetic_delta, inout GaugeSymmetriesVectorPack crnt_electric_state, inout GaugeSymmetriesVectorPack prev_electric_state, inout GaugeSymmetriesVectorPack crnt_magnetic_state, inout GaugeSymmetriesVectorPack prev_magnetic_state)
+        {
+            GaugeSymmetriesVectorPack electric_addition, magnetic_addition;
             [unroll]
             for (uint i = 0; i < 12; i++)
             {
-                const int active = _poking_active_for_field(poke_application_data.poke_mask, i + 8);
-                float4 dE4 = float4(0.0f, electric_field_increment.xyz);
-                float4 dB4 = float4(0.0f, magnetic_field_increment.xyz);
-                float  denomE = 1.0f + length(crnt_electric_pack[i]);
-                float  denomB = 1.0f + length(crnt_magnetic_pack[i]);
-                added_electric_state[i] = active * (dE4 / denomE);
-                added_magnetic_state[i] = active * (dB4 / denomB);
+                const int active = _poking_active_for_field(poke_mask, (int)i + 8);
+                float active_factor = (float)active;
+                electric_addition[i] = active_factor * float4(0.0f, electric_delta) / (1.0f + length(crnt_electric_state[i]));
+                magnetic_addition[i] = active_factor * float4(0.0f, magnetic_delta) / (1.0f + length(crnt_magnetic_state[i]));
             }
+            GaugeSymmetriesVectorPackMath::sum(crnt_electric_state, electric_addition, crnt_electric_state);
+            GaugeSymmetriesVectorPackMath::sum(prev_electric_state, electric_addition, prev_electric_state);
+            GaugeSymmetriesVectorPackMath::sum(crnt_magnetic_state, magnetic_addition, crnt_magnetic_state);
+            GaugeSymmetriesVectorPackMath::sum(prev_magnetic_state, magnetic_addition, prev_magnetic_state);
+        }
 
-            GaugeSymmetriesVectorPackMath::sum(crnt_electric_pack,  added_electric_state,  crnt_electric_pack);
-            GaugeSymmetriesVectorPackMath::sum(prev_electric_pack,  added_electric_state,  prev_electric_pack);
-            GaugeSymmetriesVectorPackMath::sum(crnt_magnetic_pack,  added_magnetic_state,  crnt_magnetic_pack);
-            GaugeSymmetriesVectorPackMath::sum(prev_magnetic_pack,  added_magnetic_state,  prev_magnetic_pack);
+        void _apply_poke_to_gauge_fields(float3 position, PokeApplicationCache poke_cache)
+        {
+            float3 electric_delta, magnetic_delta; _build_field_increments(poke_cache, electric_delta, magnetic_delta);
 
-            crnt_electric_strengths_lattice_buffer[gauge_lattice_buffer_index]  = crnt_electric_pack;
-            prev_electric_strengths_lattice_buffer[gauge_lattice_buffer_index]  = prev_electric_pack;
-            crnt_magnetic_strengths_lattice_buffer[gauge_lattice_buffer_index]  = crnt_magnetic_pack;
-            prev_magnetic_strengths_lattice_buffer[gauge_lattice_buffer_index]  = prev_magnetic_pack;
+            uint lattice_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
+            GaugeSymmetriesVectorPack current_electric_pack = crnt_electric_strengths_lattice_buffer[lattice_index];
+            GaugeSymmetriesVectorPack previous_electric_pack = prev_electric_strengths_lattice_buffer[lattice_index];
+            GaugeSymmetriesVectorPack current_magnetic_pack = crnt_magnetic_strengths_lattice_buffer[lattice_index];
+            GaugeSymmetriesVectorPack previous_magnetic_pack = prev_magnetic_strengths_lattice_buffer[lattice_index];
+
+            _accumulate_gauge_packs(poke_cache.poke_mask, electric_delta, magnetic_delta, current_electric_pack, previous_electric_pack, current_magnetic_pack, previous_magnetic_pack);
+
+            crnt_electric_strengths_lattice_buffer[lattice_index] = current_electric_pack;
+            prev_electric_strengths_lattice_buffer[lattice_index] = previous_electric_pack;
+            crnt_magnetic_strengths_lattice_buffer[lattice_index] = current_magnetic_pack;
+            prev_magnetic_strengths_lattice_buffer[lattice_index] = previous_magnetic_pack;
         }
 
         // Process a single poke at a given position
