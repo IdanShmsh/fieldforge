@@ -11,7 +11,7 @@ namespace FieldForge
     [RequireComponent(typeof(RectTransform))]
     public class FieldForgePointPokingSource2D : SimulationInteractiveBehavior
     {
-        [SerializeField, Min(0)] int pokeStrength = 1000;
+        [SerializeField] int pokeStrength = 1000;
         [SerializeField, Min(1)] int pulseDuration = 1;
         [SerializeField, Min(0)] int pulseCooldown = 0;
         [SerializeField] SerializableFieldsMask pokeMask;

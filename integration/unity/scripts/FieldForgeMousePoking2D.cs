@@ -5,7 +5,7 @@ namespace FieldForge
 {
     public class MousePoking2D : SimulationInteractiveBehavior
     {
-        [SerializeField] uint pokeStrength = 1000;
+        [SerializeField] int pokeStrength = 1000;
         [SerializeField] uint pokeRadius = 3;
 
         [SerializeField] SerializableFieldsMask mousePokesMask;
