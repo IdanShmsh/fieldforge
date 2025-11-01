@@ -7,10 +7,6 @@
 /// boundaries.
 Shader "Custom/fermion_spin_rendering_2d"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "black" {}
-    }
     SubShader
     {
         Tags
@@ -49,12 +45,9 @@ Shader "Custom/fermion_spin_rendering_2d"
                 return o;
             }
 
-            sampler2D _PreviousTex;
-
             float4 frag(v2f i) : SV_Target
             {
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 0);
                 float3 rounded_position = round(position);
                 float3 delta_position = position - rounded_position;
@@ -74,7 +67,7 @@ Shader "Custom/fermion_spin_rendering_2d"
                     color += simulation_brightness * field_properties.color * spin_state_norm * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
-                return rendered_color + color;
+                return color;
             }
             ENDCG
         }

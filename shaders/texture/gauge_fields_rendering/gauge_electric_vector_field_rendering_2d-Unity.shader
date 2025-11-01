@@ -5,10 +5,6 @@
 /// coloring pixels to indicate dials pointing along the electric fields' vector directions.
 Shader "Custom/gauge_electric_vector_field_rendering_2d"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "black" {}
-    }
     SubShader
     {
         Tags
@@ -19,6 +15,7 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
 
         Pass
         {
+            Blend One One
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -47,14 +44,12 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
                 return o;
             }
 
-            sampler2D _PreviousTex;
             float _Granularity;
 
             float4 frag(v2f i) : SV_Target
             {
                 float granularity = _Granularity ? _Granularity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 0);
                 float3 rounded_position = round(position / granularity) * granularity;
                 float3 delta_position = (position - rounded_position) / granularity;
@@ -75,7 +70,7 @@ Shader "Custom/gauge_electric_vector_field_rendering_2d"
                     color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
                 color[3] = 1;
-                return rendered_color + color;
+                return color;
             }
             ENDCG
         }

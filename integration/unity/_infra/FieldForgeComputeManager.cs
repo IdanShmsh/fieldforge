@@ -21,7 +21,6 @@ namespace FieldForge
 
         private ComputeBuffers _buffers;
         private Material[] _renderMaterials;
-        private RenderTexture _tempTexture1, _tempTexture2;
 
         private readonly int3 THREAD_GROUP_SIZE = new int3(64, 1, 1);
 
@@ -43,8 +42,6 @@ namespace FieldForge
         {
             _buffers.Release();
             foreach (Material material in _renderMaterials) Object.Destroy(material);
-            _tempTexture1.Release();
-            _tempTexture2.Release();
             _videoRecorder?.Dispose();
             foreach (var buffer in _dedicatedBuffers.Values) buffer?.Release();
             _dedicatedBuffers.Clear();
@@ -146,11 +143,6 @@ namespace FieldForge
                 ConfigureMaterial(material, shaderProperties);
                 _renderMaterials[i] = material;
             }
-
-            _tempTexture1 = new RenderTexture(Screen.width, Screen.height, 0) { enableRandomWrite = true };
-            _tempTexture2 = new RenderTexture(Screen.width, Screen.height, 0) { enableRandomWrite = true };
-            _tempTexture1.Create();
-            _tempTexture2.Create();
         }
 
         private void InitializeCommandBuffer()
@@ -179,26 +171,22 @@ namespace FieldForge
                     }
                 }
             }
-            CommandBuffer.Blit(Texture2D.blackTexture, _tempTexture1);
             foreach (Material material in _renderMaterials)
             {
                 if (material == null) continue;
-                material.SetTexture("_PreviousTex", _tempTexture1);
-                CommandBuffer.Blit(_tempTexture1, _tempTexture2, material);
-                (_tempTexture1, _tempTexture2) = (_tempTexture2, _tempTexture1);
+                CommandBuffer.Blit(BuiltinRenderTextureType.None, _targetTexture ? _targetTexture : BuiltinRenderTextureType.CameraTarget, material);
             }
-            CommandBuffer.Blit(_tempTexture1, _targetTexture);
         }
 
         private void InitializeVideoRecorder()
         {
             if (_videoRecorder == null) return;
-            CommandBuffer.RequestAsyncReadback(_tempTexture1, request =>
+            if (_targetTexture == null) return;
+            CommandBuffer.RequestAsyncReadback(_targetTexture, request =>
             {
                 if (request.hasError) return;
                 if (_videoRecorder == null) return;
-                if (_tempTexture1 == null) return;
-                _videoRecorder.CommitFrame(request, _tempTexture1.width, _tempTexture1.height);
+                _videoRecorder.CommitFrame(request, _targetTexture.width, _targetTexture.height);
             });
         }
 

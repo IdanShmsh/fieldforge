@@ -9,10 +9,6 @@
 /// boundaries.
 Shader "Custom/fermion_phases_rendering_2d"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "black" {}
-    }
     SubShader
     {
         Tags
@@ -23,6 +19,7 @@ Shader "Custom/fermion_phases_rendering_2d"
 
         Pass
         {
+            Blend One One
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -51,12 +48,9 @@ Shader "Custom/fermion_phases_rendering_2d"
                 return o;
             }
 
-            sampler2D _PreviousTex;
-
             float4 frag(v2f i) : SV_Target
             {
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 0);
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
@@ -69,7 +63,7 @@ Shader "Custom/fermion_phases_rendering_2d"
                     color += float4(CommonMath::hsv2rgb(hsv) * simulation_brightness, 0);
                 }
                 color[3] = 1;
-                return rendered_color + color;
+                return color;
             }
             ENDCG
         }

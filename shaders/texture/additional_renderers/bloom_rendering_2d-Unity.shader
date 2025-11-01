@@ -5,10 +5,6 @@
 /// For this to be relevant the bloom preparation compute operation must be ran beforehand.
 Shader "Custom/bloom_rendering_2d"
 {
-    Properties
-    {
-        _MainTex ("Texture", 2D) = "black" {}
-    }
     SubShader
     {
         Tags
@@ -19,6 +15,7 @@ Shader "Custom/bloom_rendering_2d"
 
         Pass
         {
+            Blend One One
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -47,7 +44,6 @@ Shader "Custom/bloom_rendering_2d"
                 return o;
             }
 
-            sampler2D _PreviousTex;
             StructuredBuffer<int> bloom_lattice_buffer;
 
             uint get_bloom_buffer_index(uint3 bloom_lattice_position, uint color_channel)
@@ -85,12 +81,11 @@ Shader "Custom/bloom_rendering_2d"
             float4 frag(v2f i) : SV_Target
             {
                 float3 position = float3(i.uv.x * (float)simulation_width / 4.0f, i.uv.y * (float)simulation_height / 4.0f, 0);
-                float4 rendered_color = tex2D(_PreviousTex, i.uv);
                 float4 color = float4(0, 0, 0, 1);
                 float3 corner_colors[4];
                 collect_corner_colors(position, corner_colors);
                 CommonMath::interpolate_2d(position - floor(position), corner_colors, color.xyz);
-                return rendered_color + color;
+                return color;
             }
             ENDCG
         }
