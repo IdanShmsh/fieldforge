@@ -55,6 +55,7 @@ namespace FieldForge
             InitializeBuffers();
             InitializeMaterials();
             InitializeCommandBuffer();
+            InitializeVideoRecorder();
         }
 
         private void InitializeBuffers()
@@ -178,9 +179,7 @@ namespace FieldForge
                     }
                 }
             }
-
             CommandBuffer.Blit(Texture2D.blackTexture, _tempTexture1);
-
             foreach (Material material in _renderMaterials)
             {
                 if (material == null) continue;
@@ -188,19 +187,19 @@ namespace FieldForge
                 CommandBuffer.Blit(_tempTexture1, _tempTexture2, material);
                 (_tempTexture1, _tempTexture2) = (_tempTexture2, _tempTexture1);
             }
-
             CommandBuffer.Blit(_tempTexture1, _targetTexture);
+        }
 
-            if (_videoRecorder != null)
+        private void InitializeVideoRecorder()
+        {
+            if (_videoRecorder == null) return;
+            CommandBuffer.RequestAsyncReadback(_tempTexture1, request =>
             {
-                CommandBuffer.RequestAsyncReadback(_tempTexture1, request =>
-                {
-                    if (request.hasError) return; // TODO: add an indication
-                    if (_videoRecorder == null) return;
-                    if (_tempTexture1 == null) return;
-                    _videoRecorder.CommitFrame(request, _tempTexture1.width, _tempTexture1.height);
-                });
-            }
+                if (request.hasError) return;
+                if (_videoRecorder == null) return;
+                if (_tempTexture1 == null) return;
+                _videoRecorder.CommitFrame(request, _tempTexture1.width, _tempTexture1.height);
+            });
         }
 
         private void ConfigureComputeShader(ComputeShader shader, ShaderProperty[] properties, int kernel)
