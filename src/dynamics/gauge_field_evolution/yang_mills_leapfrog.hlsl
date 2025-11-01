@@ -123,7 +123,7 @@ namespace GaugeFieldsEvolution
                 // Incorporate self-interaction via commuting the field state
                 if (simulation_non_abelian_self_interaction) for (uint i = 0; i < 4; i++) temporal_slope[a][i] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, evolution_data.crnt_gauge_potentials, 0, i, a);
                 // Set the temporal gradient of the temporal component of the gauge potential
-                temporal_slope[a][0] = 0; // Gauge fixing - Choosing a temporal-gauge. The gauge fixing can be changed to a Lorentz-gauge via: temporal_slope[a][0] = evolution_data.gauge_potential_jacobians[a][1][1] + evolution_data.gauge_potential_jacobians[a][2][2] + evolution_data.gauge_potential_jacobians[a][3][3];
+				temporal_slope[a][0] = 0;
             }
 
             // Weighing the slope with the temporal unit (\Delta t)
@@ -131,6 +131,9 @@ namespace GaugeFieldsEvolution
 
             // Then , adding it to the previous state to get the next state (leap frog method).
             GaugeSymmetriesVectorPackMath::sum(evolution_data.prev_gauge_potentials, temporal_slope, next_gauge_potentials);
+
+			// Gauge fixing - Choosing a temporal-gauge. The gauge fixing can be changed to a Lorentz-gauge via the following in the loop above: temporal_slope[a][0] = evolution_data.gauge_potential_jacobians[a][1][1] + evolution_data.gauge_potential_jacobians[a][2][2] + evolution_data.gauge_potential_jacobians[a][3][3];
+			for (int a = 0; a < 12; a++) next_gauge_potentials[a][0] = 0;
         }
 
         // Ensure the validity of the evolution result
