@@ -44,11 +44,15 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
                 return o;
             }
 
-            float _Granularity;
+            float brightness = 1.0;
+            float opacity = 1.0;
+            float granularity = 1.0;
 
             float4 frag(v2f i) : SV_Target
             {
-                float granularity = _Granularity ? _Granularity : 1.0;
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
+                granularity = granularity ? granularity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 color = float4(0, 0, 0, 0);
                 float3 rounded_position = round(position / granularity) * granularity;
@@ -69,7 +73,8 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
                     float3 symmetry_color = CommonMath::hsv2rgb(float3(symmetry_index / 12.0f, 0.5f, 1));
                     color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
-                color[3] = 1;
+                color *= brightness;
+                color[3] = opacity;
                 return color;
             }
             ENDCG

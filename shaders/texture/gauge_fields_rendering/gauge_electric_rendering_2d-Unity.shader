@@ -46,8 +46,13 @@ Shader "Custom/gauge_electric_rendering_2d"
                 return o;
             }
 
+            float brightness = 1.0;
+            float opacity = 1.0;
+
             float4 frag(v2f i) : SV_Target
             {
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 GaugeSymmetriesVectorPack state;
                 FieldInterpolations::get_gauge_state_in_position(position, rend_electric_strengths_lattice_buffer, state);
@@ -59,9 +64,10 @@ Shader "Custom/gauge_electric_rendering_2d"
                     float ampliude = length(field_state);
                     if (ampliude == 0) continue;
                     field_state *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
-                    color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
+                    color += abs(float4(field_state[1], field_state[3], field_state[2], 0));
                 }
-                color[3] = 1;
+                color *= brightness;
+                color[3] = opacity;
                 return color;
             }
             ENDCG
