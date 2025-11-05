@@ -74,6 +74,7 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
                     float3 symmetry_color = CommonMath::hsv2rgb(float3(symmetry_index / 12.0f, 0.5f, 1));
                     color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
+                color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
                 return color;

@@ -66,6 +66,7 @@ Shader "Custom/gauge_magnetic_rendering_2d"
                     field_state *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
                     color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
                 }
+                color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
                 return color;

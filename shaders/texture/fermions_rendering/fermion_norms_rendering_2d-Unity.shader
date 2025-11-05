@@ -59,9 +59,10 @@ Shader "Custom/fermion_norms_rendering_2d"
                     FermionFieldState state;
                     FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
                     float norm = FermionFieldStateMath::norm(state);
-                    color += field_properties.color * norm * simulation_brightness;
+                    color += field_properties.color * norm;
                 }
                 color[3] = 1;
+                color *= simulation_brightness;
                 return color;
             }
             ENDCG

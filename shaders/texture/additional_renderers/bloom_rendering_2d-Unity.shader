@@ -85,6 +85,7 @@ Shader "Custom/bloom_rendering_2d"
                 float3 corner_colors[4];
                 collect_corner_colors(position, corner_colors);
                 CommonMath::interpolate_2d(position - floor(position), corner_colors, color.xyz);
+                color *= simulation_brightness;
                 return color;
             }
             ENDCG

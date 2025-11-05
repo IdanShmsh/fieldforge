@@ -61,10 +61,11 @@ Shader "Custom/fermion_phases_and_dirac_norms_rendering_2d"
                     float state_norm = abs(DiracFormalism::dirac_norm(state));
                     float state_phase = ComplexNumbersMath::phase(state[0]);
                     float3 hsv = float3(state_phase / (2.0 * 3.14159265), 1.0, state_norm);
-                    color += float4(CommonMath::hsv2rgb(hsv) * simulation_brightness, 0);
-                    color += field_properties.color * state_norm * state_norm * simulation_brightness;
+                    color += float4(CommonMath::hsv2rgb(hsv), 0);
+                    color += field_properties.color * state_norm * state_norm;
                 }
                 color[3] = 1;
+                color *= simulation_brightness;
                 return color;
             }
             ENDCG
