@@ -63,7 +63,7 @@ Shader "Custom/gauge_magnetic_rendering_2d"
                     float4 field_state = state[symmetry_index];
                     float ampliude = length(field_state);
                     if (ampliude == 0) continue;
-                    field_state *= simulation_brightness * (1 - exp(-abs(ampliude))) / ampliude;
+                    field_state *= (1 - exp(-abs(ampliude))) / ampliude;
                     color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
                 }
                 color *= simulation_brightness;
