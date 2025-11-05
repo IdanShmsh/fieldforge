@@ -1,0 +1,81 @@
+/// -----------------------------------------------------------------------------------------------
+/// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
+/// -----------------------------------------------------------------------------------------------
+/// This pipeline operation renders the fermion fields within the xy-plane of the simulation by
+/// coloring pixels to represent the contour lines for the amplitude of the fermion fields, with intensity
+/// proportional to the field's norm at that position.
+/// Lattice positions are interpolated to pixel coordinates.
+/// The screen coordinates are aligned such that the screen boundaries align exactly with the simulation
+/// boundaries.
+Shader "Custom/fermion_contours_rendering_2d"
+{
+    SubShader
+    {
+        Tags
+        {
+            "RenderType"="Opaque"
+        }
+        LOD 100
+
+        Pass
+        {
+            Blend One One
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #define SPATIAL_DIMENSIONALITY 3
+
+            #include "../../../src/core/analysis/field_interpolations.hlsl"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            struct v2f
+            {
+                float2 uv : TEXCOORD0;
+                float4 pos : SV_POSITION;
+            };
+
+            v2f vert(appdata v)
+            {
+                v2f o;
+                o.pos = UnityObjectToClipPos(v.vertex);
+                o.uv = v.uv;
+                return o;
+            }
+
+            float brightness = 1.0;
+            float opacity = 1.0;
+            float granularity = 1.0;
+
+            float4 frag(v2f i) : SV_Target
+            {
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
+                granularity = granularity ? granularity : 1.0;
+                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
+                float4 color = float4(0, 0, 0, 0);
+                for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
+                {
+                    if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
+                    FermionFieldProperties field_properties = fermion_field_properties[field_index];
+                    FermionFieldState state;
+                    FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
+                    float norm = FermionFieldStateMath::norm(state);
+                    float4 periodic = abs(frac(norm * granularity) * 2 - 1) * 2 - 1;
+                    color += field_properties.color * periodic * norm;
+                }
+                color *= simulation_brightness;
+                color *= brightness;
+                color[3] = opacity;
+                return color;
+            }
+            ENDCG
+        }
+    }
+    FallBack Off
+}
