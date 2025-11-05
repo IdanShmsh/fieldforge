@@ -43,22 +43,24 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
                 o.uv = v.uv;
                 return o;
             }
-
+            
             float brightness = 1.0;
             float opacity = 1.0;
             float granularity = 1.0;
+            float length_scale = 1.0;
 
             float4 frag(v2f i) : SV_Target
             {
                 brightness = brightness ? brightness : 1.0;
                 opacity = opacity ? opacity : 1.0;
                 granularity = granularity ? granularity : 1.0;
-                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
+                length_scale = length_scale ? length_scale : 1.0;
                 float4 color = float4(0, 0, 0, 0);
+                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float3 rounded_position = round(position / granularity) * granularity;
-                float3 delta_position = (position - rounded_position) / granularity;
-                float offset = length(delta_position);
-                if (offset == 0) return float4(0, 0, 0, 0);
+                float2 delta_position = (position.xy - rounded_position.xy) / granularity;
+                float2 cell_dimensions = _ScreenParams.xy / float2(simulation_width, simulation_height) * granularity;
+                float2 offset_coefficient = delta_position.xy / cell_dimensions;
                 uint buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(rounded_position);
                 GaugeSymmetriesVectorPack state = rend_gauge_potentials_lattice_buffer[buffer_index];
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
@@ -68,10 +70,16 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
                     field_state[0] = 0;
                     float field_state_length = length(field_state);
                     if (field_state_length == 0) continue;
-                    field_state *= 25 / field_state_length;
-                    float cross_product = length(cross(field_state.yzw, delta_position));
+                    float4 normalized_field_state = field_state / field_state_length;
+                    float limited_length = CommonMath::harmonic_mean(field_state_length / length_scale, 1);
+                    float cross_product = length(cross(normalized_field_state.yzw, float3(offset_coefficient, 0)));
+                    float dot_product = max(dot(normalized_field_state.yz, offset_coefficient), 0);
                     float3 symmetry_color = CommonMath::hsv2rgb(float3(symmetry_index / 12.0f, 0.5f, 1));
-                    color += field_state_length * float4(symmetry_color, 1) * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                    float orthogonal_color_factor = exp(-cross_product * cross_product / (0.001 * 0.001));
+                    float parallel_color_factor = sqrt(max(0, 1 - pow((2 * dot_product - limited_length) / limited_length, 4)));
+                    float circular_falloff = sqrt(max(0.25 - dot(delta_position, delta_position), 0));
+                    float total_color_factor = orthogonal_color_factor * parallel_color_factor * circular_falloff;
+                    color += float4(symmetry_color, 1) * total_color_factor / rsqrt(field_state_length);
                 }
                 color *= simulation_brightness;
                 color *= brightness;
