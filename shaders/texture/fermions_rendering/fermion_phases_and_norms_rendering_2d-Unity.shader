@@ -48,8 +48,13 @@ Shader "Custom/fermion_phases_and_norms_rendering_2d"
                 return o;
             }
 
+            float brightness = 1.0;
+            float opacity = 1.0;
+
             float4 frag(v2f i) : SV_Target
             {
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 color = float4(0, 0, 0, 0);
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
@@ -64,8 +69,9 @@ Shader "Custom/fermion_phases_and_norms_rendering_2d"
                     color += float4(CommonMath::hsv2rgb(hsv), 0);
                     color += field_properties.color * state_norm * state_norm;
                 }
-                color[3] = 1;
                 color *= simulation_brightness;
+                color *= brightness;
+                color[3] = opacity;
                 return color;
             }
             ENDCG

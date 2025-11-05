@@ -78,14 +78,21 @@ Shader "Custom/bloom_rendering_2d"
                 }
             }
 
+            float brightness = 1.0;
+            float opacity = 1.0;
+
             float4 frag(v2f i) : SV_Target
             {
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width / 4.0f, i.uv.y * (float)simulation_height / 4.0f, 0);
                 float4 color = float4(0, 0, 0, 1);
                 float3 corner_colors[4];
                 collect_corner_colors(position, corner_colors);
                 CommonMath::interpolate_2d(position - floor(position), corner_colors, color.xyz);
                 color *= simulation_brightness;
+                color *= brightness;
+                color[3] = opacity;
                 return color;
             }
             ENDCG

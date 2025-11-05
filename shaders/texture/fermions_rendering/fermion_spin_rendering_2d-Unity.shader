@@ -45,8 +45,13 @@ Shader "Custom/fermion_spin_rendering_2d"
                 return o;
             }
 
+            float brightness = 1.0;
+            float opacity = 1.0;
+
             float4 frag(v2f i) : SV_Target
             {
+                brightness = brightness ? brightness : 1.0;
+                opacity = opacity ? opacity : 1.0;
                 float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 float4 color = float4(0, 0, 0, 0);
                 float3 rounded_position = round(position);
@@ -66,8 +71,9 @@ Shader "Custom/fermion_spin_rendering_2d"
                     float cross_product = length(cross(fermion_spin_state, delta_position));
                     color += field_properties.color * spin_state_norm * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
                 }
-                color[3] = 1;
                 color *= simulation_brightness;
+                color *= brightness;
+                color[3] = opacity;
                 return color;
             }
             ENDCG
