@@ -34,7 +34,6 @@ namespace FieldForge
             _touchTracker.Update();
             foreach (Touch touch in Input.touches)
             {
-                if (touch.phase == TouchPhase.Began) continue;
                 if (!_touchTracker.IsTouchActive(touch.fingerId)) continue;
                 if (!(touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)) continue;
                 SubmitCurrentPoke(touch);
