@@ -5,7 +5,6 @@
 #include "../../core/formalisms/gauge_interaction.hlsl"
 #include "../../core/ops/simulation_data_ops.hlsl"
 
-const float electric_divergence_cleaning_factor = 0.5;
 
 namespace GaugeFieldsEvolution
 {
@@ -94,12 +93,6 @@ namespace GaugeFieldsEvolution
 
             // Then, adding it to the previous state to get the next state (leap frog method).
             GaugeSymmetriesVectorPackMath::sum(evolution_data.prev_electric_strengths, electric_strength_temporal_slope, next_electric_strengths);
-
-            // Perform divergence cleaning on the electric field
-            GaugeFieldsDivergence divergences = evolution_data.prev_electric_strength_divergences;
-            GaugeSymmetriesVectorPack divergence_gradients = evolution_data.prev_electric_strength_divergence_gradients;
-            GaugeSymmetriesVectorPack gauge_currents = evolution_data.total_gauge_currents;
-            [unroll] for (uint a = 0; a < 12; a++) next_electric_strengths[a] -= (divergences[a] - gauge_currents[a][0]) * electric_divergence_cleaning_factor * divergence_gradients[a];
         }
 
         // Evolve the magnetic gauge field given the evolution data
@@ -121,7 +114,7 @@ namespace GaugeFieldsEvolution
                 // Add the gradient of the temporal component of the gauge potential's temporal slope
                 temporal_slope[a].yzw = transpose(evolution_data.gauge_potential_jacobians[a])[0].yzw - temporal_slope[a].yzw;
                 // Incorporate self-interaction via commuting the field state
-                if (simulation_non_abelian_self_interaction) for (uint i = 0; i < 4; i++) temporal_slope[a][i] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, evolution_data.crnt_gauge_potentials, 0, i, a);
+                for (uint i = 0; i < 4; i++) temporal_slope[a][i] += YangMillsFormalism::gauge_commutator(evolution_data.crnt_gauge_potentials, evolution_data.crnt_gauge_potentials, 0, i, a);
                 // Set the temporal gradient of the temporal component of the gauge potential
 				temporal_slope[a][0] = 0;
             }
