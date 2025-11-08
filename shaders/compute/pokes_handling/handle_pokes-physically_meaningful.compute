@@ -1,0 +1,24 @@
+#pragma kernel Pass0
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/dynamics/simulation_poking/physically_meaningful.hlsl"
+
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation applies pokes configured via the simulation's internal protocol for pokes submission,
+/// as "physically meaningful pokes" - applied in the form of appropriate physically meaningful configurations (for
+/// instance, pokes are handled and applied as "gauge-currents" appropriately affecting the gauge fields.) 
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    float3 position = float3(dispatch_thread_id);
+    SimulationPokesProcessing::PhysicallyMeaningful::process_pokes(position);
+}
