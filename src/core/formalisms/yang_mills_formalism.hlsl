@@ -19,10 +19,10 @@ namespace YangMillsFormalism
         float3 structure_constants[2] = gauge_structure_constants[a];
         if (structure_constants[0][0] == 0) return 0; // prevent any computation if the structure constants are all 0
         return simulation_non_abelian_self_interaction *
-            (gauge_vector_pack1[(uint)structure_constants[0][1]][mu] * gauge_vector_pack2[(uint)structure_constants[0][2]][nu] * structure_constants[0][0] -
-            gauge_vector_pack1[(uint)structure_constants[0][2]][mu] * gauge_vector_pack2[(uint)structure_constants[0][1]][nu] * structure_constants[0][0] +
-            gauge_vector_pack1[(uint)structure_constants[1][1]][mu] * gauge_vector_pack2[(uint)structure_constants[1][2]][nu] * structure_constants[0][0] -
-            gauge_vector_pack1[(uint)structure_constants[1][2]][mu] * gauge_vector_pack2[(uint)structure_constants[1][1]][nu] * structure_constants[0][0]);
+            (structure_constants[0][0] * (gauge_vector_pack1[(uint)structure_constants[0][1]][mu] * gauge_vector_pack2[(uint)structure_constants[0][2]][nu] - 
+            gauge_vector_pack1[(uint)structure_constants[0][2]][mu] * gauge_vector_pack2[(uint)structure_constants[0][1]][nu]) +
+            structure_constants[1][0] * (gauge_vector_pack1[(uint)structure_constants[1][1]][mu] * gauge_vector_pack2[(uint)structure_constants[1][2]][nu] - 
+            gauge_vector_pack1[(uint)structure_constants[1][2]][mu] * gauge_vector_pack2[(uint)structure_constants[1][1]][nu]));
     }
 
     // Computes the field strength tensor for the specified set of gauge potentials with their local configuration provided via their jacobian
