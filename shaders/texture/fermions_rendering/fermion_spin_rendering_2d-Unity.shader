@@ -57,7 +57,7 @@ Shader "Custom/fermion_spin_rendering_2d"
                 float3 rounded_position = round(position);
                 float3 delta_position = position - rounded_position;
                 float offset = length(delta_position);
-                if (offset == 0) return rendered_color;
+                if (offset == 0) return color;
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
                     if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
