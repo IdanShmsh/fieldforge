@@ -17,6 +17,7 @@ Shader "Custom/fermion_spin_rendering_2d"
 
         Pass
         {
+            Blend One One
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -24,6 +25,7 @@ Shader "Custom/fermion_spin_rendering_2d"
             #define SPATIAL_DIMENSIONALITY 3
 
             #include "../../../src/core/analysis/field_interpolations.hlsl"
+            #include "../../../src/visuals/fermion_renderers/render_fermion_spin_dial.hlsl"
 
             struct appdata
             {
@@ -47,29 +49,20 @@ Shader "Custom/fermion_spin_rendering_2d"
 
             float brightness = 1.0;
             float opacity = 1.0;
+            float granularity = 1.0;
+            float length_scale = 1.0;
 
             float4 frag(v2f i) : SV_Target
             {
                 brightness = brightness ? brightness : 1.0;
                 opacity = opacity ? opacity : 1.0;
-                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                float4 color = float4(0, 0, 0, 0);
-                float3 rounded_position = round(position);
-                float3 delta_position = position - rounded_position;
-                float offset = length(delta_position);
-                if (offset == 0) return color;
+                granularity = granularity ? granularity : 1.0;
+                length_scale = length_scale ? length_scale : 1.0;
+                half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
+                half4 color = half4(0, 0, 0, 0);
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
-                    if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
-                    FermionFieldProperties field_properties = fermion_field_properties[field_index];
-                    uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(rounded_position, field_index);
-                    FermionFieldState fermion_state = rend_fermions_lattice_buffer[buffer_index];
-                    float3 fermion_spin_state = DiracFormalism::obtain_spin_state(fermion_state);
-                    float spin_state_norm = length(fermion_spin_state);
-                    if (spin_state_norm == 0) return float4(0, 0, 0, 0);
-                    fermion_spin_state *= 25 / spin_state_norm;
-                    float cross_product = length(cross(fermion_spin_state, delta_position));
-                    color += field_properties.color * spin_state_norm * exp(-cross_product * cross_product) * sqrt(max(0.25 - offset * offset, 0));
+                    color += FermionRendering::RenderFermionSpinDial::get_fermion_spin_dial_color_at_position(position, field_index, granularity, length_scale);
                 }
                 color *= simulation_brightness;
                 color *= brightness;
