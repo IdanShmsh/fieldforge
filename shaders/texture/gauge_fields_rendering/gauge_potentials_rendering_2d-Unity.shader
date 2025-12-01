@@ -53,18 +53,14 @@ Shader "Custom/gauge_potentials_rendering_2d"
             {
                 brightness = brightness ? brightness : 1.0;
                 opacity = opacity ? opacity : 1.0;
-                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
+                half3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
                 GaugeSymmetriesVectorPack state;
                 FieldInterpolations::get_gauge_state_in_position(position, rend_gauge_potentials_lattice_buffer, state);
                 float4 color = float4(0, 0, 0, 0);
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
                 {
                     if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
-                    float4 field_state = state[symmetry_index];
-                    float ampliude = length(field_state);
-                    if (ampliude == 0) continue;
-                    field_state *= (1 - exp(-abs(ampliude))) / ampliude;
-                    color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
+                    color += abs(float4(state[symmetry_index].yzw, 0));
                 }
                 color *= simulation_brightness;
                 color *= brightness;

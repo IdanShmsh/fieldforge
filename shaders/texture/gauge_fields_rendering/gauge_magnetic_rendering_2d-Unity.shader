@@ -60,11 +60,7 @@ Shader "Custom/gauge_magnetic_rendering_2d"
                 for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
                 {
                     if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
-                    float4 field_state = state[symmetry_index];
-                    float ampliude = length(field_state);
-                    if (ampliude == 0) continue;
-                    field_state *= (1 - exp(-abs(ampliude))) / ampliude;
-                    color += abs(float4(field_state[1], field_state[3], field_state[2], field_state[0]));
+                    color += abs(float4(state[symmetry_index].yzw, 0));
                 }
                 color *= simulation_brightness;
                 color *= brightness;
