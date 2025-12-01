@@ -27,6 +27,7 @@ Shader "Custom/fermion_contours_rendering_2d"
             #define SPATIAL_DIMENSIONALITY 3
 
             #include "../../../src/core/analysis/field_interpolations.hlsl"
+            #include "../../../src/visuals/fermion_renderers/render_fermion_norm_contours.hlsl"
 
             struct appdata
             {
@@ -52,22 +53,16 @@ Shader "Custom/fermion_contours_rendering_2d"
             float opacity = 1.0;
             float granularity = 1.0;
 
-            float4 frag(v2f i) : SV_Target
+            half4 frag(v2f i) : SV_Target
             {
                 brightness = brightness ? brightness : 1.0;
                 opacity = opacity ? opacity : 1.0;
                 granularity = granularity ? granularity : 1.0;
-                float3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                float4 color = float4(0, 0, 0, 0);
+                half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
+                half4 color = half4(0, 0, 0, 0);
                 for (int field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
                 {
-                    if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
-                    FermionFieldProperties field_properties = fermion_field_properties[field_index];
-                    FermionFieldState state;
-                    FieldInterpolations::get_fermion_state_in_position(position, field_index, rend_fermions_lattice_buffer, state);
-                    float norm = FermionFieldStateMath::norm(state);
-                    float4 periodic = abs(frac(norm * granularity) * 2 - 1) * 2 - 1;
-                    color += field_properties.color * periodic * norm;
+                    color += FermionRendering::RenderFermionNormContours::get_fermion_norm_contours_color_at_position(position, field_index, granularity);
                 }
                 color *= simulation_brightness;
                 color *= brightness;
