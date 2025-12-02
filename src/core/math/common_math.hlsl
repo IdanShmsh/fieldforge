@@ -213,6 +213,106 @@ namespace CommonMath
         float4 v1 = lerp(v10, v11, fraction.y);
         result = lerp(v0, v1, fraction.x);
     }
+
+    float integer_pow(float x, uint exponent)
+    {
+        if (exponent == 0) return 1.0;
+        if (exponent == 1) return x;
+        const float x2 = x * x;
+        if (exponent == 2) return x2;
+        const float x3 = x2 * x;
+        if (exponent == 3) return x3;
+        const float x4 = x2 * x2;
+        if (exponent == 4) return x4;
+        const float x5 = x3 * x2;
+        if (exponent == 5) return x5;
+        const float x6 = x3 * x3;
+        if (exponent == 6) return x6;
+        const float x7 = x3 * x4;
+        if (exponent == 7) return x7;
+        const float x8 = x4 * x4;
+        if (exponent == 8) return x8;
+        const float x9 = x4 * x5;
+        if (exponent == 9) return x9;
+        const float x10 = x5 * x5;
+        if (exponent == 10) return x10;
+        return pow(x, exponent);
+    }
+
+    float2 integer_pow(float2 x, uint exponent)
+    {
+        if (exponent == 0) return 1.0;
+        if (exponent == 1) return x;
+        const float2 x2 = x * x;
+        if (exponent == 2) return x2;
+        const float2 x3 = x2 * x;
+        if (exponent == 3) return x3;
+        const float2 x4 = x2 * x2;
+        if (exponent == 4) return x4;
+        const float2 x5 = x3 * x2;
+        if (exponent == 5) return x5;
+        const float2 x6 = x3 * x3;
+        if (exponent == 6) return x6;
+        const float2 x7 = x3 * x4;
+        if (exponent == 7) return x7;
+        const float2 x8 = x4 * x4;
+        if (exponent == 8) return x8;
+        const float2 x9 = x4 * x5;
+        if (exponent == 9) return x9;
+        const float2 x10 = x5 * x5;
+        if (exponent == 10) return x10;
+        return pow(x, exponent);
+    }
+
+    float3 integer_pow(float3 x, uint exponent)
+    {
+        if (exponent == 0) return 1.0;
+        if (exponent == 1) return x;
+        const float3 x2 = x * x;
+        if (exponent == 2) return x2;
+        const float3 x3 = x2 * x;
+        if (exponent == 3) return x3;
+        const float3 x4 = x2 * x2;
+        if (exponent == 4) return x4;
+        const float3 x5 = x3 * x2;
+        if (exponent == 5) return x5;
+        const float3 x6 = x3 * x3;
+        if (exponent == 6) return x6;
+        const float3 x7 = x3 * x4;
+        if (exponent == 7) return x7;
+        const float3 x8 = x4 * x4;
+        if (exponent == 8) return x8;
+        const float3 x9 = x4 * x5;
+        if (exponent == 9) return x9;
+        const float3 x10 = x5 * x5;
+        if (exponent == 10) return x10;
+        return pow(x, exponent);
+    }
+
+    float4 integer_pow(float4 x, uint exponent)
+    {
+        if (exponent == 0) return 1.0;
+        if (exponent == 1) return x;
+        const float4 x2 = x * x;
+        if (exponent == 2) return x2;
+        const float4 x3 = x2 * x;
+        if (exponent == 3) return x3;
+        const float4 x4 = x2 * x2;
+        if (exponent == 4) return x4;
+        const float4 x5 = x3 * x2;
+        if (exponent == 5) return x5;
+        const float4 x6 = x3 * x3;
+        if (exponent == 6) return x6;
+        const float4 x7 = x3 * x4;
+        if (exponent == 7) return x7;
+        const float4 x8 = x4 * x4;
+        if (exponent == 8) return x8;
+        const float4 x9 = x4 * x5;
+        if (exponent == 9) return x9;
+        const float4 x10 = x5 * x5;
+        if (exponent == 10) return x10;
+        return pow(x, exponent);
+    }
 }
 
 #endif
