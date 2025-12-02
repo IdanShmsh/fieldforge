@@ -15,7 +15,7 @@ namespace GaugeFieldsEvolution
         // A structure used to cache processed data necessary for performing the evolution
         struct EvolutionCache
         {
-            float3 position;
+            half3 position;
             uint lattice_buffer_index;
             GaugeSymmetriesVectorPack prev_gauge_potentials;
             GaugeSymmetriesVectorPack prev_electric_strengths;
@@ -33,7 +33,7 @@ namespace GaugeFieldsEvolution
         // Obtain data needed to perform the evolution
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
-        void _obtain_evolution_data(float3 position, out EvolutionCache evolution_data)
+        void _obtain_evolution_data(half3 position, out EvolutionCache evolution_data)
         {
             // The position and the buffer index associated with it are cached
             evolution_data.position = position;
@@ -136,7 +136,7 @@ namespace GaugeFieldsEvolution
             {
                 // Discard any state that's "not a number" or infinity
                 const bool component_value_valid = !(any(isnan(result_data[c])) || any(isinf(result_data[c])));
-                validated_result[c] = component_value_valid ? result_data[c] : float4(0,0,0,0);
+                validated_result[c] = component_value_valid ? result_data[c] : half4(0,0,0,0);
             }
         }
 
@@ -177,7 +177,7 @@ namespace GaugeFieldsEvolution
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void gauge_evolution(float3 position)
+        void gauge_evolution(half3 position)
         {
             // Load data needed for the evolution
             EvolutionCache evolution_data;

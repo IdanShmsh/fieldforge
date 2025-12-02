@@ -16,24 +16,24 @@ namespace FieldModesInjection
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void inject_fermion_mode(float3 position, FermionModeData mode_data)
+        void inject_fermion_mode(half3 position, FermionModeData mode_data)
         {
             uint field_index = uint(mode_data[0] - 1);
-            float amplitude = mode_data[1];
-            float3 origin = float3(mode_data[2], mode_data[3], mode_data[4]);
-            float3 wave_vector = float3(mode_data[5], mode_data[6], mode_data[7]);
-            float3 spin_vector = float3(mode_data[8], mode_data[9], mode_data[10]);
-            float3 inverse_gaussian_width = float3(mode_data[11], mode_data[12], mode_data[13]);
+            half amplitude = mode_data[1];
+            half3 origin = half3(mode_data[2], mode_data[3], mode_data[4]);
+            half3 wave_vector = half3(mode_data[5], mode_data[6], mode_data[7]);
+            half3 spin_vector = half3(mode_data[8], mode_data[9], mode_data[10]);
+            half3 inverse_gaussian_width = half3(mode_data[11], mode_data[12], mode_data[13]);
 
             uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
             FermionFieldProperties field_properties = fermion_field_properties[field_index];
-            float field_mass = field_properties.field_mass;
+            half field_mass = field_properties.field_mass;
 
             FermionFieldState new_state;
 
             DiracFormalism::construct_spin_state(spin_vector, wave_vector, field_mass, new_state);
-            float3 delta_position = position - origin;
-            float2 position_phase = amplitude * ComplexNumbersMath::cxp(float2(-dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, position - origin)));
+            half3 delta_position = position - origin;
+            half2 position_phase = amplitude * ComplexNumbersMath::cxp(half2(-dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, position - origin)));
             FermionFieldStateMath::scl(new_state, position_phase, new_state);
 
             FermionFieldState current_state = crnt_fermions_lattice_buffer[buffer_index];
@@ -41,7 +41,7 @@ namespace FieldModesInjection
             crnt_fermions_lattice_buffer[buffer_index] = new_state;
 
             FermionFieldState time_finite_difference;
-            FermionFieldStateMath::scl(new_state, float2(0, sqrt(dot(wave_vector, wave_vector) + field_mass * field_mass) * simulation_temporal_unit), time_finite_difference);
+            FermionFieldStateMath::scl(new_state, half2(0, sqrt(dot(wave_vector, wave_vector) + field_mass * field_mass) * simulation_temporal_unit), time_finite_difference);
             DiracFormalism::gamma0(time_finite_difference, time_finite_difference);
             FermionFieldStateMath::sum(new_state, time_finite_difference, new_state);
 
@@ -54,7 +54,7 @@ namespace FieldModesInjection
         // * Side Effects:
         // • Reads directly from the simulation's fermion modes buffer
         // • Writes directly to the simulation's lattice buffers
-        void inject_fermion_modes(float3 position)
+        void inject_fermion_modes(half3 position)
         {
             for (uint i = 0; i < FERMION_MODES_BUFFER_LENGTH; i++)
             {

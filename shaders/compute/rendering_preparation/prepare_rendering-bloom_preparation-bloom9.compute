@@ -55,7 +55,7 @@ void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
             int((sample_idx / KERNEL_DIAMETER) % KERNEL_DIAMETER) - BLUR_RADIUS,
             int(sample_idx / (KERNEL_DIAMETER * KERNEL_DIAMETER)) - BLUR_RADIUS
         );
-        float weight = sqrt(BLUR_RADIUS * BLUR_RADIUS - dot(offset, offset));
+        half weight = sqrt(BLUR_RADIUS * BLUR_RADIUS - dot(offset, offset));
         uint3 neighbor_position = clamp(bloom_position + offset, int3(0, 0, 0), bloom_lattice_size - 1);
         for (uint channel = 0; channel < 3; channel++)
         {

@@ -13,7 +13,7 @@
 #include "../../../src/core/ops/global_intrinsics_indieces.hlsl"
 
 // This function is used to loop the states through the fermion lattice buffers at a given position
-void loop_fermion_field(float3 position, uint field_index)
+void loop_fermion_field(half3 position, uint field_index)
 {
     uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
     FermionFieldState empty_state;
@@ -24,13 +24,13 @@ void loop_fermion_field(float3 position, uint field_index)
 }
 
 // This function is used to loop the states through the fermion lattice buffers at a given position
-void loop_fermion_fields(float3 position)
+void loop_fermion_fields(half3 position)
 {
     for (uint fieldIndex = 0; fieldIndex < FERMION_FIELDS_COUNT; fieldIndex++) loop_fermion_field(position, fieldIndex);
 }
 
 // This function is used to loop the states through the gauge lattice buffers at a given position
-void loop_gauge_fields(float3 position)
+void loop_gauge_fields(half3 position)
 {
     uint lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
     GaugeSymmetriesVectorPack empty_gauge_state;
@@ -62,7 +62,7 @@ void update_global_intrinsics()
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    float3 position = float3(dispatch_thread_id);
+    half3 position = half3(dispatch_thread_id);
     loop_fermion_fields(position);
     loop_gauge_fields(position);
     bool last_thread = dispatch_thread_id.x == simulation_width - 1 && dispatch_thread_id.y == simulation_height - 1 && dispatch_thread_id.z == simulation_depth - 1;

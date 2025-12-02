@@ -8,8 +8,8 @@
 
 typedef GaugeSymmetriesVectorPack GaugeFieldsSpatialGradient[3]; // indices: [gradient-axis][gauge-symmetry][field-component]
 typedef GaugeSymmetriesVectorPack GaugeFieldsSpacetimeGradient[4]; // indices: [gradient-axis][gauge-symmetry][field-component]
-typedef float4x4 GaugeFieldsJacobian[12]; // indices: [gauge-symmetry][gradient-axis][field-component]
-typedef float GaugeFieldsDivergence[12]; // indices: [gauge-symmetry][gradient-axis][field-component]
+typedef half4x4 GaugeFieldsJacobian[12]; // indices: [gauge-symmetry][gradient-axis][field-component]
+typedef half GaugeFieldsDivergence[12]; // indices: [gauge-symmetry][gradient-axis][field-component]
 
 /// This namespace implements functions used to compute derivatives of gauge fields in the simulation.
 /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
@@ -18,7 +18,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // Take the derivative of all gauge fields at a specified simulation location, along the temporal axis.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void temporal_derivative(float3 position, out GaugeSymmetriesVectorPack field_derivatives)
+    void temporal_derivative(half3 position, out GaugeSymmetriesVectorPack field_derivatives)
     {
         GaugeSymmetriesVectorPack v1 = prev_gauge_potentials_lattice_buffer[SimulationDataOps::get_gauge_lattice_buffer_index(position)];
         GaugeSymmetriesVectorPack v2 = crnt_gauge_potentials_lattice_buffer[SimulationDataOps::get_gauge_lattice_buffer_index(position)];
@@ -30,11 +30,11 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_derivatives)
+    void spatial_derivative(uint axis, half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_derivatives)
     {
         GaugeSymmetriesVectorPackOps::empty(field_derivatives);
         if (axis > SPATIAL_DIMENSIONALITY - 1) return;
-        float3 offset = float3(0, 0, 0);
+        half3 offset = half3(0, 0, 0);
         offset[axis] = 1;
         uint idx1 = SimulationDataOps::get_gauge_lattice_buffer_index(position - offset);
         uint idx2 = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
@@ -49,11 +49,11 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_second_derivative(uint2 axes, float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_second_derivatives)
+    void spatial_second_derivative(uint2 axes, half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_second_derivatives)
     {
         GaugeSymmetriesVectorPackOps::empty(field_second_derivatives);
-        float3 offset1 = float3(0, 0, 0);
-        float3 offset2 = float3(0, 0, 0);
+        half3 offset1 = half3(0, 0, 0);
+        half3 offset2 = half3(0, 0, 0);
         offset1[axes.x] = 1;
         offset2[axes.y] = 1;
         uint idx1 = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset1 + offset2);
@@ -75,7 +75,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, out GaugeSymmetriesVectorPack derivative)
+    void spatial_derivative(uint axis, half3 position, out GaugeSymmetriesVectorPack derivative)
     {
         spatial_derivative(axis, position, crnt_gauge_potentials_lattice_buffer, derivative);
     }
@@ -84,7 +84,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_derivative(uint axis, float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_derivatives)
+    void spacetime_derivative(uint axis, half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_derivatives)
     {
         if (axis == 0) temporal_derivative(position, field_derivatives);
         else spatial_derivative(axis - 1, position, lattice_buffer, field_derivatives);
@@ -94,7 +94,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_derivative(uint axis, float3 position, out GaugeSymmetriesVectorPack derivative)
+    void spacetime_derivative(uint axis, half3 position, out GaugeSymmetriesVectorPack derivative)
     {
         if (axis == 0) temporal_derivative(position, derivative);
         else spatial_derivative(axis - 1, position, derivative);
@@ -104,7 +104,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_gradient(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsSpacetimeGradient field_gradients)
+    void spacetime_gradient(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsSpacetimeGradient field_gradients)
     {
         temporal_derivative(position, field_gradients[0]);
         spatial_derivative(0, position, lattice_buffer, field_gradients[1]);
@@ -116,7 +116,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_gradient(float3 position, out GaugeFieldsSpacetimeGradient field_gradients)
+    void spacetime_gradient(half3 position, out GaugeFieldsSpacetimeGradient field_gradients)
     {
         temporal_derivative(position, field_gradients[0]);
         spatial_derivative(0, position, field_gradients[1]);
@@ -128,7 +128,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_gradient(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsSpatialGradient field_gradients)
+    void spatial_gradient(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsSpatialGradient field_gradients)
     {
         spatial_derivative(0, position, lattice_buffer, field_gradients[0]);
         spatial_derivative(1, position, lattice_buffer, field_gradients[1]);
@@ -139,7 +139,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_gradient(float3 position, out GaugeFieldsSpatialGradient gradient)
+    void spatial_gradient(half3 position, out GaugeFieldsSpatialGradient gradient)
     {
         spatial_derivative(0, position, gradient[0]);
         spatial_derivative(1, position, gradient[1]);
@@ -156,7 +156,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void jacobian(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsJacobian field_jacobians)
+    void jacobian(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsJacobian field_jacobians)
     {
         GaugeFieldsSpacetimeGradient gradient;
         spacetime_gradient(position, lattice_buffer, gradient);
@@ -167,7 +167,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void jacobian(float3 position, out GaugeFieldsJacobian field_jacobians)
+    void jacobian(half3 position, out GaugeFieldsJacobian field_jacobians)
     {
         jacobian(position, crnt_gauge_potentials_lattice_buffer, field_jacobians);
     }
@@ -175,7 +175,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // Take the divergence of all gauge fields at a specified simulation location, in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergence(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsDivergence field_divergences)
+    void divergence(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeFieldsDivergence field_divergences)
     {
         GaugeFieldsSpatialGradient gradient;
         spatial_gradient(position, lattice_buffer, gradient);
@@ -185,7 +185,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // Take the divergence of all gauge fields at a specified simulation location, in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergence(float3 position, out GaugeFieldsDivergence field_divergences)
+    void divergence(half3 position, out GaugeFieldsDivergence field_divergences)
     {
         divergence(position, crnt_gauge_potentials_lattice_buffer, field_divergences);
     }
@@ -201,11 +201,11 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // Take the curl of all gauge fields at a specified simulation location, in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void curl(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_curls)
+    void curl(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_curls)
     {
         GaugeFieldsSpatialGradient gradient;
         spatial_gradient(position, lattice_buffer, gradient);
-        [unroll] for (uint a = 0; a < 12; a++) field_curls[a] = float4(
+        [unroll] for (uint a = 0; a < 12; a++) field_curls[a] = half4(
                 0,
                 gradient[1][a][3] - gradient[2][a][2],
                 gradient[2][a][1] - gradient[0][a][3],
@@ -216,7 +216,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // Take the curl of all gauge fields at a specified simulation location, in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void curl(float3 position, out GaugeSymmetriesVectorPack field_curls)
+    void curl(half3 position, out GaugeSymmetriesVectorPack field_curls)
     {
         curl(position, crnt_gauge_potentials_lattice_buffer, field_curls);
     }
@@ -226,7 +226,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // • Reads directly from the simulation's lattice buffers.
     void curl(GaugeFieldsSpacetimeGradient gradient, out GaugeSymmetriesVectorPack field_curls)
     {
-        for (uint a = 0; a < 12; a++) field_curls[a] = float4(
+        for (uint a = 0; a < 12; a++) field_curls[a] = half4(
                 0,
                 gradient[2][a][3] - gradient[3][a][2],
                 gradient[3][a][1] - gradient[1][a][3],
@@ -239,13 +239,13 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in a specified gauge lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergence_gradient(float3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_divergence_gradients)
+    void divergence_gradient(half3 position, GaugeLatticeBuffer lattice_buffer, out GaugeSymmetriesVectorPack field_divergence_gradients)
     {
         GaugeSymmetriesVectorPackOps::empty(field_divergence_gradients);
         for (uint i = 0; i < 3; i++) for (uint j = 0; j < 3; j++)
         {
             GaugeSymmetriesVectorPack temp;
-            spatial_second_derivative(float2(i,j), position, lattice_buffer, temp);
+            spatial_second_derivative(half2(i,j), position, lattice_buffer, temp);
             for (uint a = 0; a < 12; a++) field_divergence_gradients[a] += temp[a][j];
         }
     }
@@ -254,7 +254,7 @@ namespace GaugeSymmetriesVectorPackDifferentials
     // in the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void divergence_gradient(float3 position, out GaugeSymmetriesVectorPack field_divergence_gradients)
+    void divergence_gradient(half3 position, out GaugeSymmetriesVectorPack field_divergence_gradients)
     {
         divergence_gradient(position, crnt_gauge_potentials_lattice_buffer, field_divergence_gradients);
     }

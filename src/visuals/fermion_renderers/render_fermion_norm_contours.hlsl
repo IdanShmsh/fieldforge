@@ -10,7 +10,7 @@ namespace FermionRendering
 {
     namespace RenderFermionNormContours
     {
-        half4 get_fermion_norm_contours_color_at_position(float3 position, uint field_index, half granularity)
+        half4 get_fermion_norm_contours_color_at_position(half3 position, uint field_index, half granularity)
         {
             if (!SimulationDataOps::is_fermion_field_active(field_index)) return half4(0, 0, 0, 0);
             FermionFieldState state;

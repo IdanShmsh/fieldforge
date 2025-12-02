@@ -6,34 +6,34 @@
 
 namespace FieldInterpolations
 {
-    void get_fermion_state_in_position(float3 position, uint fermion_field_index, FermionLatticeBuffer field_buffer, out FermionFieldState fermion_state)
+    void get_fermion_state_in_position(half3 position, uint fermion_field_index, FermionLatticeBuffer field_buffer, out FermionFieldState fermion_state)
     {
-        float3 fraction = position - floor(position);
+        half3 fraction = position - floor(position);
         FermionFieldState f000, f001, f010, f011, f100, f101, f110, f111;
-        float3 index_floor = floor(position);
-        float3 index_ceil = ceil(position);
+        half3 index_floor = floor(position);
+        half3 index_ceil = ceil(position);
         uint buffer_index = 0;
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_floor.x, index_floor.y, index_floor.z), fermion_field_index);
         f000 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_ceil.x, index_floor.y, index_floor.z), fermion_field_index);
         f100 = field_buffer[buffer_index];
         #if SPATIAL_DIMENSIONALITY < 2
         return;
         #endif
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_floor.x, index_ceil.y, index_floor.z), fermion_field_index);
         f010 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_ceil.x, index_ceil.y, index_floor.z), fermion_field_index);
         f110 = field_buffer[buffer_index];
         #if SPATIAL_DIMENSIONALITY < 3
         return;
         #endif
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_floor.x, index_floor.y, index_ceil.z), fermion_field_index);
         f001 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_floor.x, index_ceil.y, index_ceil.z), fermion_field_index);
         f011 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_ceil.x, index_floor.y, index_ceil.z), fermion_field_index);
         f101 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z), fermion_field_index);
+        buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(half3(index_ceil.x, index_ceil.y, index_ceil.z), fermion_field_index);
         f111 = field_buffer[buffer_index];
         FermionFieldState f00, f01, f10, f11;
         #if SPATIAL_DIMENSIONALITY > 2
@@ -58,34 +58,34 @@ namespace FieldInterpolations
         FermionFieldStateMath::lerp_states(f0, f1, fraction.x, fermion_state);
     }
 
-    void get_gauge_state_in_position(float3 position, GaugeLatticeBuffer field_buffer, out GaugeSymmetriesVectorPack gauge_state)
+    void get_gauge_state_in_position(half3 position, GaugeLatticeBuffer field_buffer, out GaugeSymmetriesVectorPack gauge_state)
     {
-        float3 fraction = position - floor(position);
+        half3 fraction = position - floor(position);
         GaugeSymmetriesVectorPack f000, f001, f010, f011, f100, f101, f110, f111;
-        float3 index_floor = floor(position);
-        float3 index_ceil = ceil(position);
+        half3 index_floor = floor(position);
+        half3 index_ceil = ceil(position);
         uint buffer_index = 0;
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_floor.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_floor.x, index_floor.y, index_floor.z));
         f000 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_floor.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_ceil.x, index_floor.y, index_floor.z));
         f100 = field_buffer[buffer_index];
         #if SPATIAL_DIMENSIONALITY < 2
         return;
         #endif
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_floor.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_floor.x, index_ceil.y, index_floor.z));
         f010 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_floor.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_ceil.x, index_ceil.y, index_floor.z));
         f110 = field_buffer[buffer_index];
         #if SPATIAL_DIMENSIONALITY < 3
         return;
         #endif
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_floor.x, index_floor.y, index_ceil.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_floor.x, index_floor.y, index_ceil.z));
         f001 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_floor.x, index_ceil.y, index_ceil.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_floor.x, index_ceil.y, index_ceil.z));
         f011 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_ceil.x, index_floor.y, index_ceil.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_ceil.x, index_floor.y, index_ceil.z));
         f101 = field_buffer[buffer_index];
-        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(float3(index_ceil.x, index_ceil.y, index_ceil.z));
+        buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(half3(index_ceil.x, index_ceil.y, index_ceil.z));
         f111 = field_buffer[buffer_index];
         GaugeSymmetriesVectorPack f00, f01, f10, f11;
         #if SPATIAL_DIMENSIONALITY > 2

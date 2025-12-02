@@ -8,7 +8,7 @@
 namespace GaugeInteraction
 {
     // Get the gauge charge of a fermion for a given gauge field index
-    float _get_gauge_charge(uint symmetry_index, FermionFieldProperties fermion_field_properties)
+    half _get_gauge_charge(uint symmetry_index, FermionFieldProperties fermion_field_properties)
     {
         return symmetry_index == 0 ? fermion_field_properties.u1_interaction_coupling :
                symmetry_index < 4 ? fermion_field_properties.su2_interaction_coupling :
@@ -35,7 +35,7 @@ namespace GaugeInteraction
     }
 
     // Compute the gauge current for a fermion field at a given position in a specified fermion lattice buffer
-    void compute_fermion_gauge_currents_at_position(float3 position, uint field_index, FermionLatticeBuffer fermion_lattice_buffer, out GaugeSymmetriesVectorPack fermion_gauge_currents)
+    void compute_fermion_gauge_currents_at_position(half3 position, uint field_index, FermionLatticeBuffer fermion_lattice_buffer, out GaugeSymmetriesVectorPack fermion_gauge_currents)
     {
         GaugeSymmetriesVectorPackOps::empty(fermion_gauge_currents);
         if (!SimulationDataOps::is_fermion_field_active(field_index)) return;
@@ -53,9 +53,9 @@ namespace GaugeInteraction
 
         for (uint symmetry_index = 0; symmetry_index < 12; symmetry_index++)
         {
-            fermion_gauge_currents[symmetry_index] = float4(0, 0, 0, 0);
+            fermion_gauge_currents[symmetry_index] = half4(0, 0, 0, 0);
             if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
-            float charge = _get_gauge_charge(symmetry_index, props);
+            half charge = _get_gauge_charge(symmetry_index, props);
             if (charge == 0) continue;
 
             FermionFieldState symmetry_transformed_state;
@@ -65,20 +65,20 @@ namespace GaugeInteraction
             {
                 FermionFieldState gamma_transformed_state;
                 DiracFormalism::apply_gamma(symmetry_transformed_state, mu, gamma_transformed_state);
-                float current_component_value = charge * FermionFieldStateMath::inner_product(adjoint, gamma_transformed_state).x;
+                half current_component_value = charge * FermionFieldStateMath::inner_product(adjoint, gamma_transformed_state).x;
                 fermion_gauge_currents[symmetry_index][mu] = current_component_value;
             }
         }
     }
 
     // Compute the gauge current for a fermion field at a given position in the current fermions lattice buffer
-    void compute_fermion_gauge_currents_at_position(float3 position, uint field_index, out GaugeSymmetriesVectorPack fermion_gauge_currents)
+    void compute_fermion_gauge_currents_at_position(half3 position, uint field_index, out GaugeSymmetriesVectorPack fermion_gauge_currents)
     {
         compute_fermion_gauge_currents_at_position(position, field_index, crnt_fermions_lattice_buffer, fermion_gauge_currents);
     }
 
     // Compute the total gauge current at a given position by summing the contributions from all fermion fields in a specified fermions lattice buffer
-    void compute_total_gauge_currents_at_position(float3 position, FermionLatticeBuffer fermion_lattice_buffer, out GaugeSymmetriesVectorPack total_current)
+    void compute_total_gauge_currents_at_position(half3 position, FermionLatticeBuffer fermion_lattice_buffer, out GaugeSymmetriesVectorPack total_current)
     {
         GaugeSymmetriesVectorPackOps::empty(total_current);
         for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
@@ -90,13 +90,13 @@ namespace GaugeInteraction
     }
 
     // Compute the total gauge current at a given position by summing the contributions from all fermion fields in the current fermions lattice buffer
-    void compute_total_gauge_currents_at_position(float3 position, out GaugeSymmetriesVectorPack total_current)
+    void compute_total_gauge_currents_at_position(half3 position, out GaugeSymmetriesVectorPack total_current)
     {
         compute_total_gauge_currents_at_position(position, crnt_fermions_lattice_buffer, total_current);
     }
 
     // Compute the interaction potential energy between provided gauge potentials and total currents
-    float compute_interaction_potential_energy(GaugeSymmetriesVectorPack gauge_potentials, GaugeSymmetriesVectorPack total_currents)
+    half compute_interaction_potential_energy(GaugeSymmetriesVectorPack gauge_potentials, GaugeSymmetriesVectorPack total_currents)
     {
         return GaugeSymmetriesVectorPackMath::dot(gauge_potentials, total_currents);
     }

@@ -13,24 +13,24 @@ namespace FieldDenoising
 {
     // Compute the bilateral weight for a specified center fermion field state, a neighboring fermion field state, their offset and
     // the spatial and range standard deviations
-    float _fermion_bilateral_weight(FermionFieldState center_state, FermionFieldState neighbor_state, float3 offset, float spatial_std, float range_std)
+    half _fermion_bilateral_weight(FermionFieldState center_state, FermionFieldState neighbor_state, half3 offset, half spatial_std, half range_std)
     {
-        float spatial_weight = exp(-dot(offset, offset) / (2 * spatial_std * spatial_std));
+        half spatial_weight = exp(-dot(offset, offset) / (2 * spatial_std * spatial_std));
         FermionFieldState state_difference;
         FermionFieldStateMath::sub(neighbor_state, center_state, state_difference);
-        float difference_magnitude_sqrd = FermionFieldStateMath::norm_sqrd(state_difference);
-        float range_weight = exp(-difference_magnitude_sqrd / (2 * range_std * range_std));
+        half difference_magnitude_sqrd = FermionFieldStateMath::norm_sqrd(state_difference);
+        half range_weight = exp(-difference_magnitude_sqrd / (2 * range_std * range_std));
         return spatial_weight * range_weight;
     }
 
     // Compute the bilateral weight for a specified center gauge field states (4-vectors), a neighboring gauge field state, their offset and
     // the spatial and range standard deviations
-    float _gauge_bilateral_weight(float4 center_state, float4 neighboring_state, float3 offset, float spatial_std, float range_std)
+    half _gauge_bilateral_weight(half4 center_state, half4 neighboring_state, half3 offset, half spatial_std, half range_std)
     {
-        float spatial_weight = exp(-dot(offset, offset) / (2 * spatial_std * spatial_std));
-        float4 state_difference = center_state - neighboring_state;
-        float difference_magnitude_sqrd = dot(state_difference, state_difference);
-        float range_weight = exp(-difference_magnitude_sqrd / (2 * range_std * range_std));
+        half spatial_weight = exp(-dot(offset, offset) / (2 * spatial_std * spatial_std));
+        half4 state_difference = center_state - neighboring_state;
+        half difference_magnitude_sqrd = dot(state_difference, state_difference);
+        half range_weight = exp(-difference_magnitude_sqrd / (2 * range_std * range_std));
         return spatial_weight * range_weight;
     }
 
@@ -40,21 +40,21 @@ namespace FieldDenoising
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void bilateral_denoise_fermion_state(float3 position, uint field_index, float spatial_std, float range_std, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
+    void bilateral_denoise_fermion_state(half3 position, uint field_index, half spatial_std, half range_std, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
     {
         uint center_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
         FermionFieldState fermion_state;
         FermionFieldStateOps::empty(fermion_state);
         FermionFieldState center_state = source_lattice_buffer[center_index];
-        float total_weight = 0;
+        half total_weight = 0;
         for (int x = -1; x <= 1; x++)
         for (int y = -1; y <= 1; y++)
         for (int z = -1; z <= 1; z++)
         {
-            float3 offset = float3(x, y, z);
+            half3 offset = half3(x, y, z);
             uint neighbor_index = SimulationDataOps::get_fermion_lattice_buffer_index(position + offset, field_index);
             FermionFieldState neighbor = source_lattice_buffer[neighbor_index];
-            float weight = _fermion_bilateral_weight(center_state, neighbor, offset, spatial_std, range_std);
+            half weight = _fermion_bilateral_weight(center_state, neighbor, offset, spatial_std, range_std);
             total_weight += weight;
             FermionFieldState weighted;
             FermionFieldStateMath::rscl(neighbor, weight, weighted);
@@ -69,7 +69,7 @@ namespace FieldDenoising
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void bilateral_denoise_fermion_fields(float3 position, float spatial_std, float range_std, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
+    void bilateral_denoise_fermion_fields(half3 position, half spatial_std, half range_std, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
     {
         for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++) bilateral_denoise_fermion_state(position, field_index, spatial_std, range_std, source_lattice_buffer, target_lattice_buffer);
     }
@@ -79,22 +79,22 @@ namespace FieldDenoising
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void bilateral_denoise_gauge_state(float3 position, uint symmetry_index, float spatial_std, float range_std, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
+    void bilateral_denoise_gauge_state(half3 position, uint symmetry_index, half spatial_std, half range_std, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
     {
         uint center_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
-        float4 gauge_state = float4(0, 0, 0, 0);
+        half4 gauge_state = half4(0, 0, 0, 0);
         GaugeSymmetriesVectorPack center_states = source_lattice_buffer[center_index];
-        float4 center_state = center_states[symmetry_index];
-        float total_weight = 0;
+        half4 center_state = center_states[symmetry_index];
+        half total_weight = 0;
         for (int x = -1; x <= 1; x++)
         for (int y = -1; y <= 1; y++)
         for (int z = -1; z <= 1; z++)
         {
-            float3 offset = float3(x, y, z);
+            half3 offset = half3(x, y, z);
             uint neighbor_index = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
             GaugeSymmetriesVectorPack neighboring_states = source_lattice_buffer[neighbor_index];
-            float4 neighbor_state = neighboring_states[symmetry_index];
-            float weight = _gauge_bilateral_weight(center_state, neighbor_state, offset, spatial_std, range_std);
+            half4 neighbor_state = neighboring_states[symmetry_index];
+            half weight = _gauge_bilateral_weight(center_state, neighbor_state, offset, spatial_std, range_std);
             total_weight += weight;
             gauge_state += weight * neighbor_state;
         }
@@ -107,7 +107,7 @@ namespace FieldDenoising
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void bilateral_denoise_gauge_fields(float3 position, float spatial_std, float range_std, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
+    void bilateral_denoise_gauge_fields(half3 position, half spatial_std, half range_std, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
     {
         for (uint symmetry_index = 0; symmetry_index < FERMION_FIELDS_COUNT; symmetry_index++) bilateral_denoise_gauge_state(position, symmetry_index, spatial_std, range_std, source_lattice_buffer, target_lattice_buffer);
     }

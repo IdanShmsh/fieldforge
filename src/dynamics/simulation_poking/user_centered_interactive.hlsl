@@ -19,41 +19,41 @@ namespace SimulationPokesProcessing
         // A structure used to cache processed data associated with a poke or necessary for its application
         struct PokeApplicationCache
         {
-            float3 position;
+            half3 position;
             SimulationPokeData raw_poke_data;
-            float poking_strength;
-            float poking_radius;
-            float3 poking_position;
-            float3 sweep_delta;
-            float3 distance_vector_to_poke_sweep;
+            half poking_strength;
+            half poking_radius;
+            half3 poking_position;
+            half3 sweep_delta;
+            half3 distance_vector_to_poke_sweep;
             int poke_mask;
-            float distance_from_poking_sweep;
-            float normalized_distance_from_poking_sweep;
+            half distance_from_poking_sweep;
+            half normalized_distance_from_poking_sweep;
         };
 
         // This function computes the distance vector from a point to the closest point on a line segment defined
         // by the "poke sweep" (i.e. the line segment between the poke position and the poke position + the poke delta)
-        float3 _compute_distance_vector_to_poke_sweep(float3 position, float3 poking_position, float3 poking_delta)
+        half3 _compute_distance_vector_to_poke_sweep(half3 position, half3 poking_position, half3 poking_delta)
         {
-            float3 AP = position - poking_position;
-            float3 AB = -poking_delta;
-            float AB_lengthSquared = dot(AB, AB);
+            half3 AP = position - poking_position;
+            half3 AB = -poking_delta;
+            half AB_lengthSquared = dot(AB, AB);
             if (AB_lengthSquared == 0.0f) return AP;
-            float t = dot(AP, AB) / AB_lengthSquared;
+            half t = dot(AP, AB) / AB_lengthSquared;
             t = clamp(t, 0.0f, 1.0f);
-            float3 closestPoint = poking_position + t * AB;
+            half3 closestPoint = poking_position + t * AB;
             return position - closestPoint;
         }
 
         // Constructs a structure of computed cached properties associated with a poke
-        void _construct_poke_application_data(float3 position, SimulationPokeData poke_data, out PokeApplicationCache poke_application_data)
+        void _construct_poke_application_data(half3 position, SimulationPokeData poke_data, out PokeApplicationCache poke_application_data)
         {
             poke_application_data.position = position;
             poke_application_data.raw_poke_data = poke_data;
             poke_application_data.poking_strength = poke_data[0] / 1000.0f;
             poke_application_data.poking_radius = poke_data[1];
-            poke_application_data.poking_position = float3(poke_data[2], poke_data[3], poke_data[4]);
-            poke_application_data.sweep_delta = float3(poke_data[5], poke_data[6], poke_data[7]);
+            poke_application_data.poking_position = half3(poke_data[2], poke_data[3], poke_data[4]);
+            poke_application_data.sweep_delta = half3(poke_data[5], poke_data[6], poke_data[7]);
             poke_application_data.poke_mask = poke_data[8] & simulation_field_mask;
             poke_application_data.distance_vector_to_poke_sweep = _compute_distance_vector_to_poke_sweep(poke_application_data.position, poke_application_data.poking_position, poke_application_data.sweep_delta);
             poke_application_data.distance_from_poking_sweep = length(poke_application_data.distance_vector_to_poke_sweep);
@@ -62,11 +62,11 @@ namespace SimulationPokesProcessing
 
         // Will return a semi-random number depending on the poke data - ensuring consistency between a poke
         // and the data it affects
-        float _get_random_number_for_poke_data(SimulationPokeData raw_poke_data, int seed = 0)
+        half _get_random_number_for_poke_data(SimulationPokeData raw_poke_data, int seed = 0)
         {
-            float sum = seed;
+            half sum = seed;
             for (uint i = 0; i < 9; i++) sum += raw_poke_data[i];
-            float mixedValue = sum * seed % (seed + 1);
+            half mixedValue = sum * seed % (seed + 1);
             return mixedValue;
         }
 
@@ -76,16 +76,16 @@ namespace SimulationPokesProcessing
             return (poke_mask & 1 << global_field_index) != 0 ? 1 : 0;
         }
 
-        float _poking_profile(PokeApplicationCache poke_application_data)
+        half _poking_profile(PokeApplicationCache poke_application_data)
         {
-            float r = poke_application_data.normalized_distance_from_poking_sweep;
+            half r = poke_application_data.normalized_distance_from_poking_sweep;
             return exp(-r * r);
         }
 
         void _fermion_state(PokeApplicationCache poke_application_data, out FermionFieldState new_fermion_state)
         {
-            float mass = 1; // since a random field is chosen, the effective mass involved in the fermion state construction would be hardcoded
-            float3 spin_vector = poke_application_data.sweep_delta;
+            half mass = 1; // since a random field is chosen, the effective mass involved in the fermion state construction would be hardcoded
+            half3 spin_vector = poke_application_data.sweep_delta;
             spin_vector.z = 1;
             DiracFormalism::construct_spin_state(normalize(spin_vector), poke_application_data.sweep_delta, mass, new_fermion_state);
         }
@@ -94,28 +94,28 @@ namespace SimulationPokesProcessing
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void _apply_poke_to_fermion_fields(float3 position, PokeApplicationCache poke_application_data)
+        void _apply_poke_to_fermion_fields(half3 position, PokeApplicationCache poke_application_data)
         {
             int number_of_poke_participating_fermion_fields = 0;
             for (int i = 0; i < FERMION_FIELDS_COUNT; i++) number_of_poke_participating_fermion_fields += _poking_active_for_field(poke_application_data.poke_mask, i);
             if (number_of_poke_participating_fermion_fields == 0) return;
-            float poke_strength_at_position = poke_application_data.poking_strength * _poking_profile(poke_application_data);
+            half poke_strength_at_position = poke_application_data.poking_strength * _poking_profile(poke_application_data);
             FermionFieldState new_fermion_state;
             _fermion_state(poke_application_data, new_fermion_state);
             for (uint i = 0; i < 5; i++)
             {
                 // Obtain a random field index for the poke data - associated with a given unique raw poke data (ensuring all points affected by the same poke affect the same field)
-                float randomly_chosen_participating_field = round(_get_random_number_for_poke_data(poke_application_data.raw_poke_data, i + 1)) % number_of_poke_participating_fermion_fields + 1;
+                half randomly_chosen_participating_field = round(_get_random_number_for_poke_data(poke_application_data.raw_poke_data, i + 1)) % number_of_poke_participating_fermion_fields + 1;
                 uint random_field_index;
                 for (random_field_index = 0; random_field_index < FERMION_FIELDS_COUNT; random_field_index++)
                 {
                     randomly_chosen_participating_field -= _poking_active_for_field(poke_application_data.poke_mask, random_field_index);
                     if (randomly_chosen_participating_field <= 0) break;
                 }
-                float field_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, random_field_index);
+                half field_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, random_field_index);
                 FermionFieldState crnt_field_state = crnt_fermions_lattice_buffer[field_buffer_index];
                 FermionFieldState prev_field_state = prev_fermions_lattice_buffer[field_buffer_index];
-                float field_norm_sqrd = FermionFieldStateMath::norm_sqrd(crnt_field_state);
+                half field_norm_sqrd = FermionFieldStateMath::norm_sqrd(crnt_field_state);
                 FermionFieldState electric_additiond_field_state;
                 FermionFieldStateMath::rscl(new_fermion_state, poke_strength_at_position / (1 + field_norm_sqrd), electric_additiond_field_state);
                 FermionFieldStateMath::sum(crnt_field_state, electric_additiond_field_state, crnt_field_state);
@@ -126,32 +126,32 @@ namespace SimulationPokesProcessing
         }
 
 		// Compute the electric and magnetic field increments associated with a poke
-        void _build_field_increments(PokeApplicationCache poke_application_data, out float3 electric_field_increment, out float3 magnetic_field_increment)
+        void _build_field_increments(PokeApplicationCache poke_application_data, out half3 electric_field_increment, out half3 magnetic_field_increment)
         {
-            float3 sweep_direction_unit_vector = poke_application_data.sweep_delta;
+            half3 sweep_direction_unit_vector = poke_application_data.sweep_delta;
 			sweep_direction_unit_vector.z = 1;
 			sweep_direction_unit_vector = normalize(sweep_direction_unit_vector);
-            float poking_profile = _poking_profile(poke_application_data);
-            float radius_sqrd = poke_application_data.poking_radius * poke_application_data.poking_radius;
-            const float poke_wavelength_scale = 2.0f;
-            float effective_radius_sqrd_for_gradient = radius_sqrd * (poke_wavelength_scale * poke_wavelength_scale);
-            float3 gradient_of_poking_profile = (-2.0f / effective_radius_sqrd_for_gradient) * poking_profile * poke_application_data.distance_vector_to_poke_sweep;
-            float electric_strength_scale = poke_application_data.poking_strength;
+            half poking_profile = _poking_profile(poke_application_data);
+            half radius_sqrd = poke_application_data.poking_radius * poke_application_data.poking_radius;
+            const half poke_wavelength_scale = 2.0f;
+            half effective_radius_sqrd_for_gradient = radius_sqrd * (poke_wavelength_scale * poke_wavelength_scale);
+            half3 gradient_of_poking_profile = (-2.0f / effective_radius_sqrd_for_gradient) * poking_profile * poke_application_data.distance_vector_to_poke_sweep;
+            half electric_strength_scale = poke_application_data.poking_strength;
             electric_field_increment = electric_strength_scale * cross(gradient_of_poking_profile, sweep_direction_unit_vector);
-            magnetic_field_increment = float3(0.0f, 0.0f, 0.0f);
+            magnetic_field_increment = half3(0.0f, 0.0f, 0.0f);
         }
 
 		// Accumulate the gauge field increments associated with a poke
-        void _accumulate_gauge_packs(int poke_mask, float3 electric_delta, float3 magnetic_delta, inout GaugeSymmetriesVectorPack crnt_electric_state, inout GaugeSymmetriesVectorPack prev_electric_state, inout GaugeSymmetriesVectorPack crnt_magnetic_state, inout GaugeSymmetriesVectorPack prev_magnetic_state)
+        void _accumulate_gauge_packs(int poke_mask, half3 electric_delta, half3 magnetic_delta, inout GaugeSymmetriesVectorPack crnt_electric_state, inout GaugeSymmetriesVectorPack prev_electric_state, inout GaugeSymmetriesVectorPack crnt_magnetic_state, inout GaugeSymmetriesVectorPack prev_magnetic_state)
         {
             GaugeSymmetriesVectorPack electric_addition, magnetic_addition;
             [unroll]
             for (uint i = 0; i < 12; i++)
             {
                 const int active = _poking_active_for_field(poke_mask, (int)i + 8);
-                float active_factor = (float)active;
-                electric_addition[i] = active_factor * float4(0.0f, electric_delta) / (1.0f + length(crnt_electric_state[i]));
-                magnetic_addition[i] = active_factor * float4(0.0f, magnetic_delta) / (1.0f + length(crnt_magnetic_state[i]));
+                half active_factor = (half)active;
+                electric_addition[i] = active_factor * half4(0.0f, electric_delta) / (1.0f + length(crnt_electric_state[i]));
+                magnetic_addition[i] = active_factor * half4(0.0f, magnetic_delta) / (1.0f + length(crnt_magnetic_state[i]));
             }
             GaugeSymmetriesVectorPackMath::sum(crnt_electric_state, electric_addition, crnt_electric_state);
             GaugeSymmetriesVectorPackMath::sum(crnt_magnetic_state, magnetic_addition, crnt_magnetic_state);
@@ -160,9 +160,9 @@ namespace SimulationPokesProcessing
         }
 
 		// Apply a poke to the gauge fields at a given position given its poke data cache
-        void _apply_poke_to_gauge_fields(float3 position, PokeApplicationCache poke_application_data)
+        void _apply_poke_to_gauge_fields(half3 position, PokeApplicationCache poke_application_data)
         {
-            float3 electric_delta, magnetic_delta; 
+            half3 electric_delta, magnetic_delta; 
             _build_field_increments(poke_application_data, electric_delta, magnetic_delta);
 
             uint lattice_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
@@ -183,7 +183,7 @@ namespace SimulationPokesProcessing
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void process_poke(float3 position, SimulationPokeData raw_poke_data)
+        void process_poke(half3 position, SimulationPokeData raw_poke_data)
         {
             if (raw_poke_data[0] == 0) return;
             PokeApplicationCache poke_application_data;
@@ -196,7 +196,7 @@ namespace SimulationPokesProcessing
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void process_pokes(float3 position)
+        void process_pokes(half3 position)
         {
             for (int i = 0; i < POKES_BUFFER_LENGTH; i++)
             {

@@ -17,20 +17,20 @@ namespace FieldBlurring
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_fermion_fields_3x3x3(float3 position, float standard_deviation, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
+    void blur_fermion_fields_3x3x3(half3 position, half standard_deviation, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
     {
         for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
         {
             uint center_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
             FermionFieldState fermion_state;
             FermionFieldStateOps::empty(fermion_state);
-            float total_weight = 0;
+            half total_weight = 0;
             for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 1; y++)
             for (int z = -1; z <= 1; z++)
             {
-                float3 offset = float3(x, y, z);
-                float weight = CommonMath::gaussian(offset, standard_deviation);
+                half3 offset = half3(x, y, z);
+                half weight = CommonMath::gaussian(offset, standard_deviation);
                 total_weight += weight;
                 uint neighbor_index = SimulationDataOps::get_fermion_lattice_buffer_index(position + offset, field_index);
                 FermionFieldState neighbor = source_lattice_buffer[neighbor_index];
@@ -45,18 +45,18 @@ namespace FieldBlurring
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
     // • Writes directly to the simulation's lattice buffers
-    void blur_gauge_fields_3x3x3(float3 position, float standard_deviation, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
+    void blur_gauge_fields_3x3x3(half3 position, half standard_deviation, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
     {
         uint center_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
         GaugeSymmetriesVectorPack state;
         GaugeSymmetriesVectorPackOps::empty(state);
-        float total_weight = 0;
+        half total_weight = 0;
         for (int x = -1; x <= 1; x++)
         for (int y = -1; y <= 1; y++)
         for (int z = -1; z <= 1; z++)
         {
-            float3 offset = float3(x, y, z);
-            float weight = CommonMath::gaussian(offset, standard_deviation);
+            half3 offset = half3(x, y, z);
+            half weight = CommonMath::gaussian(offset, standard_deviation);
             total_weight += weight;
             uint neighbor_index = SimulationDataOps::get_gauge_lattice_buffer_index(position + offset);
             GaugeSymmetriesVectorPack neighbor = source_lattice_buffer[neighbor_index];

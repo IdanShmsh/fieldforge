@@ -44,7 +44,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Scale all vectors in a gauge-symmetries-vector-pack
-    void scl(GaugeSymmetriesVectorPack vector_pack, float scalar, out GaugeSymmetriesVectorPack result)
+    void scl(GaugeSymmetriesVectorPack vector_pack, half scalar, out GaugeSymmetriesVectorPack result)
     {
         result[0] = vector_pack[0] * scalar;
         result[1] = vector_pack[1] * scalar;
@@ -61,9 +61,9 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Compute sum of overlaps between all associated vectors in a pair of gauge-symmetries-vector-packs
-    float dot(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2)
+    half dot(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2)
     {
-        float result = 0;
+        half result = 0;
         result += vector_pack1[0][0] * vector_pack2[0][0] + vector_pack1[0][1] * vector_pack2[0][1] + vector_pack1[0][2] * vector_pack2[0][2] + vector_pack1[0][3] * vector_pack2[0][3];
         result += vector_pack1[1][0] * vector_pack2[1][0] + vector_pack1[1][1] * vector_pack2[1][1] + vector_pack1[1][2] * vector_pack2[1][2] + vector_pack1[1][3] * vector_pack2[1][3];
         result += vector_pack1[2][0] * vector_pack2[2][0] + vector_pack1[2][1] * vector_pack2[2][1] + vector_pack1[2][2] * vector_pack2[2][2] + vector_pack1[2][3] * vector_pack2[2][3];
@@ -80,7 +80,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Perform a linear combination between all associated vectors in a pair of gauge-symmetries-vector-packs
-    void scl_sum(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, float scalar1, float scalar2, out GaugeSymmetriesVectorPack result)
+    void scl_sum(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, half scalar1, half scalar2, out GaugeSymmetriesVectorPack result)
     {
         result[0] = vector_pack1[0] * scalar1 + vector_pack2[0] * scalar2;
         result[1] = vector_pack1[1] * scalar1 + vector_pack2[1] * scalar2;
@@ -97,7 +97,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Compute the norm squared of a gauge-symmetries-vector-pack (the sum of norm squares of all vectors in it)
-    float norm_sqrd(GaugeSymmetriesVectorPack vector_pack)
+    half norm_sqrd(GaugeSymmetriesVectorPack vector_pack)
     {
         return vector_pack[0] * vector_pack[0] + vector_pack[1] * vector_pack[1] + vector_pack[2] * vector_pack[2] + vector_pack[3] * vector_pack[3] +
                vector_pack[4] * vector_pack[4] + vector_pack[5] * vector_pack[5] + vector_pack[6] * vector_pack[6] + vector_pack[7] * vector_pack[7] +
@@ -105,7 +105,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Add a specified vector to all vectors in a gauge-symmetries-vector-pack (individually)
-    void vec_sum(GaugeSymmetriesVectorPack vector_pack, float4 summand, out GaugeSymmetriesVectorPack result)
+    void vec_sum(GaugeSymmetriesVectorPack vector_pack, half4 summand, out GaugeSymmetriesVectorPack result)
     {
         result[0] = vector_pack[0] + summand;
         result[1] = vector_pack[1] + summand;
@@ -122,7 +122,7 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Interpolate between a pair of gauge-symmetries-vector-packs
-    void lerp_states(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, float weight, out GaugeSymmetriesVectorPack result)
+    void lerp_states(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, half weight, out GaugeSymmetriesVectorPack result)
     {
         result[0] = lerp(vector_pack1[0], vector_pack2[0], weight);
         result[1] = lerp(vector_pack1[1], vector_pack2[1], weight);
@@ -139,20 +139,20 @@ namespace GaugeSymmetriesVectorPackMath
     }
 
     // Limit the norms of all vectors in a gauge-symmetries-vector-pack using a harmonic mean
-    void harmonically_limit_norms(GaugeSymmetriesVectorPack vector_pack, float max_norm, out GaugeSymmetriesVectorPack result)
+    void harmonically_limit_norms(GaugeSymmetriesVectorPack vector_pack, half max_norm, out GaugeSymmetriesVectorPack result)
     {
-        float m0 = length(vector_pack[0]);  result[0] = m0 == 0 ? vector_pack[0] : vector_pack[0] * CommonMath::harmonic_mean(m0, max_norm) / m0;
-        float m1 = length(vector_pack[1]);  result[1] = m1 == 0 ? vector_pack[1] : vector_pack[1] * CommonMath::harmonic_mean(m1, max_norm) / m1;
-        float m2 = length(vector_pack[2]);  result[2] = m2 == 0 ? vector_pack[2] : vector_pack[2] * CommonMath::harmonic_mean(m2, max_norm) / m2;
-        float m3 = length(vector_pack[3]);  result[3] = m3 == 0 ? vector_pack[3] : vector_pack[3] * CommonMath::harmonic_mean(m3, max_norm) / m3;
-        float m4 = length(vector_pack[4]);  result[4] = m4 == 0 ? vector_pack[4] : vector_pack[4] * CommonMath::harmonic_mean(m4, max_norm) / m4;
-        float m5 = length(vector_pack[5]);  result[5] = m5 == 0 ? vector_pack[5] : vector_pack[5] * CommonMath::harmonic_mean(m5, max_norm) / m5;
-        float m6 = length(vector_pack[6]);  result[6] = m6 == 0 ? vector_pack[6] : vector_pack[6] * CommonMath::harmonic_mean(m6, max_norm) / m6;
-        float m7 = length(vector_pack[7]);  result[7] = m7 == 0 ? vector_pack[7] : vector_pack[7] * CommonMath::harmonic_mean(m7, max_norm) / m7;
-        float m8 = length(vector_pack[8]);  result[8] = m8 == 0 ? vector_pack[8] : vector_pack[8] * CommonMath::harmonic_mean(m8, max_norm) / m8;
-        float m9 = length(vector_pack[9]);  result[9] = m9 == 0 ? vector_pack[9] : vector_pack[9] * CommonMath::harmonic_mean(m9, max_norm) / m9;
-        float m10 = length(vector_pack[10]); result[10] = m10 == 0 ? vector_pack[10] : vector_pack[10] * CommonMath::harmonic_mean(m10, max_norm) / m10;
-        float m11 = length(vector_pack[11]); result[11] = m11 == 0 ? vector_pack[11] : vector_pack[11] * CommonMath::harmonic_mean(m11, max_norm) / m11;
+        half m0 = length(vector_pack[0]);  result[0] = m0 == 0 ? vector_pack[0] : vector_pack[0] * CommonMath::harmonic_mean(m0, max_norm) / m0;
+        half m1 = length(vector_pack[1]);  result[1] = m1 == 0 ? vector_pack[1] : vector_pack[1] * CommonMath::harmonic_mean(m1, max_norm) / m1;
+        half m2 = length(vector_pack[2]);  result[2] = m2 == 0 ? vector_pack[2] : vector_pack[2] * CommonMath::harmonic_mean(m2, max_norm) / m2;
+        half m3 = length(vector_pack[3]);  result[3] = m3 == 0 ? vector_pack[3] : vector_pack[3] * CommonMath::harmonic_mean(m3, max_norm) / m3;
+        half m4 = length(vector_pack[4]);  result[4] = m4 == 0 ? vector_pack[4] : vector_pack[4] * CommonMath::harmonic_mean(m4, max_norm) / m4;
+        half m5 = length(vector_pack[5]);  result[5] = m5 == 0 ? vector_pack[5] : vector_pack[5] * CommonMath::harmonic_mean(m5, max_norm) / m5;
+        half m6 = length(vector_pack[6]);  result[6] = m6 == 0 ? vector_pack[6] : vector_pack[6] * CommonMath::harmonic_mean(m6, max_norm) / m6;
+        half m7 = length(vector_pack[7]);  result[7] = m7 == 0 ? vector_pack[7] : vector_pack[7] * CommonMath::harmonic_mean(m7, max_norm) / m7;
+        half m8 = length(vector_pack[8]);  result[8] = m8 == 0 ? vector_pack[8] : vector_pack[8] * CommonMath::harmonic_mean(m8, max_norm) / m8;
+        half m9 = length(vector_pack[9]);  result[9] = m9 == 0 ? vector_pack[9] : vector_pack[9] * CommonMath::harmonic_mean(m9, max_norm) / m9;
+        half m10 = length(vector_pack[10]); result[10] = m10 == 0 ? vector_pack[10] : vector_pack[10] * CommonMath::harmonic_mean(m10, max_norm) / m10;
+        half m11 = length(vector_pack[11]); result[11] = m11 == 0 ? vector_pack[11] : vector_pack[11] * CommonMath::harmonic_mean(m11, max_norm) / m11;
     }
 }
 

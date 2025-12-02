@@ -12,20 +12,20 @@
 #include "../../../src/core/math/gauge_symmetries_vector_pack_math.hlsl"
 
 // This function is used to load the current fermion field state at a given position and field index into the rendering buffers
-void load_fermion_field(float3 position, uint field_index, float weight)
+void load_fermion_field(half3 position, uint field_index, half weight)
 {
     uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
     FermionFieldStateMath::rscl_sum(rend_fermions_lattice_buffer[lattice_buffer_index], crnt_fermions_lattice_buffer[lattice_buffer_index], 1 - weight, weight, rend_fermions_lattice_buffer[lattice_buffer_index]);
 }
 
 // This function is used to load the current fermion field states at a given position into the rendering buffers
-void load_fermion_fields(float3 position, float weight)
+void load_fermion_fields(half3 position, half weight)
 {
     for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++) load_fermion_field(position, field_index, weight);
 }
 
 // This function is used to load the current gauge field states at a given position into the rendering buffers
-void load_gauge_fields(float3 position, float weight)
+void load_gauge_fields(half3 position, half weight)
 {
     uint lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
     GaugeSymmetriesVectorPackMath::scl_sum(rend_gauge_potentials_lattice_buffer[lattice_buffer_index], crnt_gauge_potentials_lattice_buffer[lattice_buffer_index], 1 - weight, weight, rend_gauge_potentials_lattice_buffer[lattice_buffer_index]);
@@ -33,7 +33,7 @@ void load_gauge_fields(float3 position, float weight)
     GaugeSymmetriesVectorPackMath::scl_sum(rend_magnetic_strengths_lattice_buffer[lattice_buffer_index], crnt_magnetic_strengths_lattice_buffer[lattice_buffer_index], 1 - weight, weight, rend_magnetic_strengths_lattice_buffer[lattice_buffer_index]);
 }
 
-float weight;
+half weight;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
@@ -44,7 +44,7 @@ void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
     weight = weight ? weight : 0.5f;
 
-    float3 position = float3(dispatch_thread_id);
+    half3 position = half3(dispatch_thread_id);
     load_fermion_fields(position, weight);
     load_gauge_fields(position, weight);
 }

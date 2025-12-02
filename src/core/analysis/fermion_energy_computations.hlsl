@@ -10,9 +10,9 @@
 namespace FermionEnergyComputations
 {
     // Compute the energy density of a fermion field given its local configuration (state , gradient , mass).
-    float compute_energy_density(FermionFieldState fermion_state, FermionFieldSpacetimeGradient fermion_field_spacetime_gradient, float fermion_mass)
+    half compute_energy_density(FermionFieldState fermion_state, FermionFieldSpacetimeGradient fermion_field_spacetime_gradient, half fermion_mass)
     {
-        float energy = 0;
+        half energy = 0;
         FermionFieldState adjoint;
         FermionFieldStateMath::adjoint(fermion_state, adjoint);
         FermionFieldState tmp;
@@ -25,37 +25,37 @@ namespace FermionEnergyComputations
     // Compute the energy density of a free fermion field with a specified field-index at a specified simulation location.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
-    float compute_free_energy_density(float3 position, uint field_index)
+    half compute_free_energy_density(half3 position, uint field_index)
     {
         if (!SimulationDataOps::is_fermion_field_active(field_index)) return 0;
         uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
         FermionFieldState fermion_state = crnt_fermions_lattice_buffer[lattice_buffer_index];
         FermionFieldSpacetimeGradient fermion_field_spacetime_gradient;
         FermionFieldStateDifferentials::spacetime_gradient(position, field_index, fermion_field_spacetime_gradient);
-        float fermion_mass = fermion_field_properties[field_index].field_mass;
+        half fermion_mass = fermion_field_properties[field_index].field_mass;
         return compute_energy_density(fermion_state, fermion_field_spacetime_gradient, fermion_mass);
     }
 
     // Compute the energy density of a free fermion field with a specified field-index at a specified simulation location.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
-    float compute_energy_density(float3 position, uint field_index)
+    half compute_energy_density(half3 position, uint field_index)
     {
         if (!SimulationDataOps::is_fermion_field_active(field_index)) return 0;
         uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
         FermionFieldState fermion_state = crnt_fermions_lattice_buffer[lattice_buffer_index];
         FermionFieldSpacetimeGradient fermion_field_spacetime_gradient;
         FermionFieldGaugeCovariantWilsonDifferentials::spacetime_gradient(position, field_index, fermion_field_spacetime_gradient);
-        float fermion_mass = fermion_field_properties[field_index].field_mass;
+        half fermion_mass = fermion_field_properties[field_index].field_mass;
         return compute_energy_density(fermion_state, fermion_field_spacetime_gradient, fermion_mass);
     }
 
     // Compute the energy density of all fermion fields at a specified simulation location.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers
-    float compute_energy_density(float3 position)
+    half compute_energy_density(half3 position)
     {
-        float total_energy = 0;
+        half total_energy = 0;
         for (uint fieldIndex = 0; fieldIndex < FERMION_FIELDS_COUNT; fieldIndex++) total_energy += compute_energy_density(position, fieldIndex);
         return total_energy;
     }

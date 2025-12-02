@@ -19,6 +19,6 @@
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    float3 position = float3(dispatch_thread_id);
+    half3 position = half3(dispatch_thread_id);
     SimulationPokesProcessing::PhysicallyMeaningful::process_pokes(position);
 }

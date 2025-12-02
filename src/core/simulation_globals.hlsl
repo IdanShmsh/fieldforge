@@ -36,13 +36,13 @@
 int simulation_width;
 int simulation_height;
 int simulation_depth;
-float simulation_spatial_unit;
-float simulation_temporal_unit;
-float simulation_non_abelian_self_interaction;
-float simulation_fermion_density_limit;
-float simulation_gauge_norm_limit;
+half simulation_spatial_unit;
+half simulation_temporal_unit;
+half simulation_non_abelian_self_interaction;
+half simulation_fermion_density_limit;
+half simulation_gauge_norm_limit;
 int simulation_field_mask;
-float simulation_brightness = 1;
+half simulation_brightness = 1;
 
 // Storing the properties of the spinor fields
 RWStructuredBuffer<FermionFieldProperties> fermion_field_properties;

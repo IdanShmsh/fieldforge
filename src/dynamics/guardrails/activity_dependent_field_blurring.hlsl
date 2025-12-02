@@ -21,10 +21,10 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void fermions_energy_density_dependent_blurring(float3 position, float energy_scale, float radius_cap, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
+        void fermions_energy_density_dependent_blurring(half3 position, half energy_scale, half radius_cap, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
         {
-            float energy_density = FermionEnergyComputations::compute_energy_density(position) / energy_scale;
-            float standard_deviation = radius_cap * (1 - exp(-energy_density * energy_density));
+            half energy_density = FermionEnergyComputations::compute_energy_density(position) / energy_scale;
+            half standard_deviation = radius_cap * (1 - exp(-energy_density * energy_density));
             FieldBlurring::blur_fermion_fields_3x3x3(position, standard_deviation, source_lattice_buffer, target_lattice_buffer);
         }
 
@@ -33,10 +33,10 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void gauge_energy_density_dependent_blurring(float3 position, float energy_scale, float radius_cap, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
+        void gauge_energy_density_dependent_blurring(half3 position, half energy_scale, half radius_cap, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
         {
-            float energy_density = FermionEnergyComputations::compute_energy_density(position) / energy_scale;
-            float standard_deviation = radius_cap * (1 - exp(-energy_density * energy_density));
+            half energy_density = FermionEnergyComputations::compute_energy_density(position) / energy_scale;
+            half standard_deviation = radius_cap * (1 - exp(-energy_density * energy_density));
             FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, source_lattice_buffer, target_lattice_buffer);
         }
     }

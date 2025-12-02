@@ -13,7 +13,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
     // along the temporal axis.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void temporal_derivative(float3 position, uint field_index, out FermionFieldState derivative)
+    void temporal_derivative(half3 position, uint field_index, out FermionFieldState derivative)
     {
         uint lattice_buffer_index;
         lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
@@ -23,7 +23,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
         FermionFieldState prev_weak_partner_state = prev_fermions_lattice_buffer[lattice_buffer_index];
         lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
         GaugeSymmetriesVectorPack gauge_potentials = prev_gauge_potentials_lattice_buffer[lattice_buffer_index];
-        float3 coupling_constants = SimulationDataOps::obtain_fermion_coupling_constants_tuple(field_index);
+        half3 coupling_constants = SimulationDataOps::obtain_fermion_coupling_constants_tuple(field_index);
         WilsonFormalism::backward_parallel_transport_fermion(
             prev_fermion_state,
             prev_weak_partner_state,
@@ -40,11 +40,11 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
     // along a specified spatial axis, in a specified fermion lattice buffer and a specified gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, uint field_index, FermionLatticeBuffer fermion_lattice_buffer, GaugeLatticeBuffer gauge_potentials_lattice_buffer, out FermionFieldState derivative)
+    void spatial_derivative(uint axis, half3 position, uint field_index, FermionLatticeBuffer fermion_lattice_buffer, GaugeLatticeBuffer gauge_potentials_lattice_buffer, out FermionFieldState derivative)
     {
         FermionFieldStateOps::empty(derivative);
         if (axis > SPATIAL_DIMENSIONALITY - 1) return;
-        float3 offset = float3(0, 0, 0);
+        half3 offset = half3(0, 0, 0);
         offset[axis] = 1;
         uint lattice_buffer_index;
         lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position - offset, field_index);
@@ -60,7 +60,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
         lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
         GaugeSymmetriesVectorPack link_gauge_potentials2 = gauge_potentials_lattice_buffer[lattice_buffer_index];
         bool weakDoubletIndex = field_index % 2 == 0;
-        float3 coupling_constants = SimulationDataOps::obtain_fermion_coupling_constants_tuple(field_index);
+        half3 coupling_constants = SimulationDataOps::obtain_fermion_coupling_constants_tuple(field_index);
         WilsonFormalism::backward_parallel_transport_fermion(
             neighboring_fermion_state1,
             neighboring_weak_partner_state1,
@@ -86,7 +86,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
     // along a specified spatial axis, in the current fermion lattice buffer and the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, uint field_index, out FermionFieldState derivative)
+    void spatial_derivative(uint axis, half3 position, uint field_index, out FermionFieldState derivative)
     {
         spatial_derivative(axis, position, field_index, crnt_fermions_lattice_buffer, crnt_gauge_potentials_lattice_buffer, derivative);
     }
@@ -95,7 +95,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
     // along all spacetime axes, in the current fermion lattice buffer and the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_gradient(float3 position, uint fieldIndex, out FermionFieldSpacetimeGradient gradient)
+    void spacetime_gradient(half3 position, uint fieldIndex, out FermionFieldSpacetimeGradient gradient)
     {
         temporal_derivative(position, fieldIndex, gradient[0]);
         spatial_derivative(0, position, fieldIndex, gradient[1]);
@@ -107,7 +107,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
     // along all spatial axes, in the current fermion lattice buffer and the current gauge potentials lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_gradient(float3 position, uint fieldIndex, out FermionFieldSpatialGradient gradient)
+    void spatial_gradient(half3 position, uint fieldIndex, out FermionFieldSpatialGradient gradient)
     {
         spatial_derivative(0, position, fieldIndex, gradient[0]);
         spatial_derivative(1, position, fieldIndex, gradient[1]);

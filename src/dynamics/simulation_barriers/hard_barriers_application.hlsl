@@ -19,37 +19,37 @@ namespace SimulationBarriersProcessing
         // A structure used to cache processed data associated with a barrier or necessary for its application
         struct BarrierApplicationCache
         {
-            float3 position;
-            float barrier_radius;
-            float barrier_width;
-            float3 p1, p2;
+            half3 position;
+            half barrier_radius;
+            half barrier_width;
+            half3 p1, p2;
             int barrier_mask;
             bool position_within_barrier_boundary;
         };
 
         // This function determines whether a point is within the boundaries of a barrier
-        bool _determine_point_within_barrier_boundaries(float3 position, float3 point1, float3 point2, float width, float radius)
+        bool _determine_point_within_barrier_boundaries(half3 position, half3 point1, half3 point2, half width, half radius)
         {
-            float3 line_vec = point2 - point1;
-            float  line_len = length(line_vec);
-            float3 line_dir = line_vec / line_len;
-            float proj = dot(position - point1, line_dir);
-            float distance = length(position - (point1 + proj * line_dir));
-            float axial_deviation = max(max(-proj, proj - line_len), 0);
-            float normal_deviation = max(distance - width / 2, 0);
+            half3 line_vec = point2 - point1;
+            half  line_len = length(line_vec);
+            half3 line_dir = line_vec / line_len;
+            half proj = dot(position - point1, line_dir);
+            half distance = length(position - (point1 + proj * line_dir));
+            half axial_deviation = max(max(-proj, proj - line_len), 0);
+            half normal_deviation = max(distance - width / 2, 0);
             return pow(axial_deviation, 2) + pow(normal_deviation, 2) <= pow(radius, 2);
         }
 
         // Constructs a structure of computed cached properties associated with a barrier
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
-        void _construct_barrier_application_data(float3 position, SimulationBarrierInformation barrier_data, out BarrierApplicationCache barrier_application_data)
+        void _construct_barrier_application_data(half3 position, SimulationBarrierInformation barrier_data, out BarrierApplicationCache barrier_application_data)
         {
             barrier_application_data.position = position;
             barrier_application_data.barrier_width = barrier_data[1];
             barrier_application_data.barrier_radius = barrier_data[2];
-            barrier_application_data.p1 = float3(barrier_data[3], barrier_data[4], barrier_data[5]);
-            barrier_application_data.p2 = float3(barrier_data[6], barrier_data[7], barrier_data[8]);
+            barrier_application_data.p1 = half3(barrier_data[3], barrier_data[4], barrier_data[5]);
+            barrier_application_data.p2 = half3(barrier_data[6], barrier_data[7], barrier_data[8]);
             barrier_application_data.barrier_mask = barrier_data[9] & simulation_field_mask;
             barrier_application_data.position_within_barrier_boundary = _determine_point_within_barrier_boundaries(position, barrier_application_data.p1, barrier_application_data.p2, barrier_application_data.barrier_width, barrier_application_data.barrier_radius);
         }
@@ -63,7 +63,7 @@ namespace SimulationBarriersProcessing
         // This function applies the barrier to all fermion fields at all accessible instances (t-1, t-0, t+1)
         // * Side Effects:
         // • Writes directly to the simulation's lattice buffers
-        void _apply_barrier_to_fermion_fields(float3 position, BarrierApplicationCache barrier_application_data)
+        void _apply_barrier_to_fermion_fields(half3 position, BarrierApplicationCache barrier_application_data)
         {
             FermionFieldState empty_fermion_state;
             FermionFieldStateOps::empty(empty_fermion_state);
@@ -82,7 +82,7 @@ namespace SimulationBarriersProcessing
         // This function applies the barrier to all gauge fields at all accessible instances (t-1, t-0, t+1)
         // * Side Effects:
         // • Writes directly to the simulation's lattice buffers
-        void _apply_barrier_to_gauge_fields(float3 position, BarrierApplicationCache barrier_application_data)
+        void _apply_barrier_to_gauge_fields(half3 position, BarrierApplicationCache barrier_application_data)
         {
             GaugeSymmetriesVectorPack empty_gauge_state;
             GaugeSymmetriesVectorPackOps::empty(empty_gauge_state);
@@ -108,7 +108,7 @@ namespace SimulationBarriersProcessing
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void process_barrier(float3 position, SimulationBarrierInformation raw_barrier_data)
+        void process_barrier(half3 position, SimulationBarrierInformation raw_barrier_data)
         {
             // This reads the strength, which, in this implementation's context would only be a simple "on/off" flag
             if (raw_barrier_data[0] == 0) return;
@@ -123,7 +123,7 @@ namespace SimulationBarriersProcessing
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void process_barriers(float3 position)
+        void process_barriers(half3 position)
         {
             for (int i = 0; i < BARRIERS_BUFFER_LENGTH; i++)
             {

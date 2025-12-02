@@ -4,12 +4,12 @@
 /// This namespace implements functions used to perform relativity related calculations.
 namespace Relativity
 {
-    float minkowski_dot(float4 a, float4 b)
+    half minkowski_dot(half4 a, half4 b)
     {
         return a.x * b.x - a.y * b.y - a.z * b.z - a.w * b.w;
     }
 
-    float interval(float4 a)
+    half interval(half4 a)
     {
         return sqrt(minkowski_dot(a, a));
     }

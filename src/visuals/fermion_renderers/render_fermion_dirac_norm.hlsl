@@ -10,7 +10,7 @@ namespace FermionRendering
 {
     namespace RenderFermionDiracNorm
     {
-        half4 get_fermion_dirac_norm_color_at_position(float3 position, uint field_index)
+        half4 get_fermion_dirac_norm_color_at_position(half3 position, uint field_index)
         {
             if (!SimulationDataOps::is_fermion_field_active(field_index)) return half4(0, 0, 0, 0);
             FermionFieldState state;

@@ -47,18 +47,18 @@ namespace DiracFormalism
     // ψ' = γ²ψ
     void gamma2(FermionFieldState fermion_state, out FermionFieldState transformed_fermion_state)
     {
-        transformed_fermion_state[0] = float2(fermion_state[9][1], -fermion_state[9][0]);
-        transformed_fermion_state[1] = float2(fermion_state[10][1], -fermion_state[10][0]);
-        transformed_fermion_state[2] = float2(fermion_state[11][1], -fermion_state[11][0]);
-        transformed_fermion_state[3] = float2(-fermion_state[6][1], fermion_state[6][0]);
-        transformed_fermion_state[4] = float2(-fermion_state[7][1], fermion_state[7][0]);
-        transformed_fermion_state[5] = float2(-fermion_state[8][1], fermion_state[8][0]);
-        transformed_fermion_state[6] = float2(-fermion_state[3][1], fermion_state[3][0]);
-        transformed_fermion_state[7] = float2(-fermion_state[4][1], fermion_state[4][0]);
-        transformed_fermion_state[8] = float2(-fermion_state[5][1], fermion_state[5][0]);
-        transformed_fermion_state[9] = float2(fermion_state[0][1], -fermion_state[0][0]);
-        transformed_fermion_state[10] = float2(fermion_state[1][1], -fermion_state[1][0]);
-        transformed_fermion_state[11] = float2(fermion_state[2][1], -fermion_state[2][0]);
+        transformed_fermion_state[0] = half2(fermion_state[9][1], -fermion_state[9][0]);
+        transformed_fermion_state[1] = half2(fermion_state[10][1], -fermion_state[10][0]);
+        transformed_fermion_state[2] = half2(fermion_state[11][1], -fermion_state[11][0]);
+        transformed_fermion_state[3] = half2(-fermion_state[6][1], fermion_state[6][0]);
+        transformed_fermion_state[4] = half2(-fermion_state[7][1], fermion_state[7][0]);
+        transformed_fermion_state[5] = half2(-fermion_state[8][1], fermion_state[8][0]);
+        transformed_fermion_state[6] = half2(-fermion_state[3][1], fermion_state[3][0]);
+        transformed_fermion_state[7] = half2(-fermion_state[4][1], fermion_state[4][0]);
+        transformed_fermion_state[8] = half2(-fermion_state[5][1], fermion_state[5][0]);
+        transformed_fermion_state[9] = half2(fermion_state[0][1], -fermion_state[0][0]);
+        transformed_fermion_state[10] = half2(fermion_state[1][1], -fermion_state[1][0]);
+        transformed_fermion_state[11] = half2(fermion_state[2][1], -fermion_state[2][0]);
     }
 
     // Apply the gamma-3 matrix to a fermion state
@@ -147,19 +147,19 @@ namespace DiracFormalism
 
     // Compute the Dirac norm of a fermion state
     // |ψ| = ψ̄ψ = ψ†γ⁰ψ
-    float dirac_norm(FermionFieldState fermion_state)
+    half dirac_norm(FermionFieldState fermion_state)
     {
-        float state_norm = 0;
+        half state_norm = 0;
         for (uint c = 0; c < 12; c++) state_norm += dot(fermion_state[c], fermion_state[c]) * (c > 5 ? -1 : 1);
         return state_norm;
     }
 
     // Construct a relativistic fermion state with a specified angular momentum vector (associated with the particle's rest frame
     // angular momentum state), in an inertial frame given by a specified momentum and mass
-    void construct_spin_state(float3 spin_vector, float3 momentum, float mass, out FermionFieldState constructed_fermion_state)
+    void construct_spin_state(half3 spin_vector, half3 momentum, half mass, out FermionFieldState constructed_fermion_state)
     {
         FermionFieldStateOps::empty(constructed_fermion_state);
-        float energy = sqrt(dot(momentum, momentum) + mass * mass);
+        half energy = sqrt(dot(momentum, momentum) + mass * mass);
         PauliSpinor upper_spinor;
         PauliFormalism::construct_pauli_spinor(spin_vector, upper_spinor);
         PauliSpinorMath::scl_rl(upper_spinor, sqrt((energy + mass) / (2 * mass)), upper_spinor);
@@ -173,13 +173,13 @@ namespace DiracFormalism
     }
 
     // Compute the angular momentum expectation value of a fermion field state
-    float3 obtain_spin_state(FermionFieldState fermion_state)
+    half3 obtain_spin_state(FermionFieldState fermion_state)
     {
-        float3 angular_momentum = float3(0, 0, 0);
+        half3 angular_momentum = half3(0, 0, 0);
         for (uint c = 0; c < 3; c++)
         {
             uint4 indices = FermionFieldStateOps::get_spinor_component_indices_for_color_index(c);
-            float2 component_values[4] = { fermion_state[indices[0]], fermion_state[indices[1]], fermion_state[indices[2]], fermion_state[indices[3]] };
+            half2 component_values[4] = { fermion_state[indices[0]], fermion_state[indices[1]], fermion_state[indices[2]], fermion_state[indices[3]] };
             angular_momentum[0] += component_values[0][0] * component_values[1][0] + component_values[0][1] * component_values[1][1] + component_values[2][0] * component_values[3][0] + component_values[2][1] * component_values[3][1];
             angular_momentum[1] += component_values[0][0] * component_values[1][1] - component_values[1][0] * component_values[0][1] + component_values[2][0] * component_values[3][1] - component_values[3][0] * component_values[2][1];
             angular_momentum[2] += 0.5 * (length(component_values[0]) - length(component_values[1]) + length(component_values[2]) - length(component_values[3]));

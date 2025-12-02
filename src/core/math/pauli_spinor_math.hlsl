@@ -15,14 +15,14 @@ namespace PauliSpinorMath
     }
 
     // Scale a Pauli spinor by a complex number
-    void scl(PauliSpinor spinor, float2 scalar, out PauliSpinor result)
+    void scl(PauliSpinor spinor, half2 scalar, out PauliSpinor result)
     {
         result[0] = ComplexNumbersMath::prd(spinor[0], scalar);
         result[1] = ComplexNumbersMath::prd(spinor[1], scalar);
     }
 
     // Scale a Pauli spinor by a real number
-    void scl_rl(PauliSpinor spinor, float scalar, out PauliSpinor result)
+    void scl_rl(PauliSpinor spinor, half scalar, out PauliSpinor result)
     {
         result[0] = scalar * spinor[0];
         result[1] = scalar * spinor[1];

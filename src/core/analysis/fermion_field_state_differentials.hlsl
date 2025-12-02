@@ -15,7 +15,7 @@ namespace FermionFieldStateDifferentials
     // Take the derivative of a fermion field with a specified field-index, at a specified simulation location, along the temporal axis.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void temporal_derivative(float3 position, uint fermion_field_index, out FermionFieldState field_derivative)
+    void temporal_derivative(half3 position, uint fermion_field_index, out FermionFieldState field_derivative)
     {
         uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, fermion_field_index);
         FermionFieldState prev_fermion_field_state = prev_fermions_lattice_buffer[lattice_buffer_index];
@@ -28,11 +28,11 @@ namespace FermionFieldStateDifferentials
     // in a specified fermion lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, uint fermion_field_index, FermionLatticeBuffer fermion_lattice_buffer, out FermionFieldState field_derivative)
+    void spatial_derivative(uint axis, half3 position, uint fermion_field_index, FermionLatticeBuffer fermion_lattice_buffer, out FermionFieldState field_derivative)
     {
         FermionFieldStateOps::empty(field_derivative);
         if (axis > SPATIAL_DIMENSIONALITY - 1) return;
-        float3 offset = float3(0, 0, 0);
+        half3 offset = half3(0, 0, 0);
         offset[axis] = 1;
         uint lattice_buffer_index;
         lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position - offset, fermion_field_index);
@@ -47,7 +47,7 @@ namespace FermionFieldStateDifferentials
     // in the current fermion lattice buffer.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_derivative(uint axis, float3 position, uint field_index, out FermionFieldState field_derivative)
+    void spatial_derivative(uint axis, half3 position, uint field_index, out FermionFieldState field_derivative)
     {
         spatial_derivative(axis, position, field_index, crnt_fermions_lattice_buffer, field_derivative);
     }
@@ -55,7 +55,7 @@ namespace FermionFieldStateDifferentials
     // Take the gradient of a fermion field with a specified field-index, at a specified simulation location, along all spacetime axes.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spacetime_gradient(float3 position, uint fermion_field_index, out FermionFieldSpacetimeGradient field_gradient)
+    void spacetime_gradient(half3 position, uint fermion_field_index, out FermionFieldSpacetimeGradient field_gradient)
     {
         temporal_derivative(position, fermion_field_index, field_gradient[0]);
         spatial_derivative(0, position, fermion_field_index, field_gradient[1]);
@@ -66,7 +66,7 @@ namespace FermionFieldStateDifferentials
     // Take the gradient of a fermion field with a specified field-index, at a specified simulation location, along all spatial axes.
     // * Side Effects:
     // • Reads directly from the simulation's lattice buffers.
-    void spatial_gradient(float3 position, uint fermion_field_index, out FermionFieldSpatialGradient field_gradient)
+    void spatial_gradient(half3 position, uint fermion_field_index, out FermionFieldSpatialGradient field_gradient)
     {
         spatial_derivative(0, position, fermion_field_index, field_gradient[0]);
         spatial_derivative(1, position, fermion_field_index, field_gradient[1]);

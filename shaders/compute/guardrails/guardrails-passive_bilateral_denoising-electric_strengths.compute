@@ -10,17 +10,17 @@
 
 #include "../../../src/dynamics/guardrails/passive_field_denoising.hlsl"
 
-float spatial_std;
-float range_std;
+half spatial_std;
+half range_std;
 
 /// --------------------------------------------------------------------------------------------------------------
 /// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
 /// --------------------------------------------------------------------------------------------------------------
 /// This pipeline operation applies bilateral denoising to the electric strength fields (denoising the field state components (not the norms))
 /// Properties:
-/// • spatial_std (float)
+/// • spatial_std (half)
 ///   This parameter <spatial_std> represents the 'spatial_weight' parameter associated with the bilateral denoising algorithm.
-/// • range_std (float)
+/// • range_std (half)
 ///   This parameter <range_std> represents the 'range_weight' parameter associated with the bilateral denoising algorithm.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
@@ -28,13 +28,13 @@ void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
     spatial_std = spatial_std ? spatial_std : 1.0f;
     range_std = range_std ? range_std : 0.25f;
 
-    float3 position = float3(dispatch_thread_id);
+    half3 position = half3(dispatch_thread_id);
     Guardrails::PassiveFieldDenoising::bilateral_denoise_gauge_fields(position, spatial_std, range_std, crnt_electric_strengths_lattice_buffer, temp_gauge_lattice_buffer);
 }
 
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass1(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
-    float3 position = float3(dispatch_thread_id);
+    half3 position = half3(dispatch_thread_id);
     SimulationDataOps::copy_buffer_information_at_position(position, temp_gauge_lattice_buffer, crnt_electric_strengths_lattice_buffer);
 }

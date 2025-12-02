@@ -15,7 +15,7 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void blur_fermion_fields(float3 position, float standard_deviation, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
+        void blur_fermion_fields(half3 position, half standard_deviation, FermionLatticeBuffer source_lattice_buffer, FermionLatticeBuffer target_lattice_buffer)
         {
             FieldBlurring::blur_fermion_fields_3x3x3(position, standard_deviation, source_lattice_buffer, target_lattice_buffer);
         }
@@ -24,7 +24,7 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void blur_gauge_fields(float3 position, float standard_deviation, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
+        void blur_gauge_fields(half3 position, half standard_deviation, GaugeLatticeBuffer source_lattice_buffer, GaugeLatticeBuffer target_lattice_buffer)
         {
             FieldBlurring::blur_gauge_fields_3x3x3(position, standard_deviation, source_lattice_buffer, target_lattice_buffer);
         }

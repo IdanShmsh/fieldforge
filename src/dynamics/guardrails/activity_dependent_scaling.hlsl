@@ -23,11 +23,11 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void fermion_energy_density_dependent_scaling(float3 position, float energy_scale, FermionLatticeBuffer lattice_buffer)
+        void fermion_energy_density_dependent_scaling(half3 position, half energy_scale, FermionLatticeBuffer lattice_buffer)
         {
-            float energy_density = abs(FermionEnergyComputations::compute_energy_density(position));
+            half energy_density = abs(FermionEnergyComputations::compute_energy_density(position));
             // This is a simple hyperbola : https://www.desmos.com/calculator/fuuc0ethl9
-            float scale_factor = 1.0 / (energy_density / energy_scale + 1.0);
+            half scale_factor = 1.0 / (energy_density / energy_scale + 1.0);
             for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
             {
                 uint lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
@@ -41,11 +41,11 @@ namespace Guardrails
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void gauge_energy_density_dependent_scaling(float3 position, float energy_scale, GaugeLatticeBuffer lattice_buffer)
+        void gauge_energy_density_dependent_scaling(half3 position, half energy_scale, GaugeLatticeBuffer lattice_buffer)
         {
-            float energy_density = abs(GaugeEnergyComputations::compute_energy_density(position));
+            half energy_density = abs(GaugeEnergyComputations::compute_energy_density(position));
             // This is a simple hyperbola : https://www.desmos.com/calculator/fuuc0ethl9
-            float scale_factor = 1.0 / (energy_density / energy_scale + 1.0);
+            half scale_factor = 1.0 / (energy_density / energy_scale + 1.0);
             uint lattice_buffer_index = SimulationDataOps::get_gauge_lattice_buffer_index(position);
             GaugeSymmetriesVectorPack gauge_vectors_pack = lattice_buffer[lattice_buffer_index];
             GaugeSymmetriesVectorPackMath::scl(gauge_vectors_pack, scale_factor, gauge_vectors_pack);

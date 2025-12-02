@@ -9,22 +9,22 @@ namespace FermionFieldStateOps
     // Empty (zero) a fermion field state
     void empty(out FermionFieldState empty_fermion_state)
     {
-        empty_fermion_state[0] = float2(0, 0);
-        empty_fermion_state[1] = float2(0, 0);
-        empty_fermion_state[2] = float2(0, 0);
-        empty_fermion_state[3] = float2(0, 0);
-        empty_fermion_state[4] = float2(0, 0);
-        empty_fermion_state[5] = float2(0, 0);
-        empty_fermion_state[6] = float2(0, 0);
-        empty_fermion_state[7] = float2(0, 0);
-        empty_fermion_state[8] = float2(0, 0);
-        empty_fermion_state[9] = float2(0, 0);
-        empty_fermion_state[10] = float2(0, 0);
-        empty_fermion_state[11] = float2(0, 0);
+        empty_fermion_state[0] = half2(0, 0);
+        empty_fermion_state[1] = half2(0, 0);
+        empty_fermion_state[2] = half2(0, 0);
+        empty_fermion_state[3] = half2(0, 0);
+        empty_fermion_state[4] = half2(0, 0);
+        empty_fermion_state[5] = half2(0, 0);
+        empty_fermion_state[6] = half2(0, 0);
+        empty_fermion_state[7] = half2(0, 0);
+        empty_fermion_state[8] = half2(0, 0);
+        empty_fermion_state[9] = half2(0, 0);
+        empty_fermion_state[10] = half2(0, 0);
+        empty_fermion_state[11] = half2(0, 0);
     }
 
     // Fill a fermion field state with a complex value
-    void fill(float2 component_value, out FermionFieldState empty_fermion_state)
+    void fill(half2 component_value, out FermionFieldState empty_fermion_state)
     {
         empty_fermion_state[0] = component_value;
         empty_fermion_state[1] = component_value;
@@ -82,7 +82,7 @@ namespace FermionFieldStateOps
     }
 
     // Check if a fermion field state is below a certain provided tolerance threshold
-    bool is_zero(FermionFieldState fermion_state, float numerical_tolerance)
+    bool is_zero(FermionFieldState fermion_state, half numerical_tolerance)
     {
         for (uint i = 0; i < 12; i++) if (any(abs(fermion_state[i]) > numerical_tolerance)) return false;
         return true;

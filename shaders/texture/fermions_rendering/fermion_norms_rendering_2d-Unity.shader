@@ -31,14 +31,14 @@ Shader "Custom/fermion_norms_rendering_2d"
 
             struct appdata
             {
-                float4 vertex : POSITION;
-                float2 uv : TEXCOORD0;
+                half4 vertex : POSITION;
+                half2 uv : TEXCOORD0;
             };
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
-                float4 pos : SV_POSITION;
+                half2 uv : TEXCOORD0;
+                half4 pos : SV_POSITION;
             };
 
             v2f vert(appdata v)
@@ -49,8 +49,8 @@ Shader "Custom/fermion_norms_rendering_2d"
                 return o;
             }
 
-            float brightness = 1.0;
-            float opacity = 1.0;
+            half brightness = 1.0;
+            half opacity = 1.0;
 
             half4 frag(v2f i) : SV_Target
             {

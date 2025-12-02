@@ -15,7 +15,7 @@ namespace FermionFieldEvolution
         // A structure used to cache processed data necessary for performing the evolution
         struct EvolutionCache
         {
-            float3 position;
+            half3 position;
             uint field_index;
             uint buffer_index;
             FermionFieldState previous_state;
@@ -25,7 +25,7 @@ namespace FermionFieldEvolution
             GaugeSymmetriesVectorPack previous_gauge_state;
             GaugeSymmetriesVectorPack gauge_state;
             FermionFieldProperties field_properties;
-            float3 coupling_constants;
+            half3 coupling_constants;
             FermionFieldSpacetimeGradient spacetime_gradient;
             bool weak_doublet_index;
         };
@@ -33,7 +33,7 @@ namespace FermionFieldEvolution
         // Obtain data needed to perform the evolution
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
-        void _obtain_evolution_data_at_position(float3 position, uint fermion_field_index, out EvolutionCache evolution_data)
+        void _obtain_evolution_data_at_position(half3 position, uint fermion_field_index, out EvolutionCache evolution_data)
         {
             evolution_data.position = position;
             evolution_data.field_index = fermion_field_index;
@@ -60,7 +60,7 @@ namespace FermionFieldEvolution
             FermionFieldState temporal_slope;
 
             // Factor in the mass term
-            FermionFieldStateMath::scl(evolution_cache.field_state, float2(0, evolution_cache.field_properties.field_mass), temporal_slope);
+            FermionFieldStateMath::scl(evolution_cache.field_state, half2(0, evolution_cache.field_properties.field_mass), temporal_slope);
 
             // Factor and sum the kinetic terms
             FermionFieldState tmp;
@@ -95,7 +95,7 @@ namespace FermionFieldEvolution
             {
                 // Discard any state that's "not a number" or infinity.
                 const bool componentValueValid = !(any(isnan(state[c])) || any(isinf(state[c])));
-                valid_state[c] = componentValueValid ? state[c] : float2(0, 0);
+                valid_state[c] = componentValueValid ? state[c] : half2(0, 0);
             }
         }
 
@@ -104,10 +104,10 @@ namespace FermionFieldEvolution
         {
             // Use a harmonic mean to limit the norm of the state to the configured maximum
             limited_state = state;
-            float dirac_norm = abs(DiracFormalism::dirac_norm(state));
+            half dirac_norm = abs(DiracFormalism::dirac_norm(state));
             if (dirac_norm == 0) return;
-            float target_norm = CommonMath::harmonic_mean(dirac_norm, simulation_fermion_density_limit);
-            float scale_factor = target_norm / dirac_norm;
+            half target_norm = CommonMath::harmonic_mean(dirac_norm, simulation_fermion_density_limit);
+            half scale_factor = target_norm / dirac_norm;
             FermionFieldStateMath::rscl(limited_state, scale_factor, limited_state);
         }
 
@@ -135,7 +135,7 @@ namespace FermionFieldEvolution
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void fermion_evolution(float3 position, uint fermion_field_index)
+        void fermion_evolution(half3 position, uint fermion_field_index)
         {
             if (!SimulationDataOps::is_fermion_field_active(fermion_field_index)) return;
 
@@ -151,7 +151,7 @@ namespace FermionFieldEvolution
         // * Side Effects:
         // • Reads directly from the simulation's lattice buffers
         // • Writes directly to the simulation's lattice buffers
-        void fermion_evolution(float3 position)
+        void fermion_evolution(half3 position)
         {
             for (uint i = 0; i < FERMION_FIELDS_COUNT; i++) fermion_evolution(position, i);
         }

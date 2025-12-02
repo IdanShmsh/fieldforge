@@ -11,7 +11,7 @@ namespace FermionRendering
 {
     namespace RenderFermionSpinDial
     {
-        half4 get_fermion_spin_dial_color_at_position(float3 position, uint field_index, half granularity, half length_scale)
+        half4 get_fermion_spin_dial_color_at_position(half3 position, uint field_index, half granularity, half length_scale)
         {
             if (!SimulationDataOps::is_fermion_field_active(field_index)) return half4(0, 0, 0, 0);
             half3 rounded_position;

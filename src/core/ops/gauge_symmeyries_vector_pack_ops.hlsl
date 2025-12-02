@@ -9,18 +9,18 @@ namespace GaugeSymmetriesVectorPackOps
     // Empty (zero) a gauge field state
     void empty(out GaugeSymmetriesVectorPack vector_pack)
     {
-        vector_pack[0] = float4(0, 0, 0, 0);
-        vector_pack[1] = float4(0, 0, 0, 0);
-        vector_pack[2] = float4(0, 0, 0, 0);
-        vector_pack[3] = float4(0, 0, 0, 0);
-        vector_pack[4] = float4(0, 0, 0, 0);
-        vector_pack[5] = float4(0, 0, 0, 0);
-        vector_pack[6] = float4(0, 0, 0, 0);
-        vector_pack[7] = float4(0, 0, 0, 0);
-        vector_pack[8] = float4(0, 0, 0, 0);
-        vector_pack[9] = float4(0, 0, 0, 0);
-        vector_pack[10] = float4(0, 0, 0, 0);
-        vector_pack[11] = float4(0, 0, 0, 0);
+        vector_pack[0] = half4(0, 0, 0, 0);
+        vector_pack[1] = half4(0, 0, 0, 0);
+        vector_pack[2] = half4(0, 0, 0, 0);
+        vector_pack[3] = half4(0, 0, 0, 0);
+        vector_pack[4] = half4(0, 0, 0, 0);
+        vector_pack[5] = half4(0, 0, 0, 0);
+        vector_pack[6] = half4(0, 0, 0, 0);
+        vector_pack[7] = half4(0, 0, 0, 0);
+        vector_pack[8] = half4(0, 0, 0, 0);
+        vector_pack[9] = half4(0, 0, 0, 0);
+        vector_pack[10] = half4(0, 0, 0, 0);
+        vector_pack[11] = half4(0, 0, 0, 0);
     }
 
     // Get the gauge fields state index of the U(1) potential
@@ -42,39 +42,39 @@ namespace GaugeSymmetriesVectorPackOps
     }
 
     // Get the gauge potential associated with the U(1) symmetry from a gauge fields state
-    float4 get_u1_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state)
+    half4 get_u1_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state)
     {
         return gauge_fields_state[get_u1_symmetry_index()];
     }
 
     // Get the gauge potential associated with a SU(2) symmetry from a gauge fields state
-    float4 get_su2_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state, float su2_symmetry_index)
+    half4 get_su2_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state, half su2_symmetry_index)
     {
         return gauge_fields_state[get_su2_field_index(su2_symmetry_index)];
     }
 
     // Get the gauge potential associated with a SU(3) symmetry from a gauge fields state
-    float4 get_su3_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state, float su3_symmetry_index)
+    half4 get_su3_gauge_potential(GaugeSymmetriesVectorPack gauge_fields_state, half su3_symmetry_index)
     {
         return gauge_fields_state[get_su3_field_index(su3_symmetry_index)];
     }
 
     // Set the gauge potential associated with the U(1) symmetry in a gauge fields state
-    void set_u1_potential(GaugeSymmetriesVectorPack gauge_fields_state, float4 gauge_potential, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
+    void set_u1_potential(GaugeSymmetriesVectorPack gauge_fields_state, half4 gauge_potential, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
     {
         modified_gauge_fields_state = gauge_fields_state;
         modified_gauge_fields_state[get_u1_symmetry_index()] = gauge_potential;
     }
 
     // Set the gauge potential associated with a SU(2) symmetry in a gauge fields state
-    void set_su2_potential(GaugeSymmetriesVectorPack gauge_fields_state, float4 gauge_potential, float su2_symmetry_index, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
+    void set_su2_potential(GaugeSymmetriesVectorPack gauge_fields_state, half4 gauge_potential, half su2_symmetry_index, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
     {
         modified_gauge_fields_state = gauge_fields_state;
         modified_gauge_fields_state[get_su2_field_index(su2_symmetry_index)] = gauge_potential;
     }
 
     // Set the gauge potential associated with a SU(3) symmetry in a gauge fields state
-    void set_su3_potential(GaugeSymmetriesVectorPack gauge_fields_state, float4 gauge_potential, float su3_symmetry_index, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
+    void set_su3_potential(GaugeSymmetriesVectorPack gauge_fields_state, half4 gauge_potential, half su3_symmetry_index, out GaugeSymmetriesVectorPack modified_gauge_fields_state)
     {
         modified_gauge_fields_state = gauge_fields_state;
         modified_gauge_fields_state[get_su3_field_index(su3_symmetry_index)] = gauge_potential[0];
@@ -88,7 +88,7 @@ namespace GaugeSymmetriesVectorPackOps
     }
 
     // Check if a gauge field state is below a certain provided tolerance threshold
-    bool is_zero(GaugeSymmetriesVectorPack gauge_fields_state, float numerical_tolerance)
+    bool is_zero(GaugeSymmetriesVectorPack gauge_fields_state, half numerical_tolerance)
     {
         for (uint i = 0; i < 12; i++) if (any(abs(gauge_fields_state[i]) > numerical_tolerance)) return false;
         return true;

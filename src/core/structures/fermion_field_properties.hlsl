@@ -4,11 +4,11 @@
 /// This data structure stores the properties of a single spinor field in the simulation
 struct FermionFieldProperties
 {
-    float4 color; // RGB color value
-    float field_mass; // float - the mass of the field
-    float u1_interaction_coupling; // u1 coupling constant
-    float su2_interaction_coupling; // su2 coupling constant
-    float su3_interaction_coupling; // su3 coupling constant
+    half4 color; // RGB color value
+    half field_mass; // half - the mass of the field
+    half u1_interaction_coupling; // u1 coupling constant
+    half su2_interaction_coupling; // su2 coupling constant
+    half su3_interaction_coupling; // su3 coupling constant
 };
 
 #endif

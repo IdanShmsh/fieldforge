@@ -19,8 +19,8 @@ namespace PauliFormalism
     // ψ' = σ₂ψ
     void sigma2(PauliSpinor spinor, out PauliSpinor transformed_spinor)
     {
-        transformed_spinor[0] = float2(spinor[1][1], -spinor[1][0]);
-        transformed_spinor[1] = float2(-spinor[0][1], spinor[0][0]);
+        transformed_spinor[0] = half2(spinor[1][1], -spinor[1][0]);
+        transformed_spinor[1] = half2(-spinor[0][1], spinor[0][0]);
     }
 
     // Apply the sigma-3 matrix to a pauli spinor
@@ -33,7 +33,7 @@ namespace PauliFormalism
 
     // Apply the sigma matrix associated with a specified axis to a pauli spinor
     // ψ' = γᵘψ
-    void apply_pauli_vector(PauliSpinor spinor, float3 coordinates, out PauliSpinor transformed_spinor)
+    void apply_pauli_vector(PauliSpinor spinor, half3 coordinates, out PauliSpinor transformed_spinor)
     {
         PauliSpinor x_transformed;
         PauliSpinor y_transformed;
@@ -46,19 +46,19 @@ namespace PauliFormalism
     }
 
     // Construct a pauli spinor representing a spin state with the specified spherical coordinates (r, theta, phi)
-    void construct_pauli_spinor(float r, float theta, float phi, out PauliSpinor pauli_spinor)
+    void construct_pauli_spinor(half r, half theta, half phi, out PauliSpinor pauli_spinor)
     {
-        float2 exp_theta = ComplexNumbersMath::cxp(float2(0, theta));
-        float2 cos_phi = float2(cos(phi / 2), 0);
-        float2 sin_phi = float2(sin(phi / 2), 0);
+        half2 exp_theta = ComplexNumbersMath::cxp(half2(0, theta));
+        half2 cos_phi = half2(cos(phi / 2), 0);
+        half2 sin_phi = half2(sin(phi / 2), 0);
         pauli_spinor[0] = r * cos_phi;
         pauli_spinor[1] = r * ComplexNumbersMath::prd(sin_phi, exp_theta);
     }
 
     // Construct a pauli spinor representing a spin state with the spin vector
-    void construct_pauli_spinor(float3 spin_vector, out PauliSpinor pauli_spinor)
+    void construct_pauli_spinor(half3 spin_vector, out PauliSpinor pauli_spinor)
     {
-        float3 spherical_coordinates = CommonMath::cartesian_to_spherical(spin_vector);
+        half3 spherical_coordinates = CommonMath::cartesian_to_spherical(spin_vector);
         construct_pauli_spinor(spherical_coordinates[0], spherical_coordinates[1], spherical_coordinates[2], pauli_spinor);
     }
 }
