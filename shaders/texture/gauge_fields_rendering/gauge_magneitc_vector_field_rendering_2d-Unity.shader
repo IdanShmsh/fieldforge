@@ -22,7 +22,7 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/visuals/gauge_renderers/render_gauge_vectors.hlsl"
+            #include "../../../src\visuals\gauge_renderers\render_gauge_vectors_dials.hlsl"
 
             struct appdata
             {
@@ -57,7 +57,7 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
                 length_scale = length_scale ? length_scale : 1.0;
                 half4 color = half4(0, 0, 0, 0);
                 half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
-                color += GaugeRendering::RenderGaugeVector::get_gauge_vectors_dial_color_at_position(rend_magnetic_strengths_lattice_buffer, position, granularity, length_scale);
+                color += GaugeRendering::RenderGaugeVectorsDials::get_gauge_vectors_dial_color_at_position_xy(rend_magnetic_strengths_lattice_buffer, position, granularity, length_scale);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
