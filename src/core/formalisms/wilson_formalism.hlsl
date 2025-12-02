@@ -33,9 +33,9 @@ namespace WilsonFormalism
             FermionFieldStateOps::dup(weak_partner_state, doublet_fermion_state1);
             FermionFieldStateOps::dup(fermion_state, doublet_fermion_state2);
         }
-        FermionStateSymmetryTransformations::sigma1(doublet_fermion_state1, doublet_fermion_state2, su2_gauge_coupling_constant * gauge_potentials[1][axis], doublet_fermion_state1, doublet_fermion_state2);
-        FermionStateSymmetryTransformations::sigma2(doublet_fermion_state1, doublet_fermion_state2, su2_gauge_coupling_constant * gauge_potentials[2][axis], doublet_fermion_state1, doublet_fermion_state2);
-        FermionStateSymmetryTransformations::sigma3(doublet_fermion_state1, doublet_fermion_state2, su2_gauge_coupling_constant * gauge_potentials[3][axis], doublet_fermion_state1, doublet_fermion_state2);
+        FermionStateSymmetryTransformations::sigma1(doublet_fermion_state1, doublet_fermion_state2, gauge_potentials[1][axis] * su2_gauge_coupling_constant, doublet_fermion_state1, doublet_fermion_state2);
+        FermionStateSymmetryTransformations::sigma2(doublet_fermion_state1, doublet_fermion_state2, gauge_potentials[2][axis] * su2_gauge_coupling_constant, doublet_fermion_state1, doublet_fermion_state2);
+        FermionStateSymmetryTransformations::sigma3(doublet_fermion_state1, doublet_fermion_state2, gauge_potentials[3][axis] * su2_gauge_coupling_constant, doublet_fermion_state1, doublet_fermion_state2);
         if (weak_doublet_index) transported_fermion_state = doublet_fermion_state1;
         else transported_fermion_state = doublet_fermion_state2;
     }
@@ -60,9 +60,9 @@ namespace WilsonFormalism
     void parallel_transport_fermion(FermionFieldState fermion_state, FermionFieldState weak_partner_state, GaugeSymmetriesVectorPack gauge_potentials, uint axis, half3 gauge_coupling_constants, bool weak_doublet_index, out FermionFieldState transported_fermion_state)
     {
         transported_fermion_state = fermion_state;
-        if (gauge_coupling_constants[0]) parallel_transport_fermion_u1(transported_fermion_state, gauge_potentials, axis, gauge_coupling_constants[0], transported_fermion_state);
-        if (gauge_coupling_constants[1]) parallel_transport_fermion_su2(transported_fermion_state, weak_partner_state, gauge_potentials, axis, gauge_coupling_constants[1], weak_doublet_index, transported_fermion_state);
-        if (gauge_coupling_constants[2]) parallel_transport_fermion_su3(transported_fermion_state, gauge_potentials, axis, gauge_coupling_constants[2], transported_fermion_state);
+        parallel_transport_fermion_u1(transported_fermion_state, gauge_potentials, axis, gauge_coupling_constants[0], transported_fermion_state);
+        parallel_transport_fermion_su2(transported_fermion_state, weak_partner_state, gauge_potentials, axis, gauge_coupling_constants[1], weak_doublet_index, transported_fermion_state);
+        parallel_transport_fermion_su3(transported_fermion_state, gauge_potentials, axis, gauge_coupling_constants[2], transported_fermion_state);
     }
 
     // Backward parallel transport a fermion state a single lattice step in the direction of a specified axis across
