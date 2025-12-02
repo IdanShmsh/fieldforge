@@ -23,8 +23,8 @@ Shader "Custom/gauge_magnetic_contours_rendering_2d"
 
             #define SPATIAL_DIMENSIONALITY 3
 
-            #include "../../../src/core/analysis/field_interpolations.hlsl"
             #include "../../../src/core/simulation_globals.hlsl"
+            #include "../../../src\visuals\gauge_renderers\render_gauge_vectors_contours.hlsl"
 
             struct appdata
             {
@@ -49,22 +49,15 @@ Shader "Custom/gauge_magnetic_contours_rendering_2d"
             float brightness = 1.0;
             float opacity = 1.0;
             float granularity = 1.0;
+            int definition = 1;
 
             float4 frag(v2f i) : SV_Target
             {
                 brightness = brightness ? brightness : 1.0;
                 opacity = opacity ? opacity : 1.0;
-                opacity = granularity ? granularity : 1.0;
-                half3 position = float3(i.uv.x * (float)simulation_width, i.uv.y * (float)simulation_height, 0);
-                GaugeSymmetriesVectorPack state;
-                FieldInterpolations::get_gauge_state_in_position(position, rend_magnetic_strengths_lattice_buffer, state);
-                float4 color = float4(0, 0, 0, 0);
-                for (int symmetry_index = 0; symmetry_index < 12; symmetry_index++)
-                {
-                    if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
-                    const half4 channels = float4(state[symmetry_index].yzw, 0);
-                    color += sqrt(length(channels) * sqrt(granularity)) * abs(frac(channels * granularity) * 2 - 1) * 2 - 1;
-                }
+                half4 color = half4(0, 0, 0, 0);
+                half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
+                color += GaugeRendering::RenderGaugeVectorsRGBContours::get_gauge_vectors_rgb_contours_color_at_position(rend_magnetic_strengths_lattice_buffer, position, granularity, definition);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
