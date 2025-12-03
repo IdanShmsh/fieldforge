@@ -8,8 +8,12 @@
 
 namespace GaugeRendering
 {
+    /// Implementation of gauge field rendering by mapping vectors onto dials.
+    /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
     namespace RenderGaugeVectorsDials
     {
+        // Get the color at a given position to render gauge vectors as dials.
+        // • Reads directly from the simulation's lattice buffers
         half4 get_gauge_vectors_dial_color_at_position_xy(GaugeLatticeBuffer target_lattice_buffer, half3 position, half granularity, half length_scale)
         {
             half4 color = half4(0, 0, 0, 0);

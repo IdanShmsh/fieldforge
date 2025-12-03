@@ -4,8 +4,11 @@
 #include "../../core/analysis/field_interpolations.hlsl"
 
 
+/// Implementation of some vector dial rendering utilities.
+/// (Vector dial : A visual representation of a vector field where each vector is represented by a dial indicating its direction and magnitude.)
 namespace VectorDialRendering
 {
+    // Calculates the color contribution of a vector field at a specific position using dial representation.
     half4 get_vector_dial_color_at_position_xy(half4 field_vector, half length_scale, half2 offset_coefficient)
     {
         field_vector[0] = 0;
@@ -24,6 +27,7 @@ namespace VectorDialRendering
         return total_color_factor * sqrt(limited_length);
     }
 
+    // Calculates rounded position and offset coefficients for dial rendering based on input position and granularity.
     void calculate_position_offset_variables_xy(half3 position, half granularity, out half3 rounded_position, out half2 offset_coefficient)
     {
         rounded_position = round(position / granularity) * granularity;
