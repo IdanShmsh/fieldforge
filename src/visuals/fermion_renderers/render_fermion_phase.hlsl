@@ -8,9 +8,13 @@
 
 namespace FermionRendering
 {
+    /// Implementation of fermion field rendering based on the phase of the fermion states.
+    /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
     namespace RenderFermionPhase
     {
-        half4 get_fermion_phase_color_at_position(float3 position, uint field_index)
+        // Get the color at a given position based on the phase of the fermion state of the specified field.
+        // • Reads directly from the simulation's lattice buffers
+        half4 get_fermion_phase_color_at_position(half3 position, uint field_index)
         {
             if (!SimulationDataOps::is_fermion_field_active(field_index)) return half4(0, 0, 0, 0);
             FermionFieldState state;

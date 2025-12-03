@@ -8,8 +8,12 @@
 
 namespace GaugeRendering
 {
+    /// Implementation of gauge field rendering as RGB based on the gauge vector components.
+    /// * Functions may read directly from and/or write directly to the simulation's lattice buffers and global values.
     namespace RenderGaugeVectorsRGB
     {
+        // Get the color at a given position based on the gauge vector components mapped to individual colors.
+        // • Reads directly from the simulation's lattice buffers
         half4 get_gauge_vectors_rgb_color_at_position(GaugeLatticeBuffer target_lattice_buffer, half3 position)
         {
             half4 color = half4(0, 0, 0, 0); 
