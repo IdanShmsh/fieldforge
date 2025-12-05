@@ -25,6 +25,8 @@ half radius_cap;
 /// • activity_energy_scale (half)
 ///   This parameter <activity_energy_scale> is incorporated via the blurring radius calculation as:
 ///   blurring_radius = sqrt(1 + pow(energy_density / <activity_energy_scale>, 2)) - 1
+/// • radius_cap (half)
+///   This parameter <radius_cap> sets an upper limit to the blurring radius.
 [numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
 void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
 {
