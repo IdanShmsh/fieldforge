@@ -1,0 +1,81 @@
+#pragma kernel Pass0
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/core/simulation_globals.hlsl"
+#include "../../../src/core/math/fermion_field_state_math.hlsl"
+#include "../../../src/core/ops/simulation_data_ops.hlsl"
+
+RWStructuredBuffer<uint> sparks_lattice_buffer;
+
+half norm_scale;
+half likelihood_coefficient;
+
+uint get_sparks_buffer_index(uint3 sparks_lattice_position)
+{
+    uint3 sparks_lattice_size = uint3(simulation_width, simulation_height, simulation_depth);
+    uint index = (sparks_lattice_position.z * sparks_lattice_size.y +  sparks_lattice_position.y) * sparks_lattice_size.x + sparks_lattice_position.x;
+    return index;
+}
+
+uint cheap_chaotic_hash(uint x)
+{
+    x ^= x << 1;
+    x ^= x >> 1;
+    x *= 747796405u;
+    x ^= x << 1;
+    return x;
+}
+
+half cheap_semi_random_from_state(uint position, FermionFieldState state)
+{
+    uint acc = 0;
+    acc ^= cheap_chaotic_hash(position * 2654435761u);
+    [unroll]
+    for(int i = 0; i < 12; i++)
+    {
+        uint ax = asuint(state[i].x);
+        uint ay = asuint(state[i].y);
+        acc ^= cheap_chaotic_hash(ax + i*13u);
+        acc ^= cheap_chaotic_hash(ay + i*31u);
+    }
+    acc = cheap_chaotic_hash(acc);
+    float r = (acc & 0x00FFFFFFu) * (1.0 / 16777216.0);
+    return r;
+}
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation loads sparks chaotically with likelihood proportional to the norms of the fermion fields.
+/// Properties:
+/// • norm_scale (half)
+///   Defines the scale of the fermion norms to be assigned probable sparks for.
+/// • likelihood_coefficient (half)
+///   Defines how strongly the fermion norms influence the likelihood of sparks being assigned.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    norm_scale = norm_scale ? norm_scale : 1.0;
+    likelihood_coefficient = likelihood_coefficient ? likelihood_coefficient : 0.1;
+    uint3 position = dispatch_thread_id;
+    uint sparks_buffer_index = get_sparks_buffer_index(position);
+    for (uint field_index = 0; field_index < FERMION_FIELDS_COUNT; field_index++)
+    {
+        if (!SimulationDataOps::is_fermion_field_active(field_index)) continue;
+        uint fermion_lattice_buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(position, field_index);
+        FermionFieldState fermion_state = rend_fermions_lattice_buffer[fermion_lattice_buffer_index];
+        half norm = FermionFieldStateMath::norm(fermion_state);
+        half norm_relative = norm / norm_scale;
+        half state_factor = CommonMath::harmonic_mean(norm_relative, 1.0);
+        half cap = state_factor * state_factor * likelihood_coefficient * 0.01;
+        half random_number = cheap_semi_random_from_state(position, fermion_state);
+        uint sparks_addition = random_number < cap ? norm_relative * 1024u : 0u;
+        InterlockedAdd(sparks_lattice_buffer[sparks_buffer_index], sparks_addition);
+    }
+}
