@@ -55,11 +55,11 @@ Shader "Custom/bloom_rendering_2d"
 
             void collect_corner_colors(half3 bloom_lattice_position, out half3 colors[4])
             {
-                half3 bloom_lattice_size = half3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
                 colors[0] = half3(0, 0, 0);
                 colors[1] = half3(0, 0, 0);
                 colors[2] = half3(0, 0, 0);
                 colors[3] = half3(0, 0, 0);
+                half3 bloom_lattice_size = half3((simulation_width + 3) / 4, (simulation_height + 3) / 4, (simulation_depth + 3) / 4);
                 half3 floor_position = floor(bloom_lattice_position);
                 floor_position = clamp(floor_position, half3(0, 0, 0), bloom_lattice_size - 1);
                 half3 ceil_position = ceil(bloom_lattice_position);
@@ -68,13 +68,13 @@ Shader "Custom/bloom_rendering_2d"
                 for (uint color_channel = 0; color_channel < 3; color_channel++)
                 {
                     lattice_index = get_bloom_buffer_index(uint3(floor_position.x, floor_position.y, floor_position.z), color_channel);
-                    colors[0][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0f;
+                    colors[0][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0;
                     lattice_index = get_bloom_buffer_index(uint3(floor_position.x, ceil_position.y, floor_position.z), color_channel);
-                    colors[1][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0f;
+                    colors[1][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0;
                     lattice_index = get_bloom_buffer_index(uint3(ceil_position.x, floor_position.y, floor_position.z), color_channel);
-                    colors[2][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0f;
+                    colors[2][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0;
                     lattice_index = get_bloom_buffer_index(uint3(ceil_position.x, ceil_position.y, floor_position.z), color_channel);
-                    colors[3][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0f;
+                    colors[3][color_channel] = (half)bloom_lattice_buffer[lattice_index] / 255.0;
                 }
             }
 
