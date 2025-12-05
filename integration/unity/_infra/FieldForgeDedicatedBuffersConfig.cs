@@ -27,7 +27,13 @@ namespace FieldForge
                 BufferName = "bloom_lattice_temp_buffer",
                 DataType = typeof(int),
                 SizeCalculator = data => (int)(Math.Ceiling(data.simulationWidth / 4.0f) * Math.Ceiling(data.simulationHeight / 4.0f) * Math.Ceiling(data.simulationDepth / 4.0f) * 3) // x0.25x0.25x0.25 the lattice size, x3 rgb channels
-            }
+            },
+            new BufferDeclaration
+            {
+                BufferName = "sparks_lattice_buffer",
+                DataType = typeof(uint),
+                SizeCalculator = data => (data.simulationWidth * data.simulationHeight * data.simulationDepth)
+            },
         };
 
         // =========================================================================================================
