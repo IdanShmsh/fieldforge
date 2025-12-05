@@ -11,12 +11,7 @@ namespace FieldForge
 
         void Awake()
         {
-            if (simulationManager == null)
-            {
-                Debug.LogError("[FieldForge] No simulation manager found. Attach to a simulation manager.");
-                Destroy(this);
-                return;
-            }
+            EnsureSimulationManager();
         }
 
         void OnEnable()
@@ -24,9 +19,11 @@ namespace FieldForge
             awakeTime++;
         }
 
-        private void Update()
+        private void EnsureSimulationManager()
         {
-            
+            if (simulationManager) return;
+            Debug.LogError("[FieldForge] No simulation manager found. Attach to a simulation manager.");
+            Destroy(this);
         }
     }
 }
