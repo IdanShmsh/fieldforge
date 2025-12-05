@@ -1,0 +1,39 @@
+#pragma kernel Pass0
+
+#define THREAD_GROUP_SIZE_X 64
+#define THREAD_GROUP_SIZE_Y 1
+#define THREAD_GROUP_SIZE_Z 1
+#define THREAD_GROUP_SIZE (THREAD_GROUP_SIZE_X * THREAD_GROUP_SIZE_Y * THREAD_GROUP_SIZE_Z)
+
+#define SPATIAL_DIMENSIONALITY 3
+
+#include "../../../src/core/simulation_globals.hlsl"
+
+RWStructuredBuffer<uint> sparks_lattice_buffer;
+
+half reduction_time;
+
+uint get_sparks_buffer_index(uint3 sparks_lattice_position)
+{
+    uint3 sparks_lattice_size = uint3(simulation_width, simulation_height, simulation_depth);
+    uint index = (sparks_lattice_position.z * sparks_lattice_size.y +  sparks_lattice_position.y) * sparks_lattice_size.x + sparks_lattice_position.x;
+    return index;
+}
+
+/// --------------------------------------------------------------------------------------------------------------
+/// This compute-shader represents the entry point for an operation in FieldForge's configurable compute-pipeline.
+/// --------------------------------------------------------------------------------------------------------------
+/// This pipeline operation updates sparks by reducing their intensity over time exponentially.
+/// Properties:
+/// • reduction_time (half)
+///   Defines the time constant over which sparks decay exponentially.
+[numthreads(THREAD_GROUP_SIZE_X, THREAD_GROUP_SIZE_Y, THREAD_GROUP_SIZE_Z)]
+void Pass0(uint3 dispatch_thread_id : SV_DispatchThreadID)
+{
+    reduction_time = reduction_time ? reduction_time : 1.0;
+    uint3 position = dispatch_thread_id;
+    uint sparks_buffer_index = get_sparks_buffer_index(position);
+    uint sparks_value = sparks_lattice_buffer[sparks_buffer_index];
+    uint sparks_new_value = uint(exp(-simulation_temporal_unit / reduction_time) * sparks_value);
+    InterlockedAdd(sparks_lattice_buffer[sparks_buffer_index], sparks_new_value - sparks_value);
+}
