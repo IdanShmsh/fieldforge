@@ -7,6 +7,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Object = UnityEngine.Object;
+using RenderTexture = UnityEngine.RenderTexture;
 
 namespace FieldForge
 {
@@ -181,12 +182,14 @@ namespace FieldForge
         private void InitializeVideoRecorder()
         {
             if (_videoRecorder == null) return;
-            if (_targetTexture == null) return;
-            CommandBuffer.RequestAsyncReadback(_targetTexture, request =>
+            RenderTexture captureTexture = new RenderTexture(Screen.width, Screen.height, 1);
+            CommandBuffer.Blit(_targetTexture ? _targetTexture : BuiltinRenderTextureType.CameraTarget, captureTexture);
+            CommandBuffer.RequestAsyncReadback(captureTexture, request =>
             {
                 if (request.hasError) return;
                 if (_videoRecorder == null) return;
-                _videoRecorder.CommitFrame(request, _targetTexture.width, _targetTexture.height);
+                if (captureTexture == null) return;
+                _videoRecorder.CommitFrame(request, captureTexture.width, captureTexture.height);
             });
         }
 
