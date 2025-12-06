@@ -14,8 +14,8 @@ namespace FermionStateSymmetryTransformations
         DiracFormalism::project_left_chiral(doublet_fermion_state2, left_chiral_doublet_fermion2);
         DiracFormalism::project_right_chiral(doublet_fermion_state1, transformed_doublet_fermion1);
         DiracFormalism::project_right_chiral(doublet_fermion_state2, transformed_doublet_fermion2);
-        FermionFieldStateMath::sum(transformed_doublet_fermion1, left_chiral_doublet_fermion2, transformed_doublet_fermion1);
-        FermionFieldStateMath::sum(transformed_doublet_fermion2, left_chiral_doublet_fermion1, transformed_doublet_fermion2);
+        FermionFieldStateMath::sum(transformed_doublet_fermion1, left_chiral_doublet_fermion1, transformed_doublet_fermion1);
+        FermionFieldStateMath::sum(transformed_doublet_fermion2, left_chiral_doublet_fermion2, transformed_doublet_fermion2);
     }
 
     // Apply σ^1 rotation to spinor doublet (ψ1, ψ2) by given angle
@@ -30,8 +30,8 @@ namespace FermionStateSymmetryTransformations
         DiracFormalism::project_right_chiral(doublet_fermion_state2, transformed_doublet_fermion2);
         FermionFieldStateMath::scl_sum(left_chiral_doublet_fermion1, left_chiral_doublet_fermion2, half2(c, 0), half2(0, -s), left_chiral_doublet_fermion1);
         FermionFieldStateMath::scl_sum(left_chiral_doublet_fermion1, left_chiral_doublet_fermion2, half2(0, -s), half2(c, 0), left_chiral_doublet_fermion2);
-        FermionFieldStateMath::sum(transformed_doublet_fermion1, left_chiral_doublet_fermion2, transformed_doublet_fermion1);
-        FermionFieldStateMath::sum(transformed_doublet_fermion2, left_chiral_doublet_fermion1, transformed_doublet_fermion2);
+        FermionFieldStateMath::sum(transformed_doublet_fermion1, left_chiral_doublet_fermion1, transformed_doublet_fermion1);
+        FermionFieldStateMath::sum(transformed_doublet_fermion2, left_chiral_doublet_fermion2, transformed_doublet_fermion2);
     }
 
     // Apply σ^2 to spinor doublet: (ψ1 → -iψ2, ψ2 → iψ1)
