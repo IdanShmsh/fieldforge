@@ -23,7 +23,7 @@ namespace FieldForge
             var startInfo = new System.Diagnostics.ProcessStartInfo
             {
                 FileName = ffmpegExecutable,
-                Arguments = $"-y -f rawvideo -vcodec rawvideo -pixel_format bgra -video_size {width}x{height} -framerate {frameRate} -i - -c:v libx264 -pix_fmt yuv420p \"{outputPath}\"",
+                Arguments = BuildFfmpegArguments(outputPath, width, height, frameRate),
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardError = true, // IMPORTANT: capture errors!
@@ -42,6 +42,19 @@ namespace FieldForge
                 if (!string.IsNullOrEmpty(e.Data)) Debug.LogWarning($"[FFmpeg] {e.Data}");
             };
             _ffmpeg.BeginErrorReadLine();
+        }
+
+        private static string BuildFfmpegArguments(string outputPath, int width, int height, int frameRate)
+        {
+            string ext = Path.GetExtension(outputPath).ToLowerInvariant();
+            string common = $"-y -f rawvideo -vcodec rawvideo -pixel_format bgra -video_size {width}x{height} -framerate {frameRate} -i - ";
+
+            if (ext == ".mov") return common + "-c:v prores_ks -profile:v 4444 -pix_fmt bgra \"" + outputPath + "\"";
+            if (ext == ".mkv") return common + "-c:v ffv1 -level 3 -pix_fmt bgra \"" + outputPath + "\"";
+            if (ext == ".mp4") return common + "-c:v libx264 -crf 0 -preset ultrafast -pix_fmt yuv444p \"" + outputPath + "\"";
+            if (ext == ".avi") return common + "-c:v ffv1 -level 3 -pix_fmt bgra \"" + outputPath + "\"";
+
+            return common + "-c:v libx264 -crf 0 -preset ultrafast -pix_fmt yuv444p \"" + outputPath + "\"";
         }
 
         public void CommitFrame(AsyncGPUReadbackRequest request, int width, int height)
