@@ -8,6 +8,23 @@ The system is designed to support theory-backed implementations, allowing rapid 
 
 ---
 
+## Visual Demonstration
+
+FieldForge includes a real-time visual interface that renders the live state of the simulated fields. Fields can be externally perturbed to explore their response, or left to evolve freely to exhibit emergent structure.
+
+The gallery below shows live captures from FieldForge simulations:
+
+<p align="center">
+  <img src="assets/gifs/Interaction.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <img src="assets/gifs/EM.gif" width="300" alt="Free Fermion Fields"/>
+  <img src="assets/gifs/Fermion.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <img src="assets/gifs/DoubleSlit.gif" width="300" alt="Free Fermion Fields"/>
+</p>
+
+Each frame is fully determined by the encoded theory - no randomness, no noise, no render approximations -  simulations are accurate up to machine precision.
+
+---
+
 ## Core Architecture
 
 FieldForge is built around a modular lattice simulation pipeline with support for:
@@ -72,26 +89,6 @@ FieldForge operates under the following foundational constraints:
 - **Composability:** The simulation structure is modular. New dynamics may be encoded by swapping or extending implementation shaders without modifying the core.
 
 This philosophical framework positions FieldForge not as a tool for predictive modeling, but as a platform for *structural exploration* — a space where the inner logic of quantum field dynamics is made accessible and manipulable.
-
----
-
-## Visual Demonstration
-
-FieldForge includes a real-time visual interface that renders the live state of the simulated fields. Fields can be externally perturbed to explore their response, or left to evolve freely to exhibit emergent structure.
-
-The gallery below shows live captures from FieldForge simulations:
-
-<p align="center">
-  <img src="assets/gifs/fermion_vs_em1.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
-  <img src="assets/gifs/gauge_vector_potential.gif" width="300" alt="Free Fermion Fields"/>
-  <img src="assets/gifs/fermion+u1_gauge.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
-  <img src="assets/gifs/fermion_phases_and_dials.gif" width="300" alt="Free Fermion Fields"/>
-  <img src="assets/gifs/fermion_double_slit.gif" width="300" alt="Fermion Double Slit"/>
-  <img src="assets/gifs/free_electromagnetic_gauge_potential.gif" width="300" alt="Free U1 Gauge Potential"/>
-  <img src="assets/gifs/fermion_vs_em2.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
-</p>
-
-Each frame is fully determined by the encoded theory — no randomness, no noise, no render approximations.
 
 ---
 
