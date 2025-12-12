@@ -85,7 +85,7 @@ namespace FermionFieldEvolution
             FermionFieldStateMath::sum(next_state, temporal_slope, next_state);
 
             // Parallel transport the entire result
-            WilsonFormalism::parallel_transport_fermion(next_state, evolution_cache.weak_partner_state, evolution_cache.gauge_state, 0, evolution_cache.coupling_constants, evolution_cache.weak_doublet_index, next_state);
+            WilsonFormalism::backward_parallel_transport_fermion(next_state, evolution_cache.weak_partner_state, evolution_cache.gauge_state, 0, evolution_cache.coupling_constants, evolution_cache.weak_doublet_index, next_state);
         }
 
         // Ensure the validity of the evolution result
