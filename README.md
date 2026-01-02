@@ -16,6 +16,7 @@ The gallery below shows live captures from FieldForge simulations:
 
 <p align="center">
   <img src="assets/gifs/Interaction.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <img src="assets/gifs/Magnetic.gif" width="300" alt="Fermion-U1 Uniform Magnetic Coupling"/>
   <img src="assets/gifs/EM.gif" width="300" alt="Free Fermion Fields"/>
   <img src="assets/gifs/Fermion.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
   <img src="assets/gifs/DoubleSlit.gif" width="300" alt="Free Fermion Fields"/>
