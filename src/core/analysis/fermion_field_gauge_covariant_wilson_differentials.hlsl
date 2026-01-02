@@ -65,7 +65,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
             neighboring_fermion_state1,
             neighboring_weak_partner_state1,
             link_gauge_potentials1,
-            axis,
+            axis + 1,
             coupling_constants,
             weakDoubletIndex,
             neighboring_fermion_state1);
@@ -73,7 +73,7 @@ namespace FermionFieldGaugeCovariantWilsonDifferentials
             neighboring_fermion_state2,
             neighboring_weak_partner_state2,
             link_gauge_potentials2,
-            axis,
+            axis + 1,
             coupling_constants,
             weakDoubletIndex,
             neighboring_fermion_state2);
