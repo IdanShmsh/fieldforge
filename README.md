@@ -42,6 +42,16 @@ Each pipeline process (e.g. fermion evolution, gauge evolution, current extracti
 
 ## Implemented Theories and Features
 
+### Core Capabilities
+
+These elements form the backbone of FieldForge’s theoretical engine. They provide the definitions, structures, and mathematical mechanisms required for the simulation’s high-fidelity evolution and internal coherence.
+
+- **Dirac Formalism (Spinor Structure)** - Provides the algebraic backbone for spinor field dynamics. Includes gamma matrix contraction rules, spinor symmetry properties, and the structural representation of spin and Lorentz transformations. This formalism defines how spinor states evolve, interact, and transform under symmetry operations.
+
+- **Yang-Mills Formalism (Gauge Field Theory)** - Encodes the structure of interacting gauge fields. Includes the full tensorial definition of the field strength, non-commutative gauge potentials, and structure constants of the underlying Lie algebra. Supports both free-field evolution and interaction with matter via covariant derivatives and currents.
+
+- **Wilson Formalism (Geometric Gauge Transport)** - Describes gauge interaction through parallel transport between adjacent lattice sites. Link variables encode local gauge transformations, ensuring that neighbor comparisons and current extractions remain gauge covariant. This formalism is central to all interaction logic and supports both abelian and non-abelian symmetries.
+
 ### Simulation Processes
 
 These are the real-time processes executed during simulation. Each one corresponds to a distinct standalone processes running on the GPU as an independent pipeline stage.
@@ -54,17 +64,15 @@ These are the real-time processes executed during simulation. Each one correspon
 
 - **Poking (Real-Time Perturbations)** - Fields may be perturbed during simulation by localized external input. This enables the injection of disturbances such as impulses, waves, or pulses, allowing users to observe reactive behavior and response propagation in real time.
 
-### Core Capabilities
+### Rendering Abilities
 
-These elements form the backbone of FieldForge’s theoretical engine. They provide the definitions, structures, and mathematical mechanisms required for the simulation’s high-fidelity evolution and internal coherence.
+Visual presentation is central to this project's main objective - exposing the underlying classical-like structure of quantum fields and their interaction. FieldForge provides a wide range of independent stackable renderers unlocking a massive collection of possible visualizations.
 
-- **Fermion Current Extraction** - Computes the gauge-covariant Dirac current $\bar{\psi} \gamma^\mu \psi$, a key quantity used to drive gauge field evolution. Currents are calculated with geometric consistency, ensuring correct transformation under gauge symmetries and proper conservation in coupled systems.
+- **Fermion Renderers** - Allow rendering properties (phase, amplitude, dirac-norm, spin-state...) of the fermion fields in the simulation bringing out different aspects of structure.
 
-- **Wilson Formalism (Geometric Gauge Transport)** - Describes gauge interaction through parallel transport between adjacent lattice sites. Link variables encode local gauge transformations, ensuring that neighbor comparisons and current extractions remain gauge covariant. This formalism is central to all interaction logic and supports both abelian and non-abelian symmetries.
+- **Gauge Renderes** - Allow rendering the different symmetry-associated vector-fields (gauge-potential, field strengths...) in the simulation in several ways (lattice of dials, vector components mapped to RGB channels etc...) conceptualizing behavior with different approaches.
 
-- **Dirac Formalism (Spinor Structure)** - Provides the algebraic backbone for spinor field dynamics. Includes gamma matrix contraction rules, spinor symmetry properties, and the structural representation of spin and Lorentz transformations. This formalism defines how spinor states evolve, interact, and transform under symmetry operations.
-
-- **Yang-Mills Formalism (Gauge Field Theory)** - Encodes the structure of interacting gauge fields. Includes the full tensorial definition of the field strength, non-commutative gauge potentials, and structure constants of the underlying Lie algebra. Supports both free-field evolution and interaction with matter via covariant derivatives and currents.
+- **Effects and Filters** - Make renders even more visually appealing and engaging.
 
 ### Non-Formal Accessories
 
