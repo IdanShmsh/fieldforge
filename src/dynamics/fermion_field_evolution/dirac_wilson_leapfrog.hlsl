@@ -27,6 +27,7 @@ namespace FermionFieldEvolution
             FermionFieldProperties field_properties;
             half3 coupling_constants;
             FermionFieldSpacetimeGradient spacetime_gradient;
+            FermionFieldState spatial_laplacian;
             bool weak_doublet_index;
         };
 
@@ -49,6 +50,7 @@ namespace FermionFieldEvolution
             evolution_data.field_properties = fermion_field_properties[fermion_field_index];
             evolution_data.coupling_constants = SimulationDataOps::obtain_fermion_coupling_constants_tuple(fermion_field_index);
             FermionFieldGaugeCovariantWilsonDifferentials::spacetime_gradient(position, fermion_field_index, evolution_data.spacetime_gradient);
+            FermionFieldGaugeCovariantWilsonDifferentials::spatial_laplacian(position, fermion_field_index, evolution_data.spatial_laplacian);
             evolution_data.weak_doublet_index = fermion_field_index % 2 == 0;
         }
 
@@ -61,6 +63,11 @@ namespace FermionFieldEvolution
 
             // Factor in the mass term
             FermionFieldStateMath::scl(evolution_cache.field_state, half2(0, evolution_cache.field_properties.field_mass), temporal_slope);
+
+            // Factor in the Wilson term
+            FermionFieldState wilson_term = evolution_cache.spatial_laplacian;
+            FermionFieldStateMath::scl(wilson_term, half2(0, 0.5h * simulation_wilson_r * simulation_spatial_unit), wilson_term);
+            FermionFieldStateMath::sum(temporal_slope, wilson_term, temporal_slope);
 
             // Factor and sum the kinetic terms
             FermionFieldState tmp;

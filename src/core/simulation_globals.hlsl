@@ -41,6 +41,7 @@ half simulation_temporal_unit;
 half simulation_non_abelian_self_interaction;
 half simulation_fermion_density_limit;
 half simulation_gauge_norm_limit;
+half simulation_wilson_r = 0.5;
 int simulation_field_mask;
 half simulation_brightness = 1;
 
