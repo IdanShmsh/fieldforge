@@ -13,19 +13,21 @@ A direct implementation of Dirac's formalism for a Dirac field's dynamics and ev
 A fermion field obeys the Dirac equation:
 
 $$
-(\gamma^\mu D_\mu + im) \psi = 0 \tag{1.1.1}
+(\gamma^\mu D_\mu - im) \psi = 0 \tag{1.1.1}
 $$
 
-where $D_\mu$ is the covariant derivative, which depends on the gauge fields $A^a_\mu(x)$:
+To suppress fermion doubling inherent to naive lattice discretizations, a Wilson term is added to the Dirac operator. The Wilson–Dirac equation takes the form:
 
 $$
-D_\mu = \partial_\mu - igA_\mu^a T^a
+(\gamma^\mu D_\mu - im - \tfrac{r}{2} a D_i D_i) \psi = 0 \tag{1.1.2}
 $$
 
-A simple algebraic development of $(1.1.1)$ leads to:
+where $r$ is a dimensionless Wilson parameter, $a \equiv \Delta x$ is the lattice spacing, and $D_i D_i$ denotes the gauge-covariant spatial Laplacian. The Wilson term acts as a momentum-dependent mass shift, lifting the unwanted doubler modes near the edges of the Brillouin zone while leaving the low-momentum physical mode intact.
+
+A simple algebraic development of $(1.1.2)$ leads to:
 
 $$
-D_0 \psi = \gamma^0(im - \gamma^i D_i)\psi \tag{1.2.1}
+D_0 \psi = \gamma^0(\gamma^i D_i + im + \tfrac{r}{2} a D_i D_i)\psi \tag{1.2.1}
 $$
 
 An approximation of the time derivatives using finite differences can be performed, with the addition of some small time interval $\Delta t$.
@@ -46,16 +48,29 @@ $$
 D_\mu \psi^n(x) \approx \frac{U^n_\mu(x)\psi(x + \Delta x \hat \mu) - \psi^n(x - \Delta x \hat \mu)}{2 \Delta x} \tag{2.1.2}
 $$
 
+The Wilson term introduces a gauge-covariant spatial curvature, implemented as a second-order finite difference (a lattice Laplacian):
+
+$$
+D_i D_i \, \psi^n(x)
+\approx \frac{1}{(\Delta x)^2} \sum_i \left(
+2\psi^n(x)
+- U^n_i(x)\psi^n(x + \Delta x \, \hat i)
+- U^{n\,\dagger}_i(x - \Delta x \, \hat i)\psi^n(x - \Delta x \, \hat i)
+\right) \tag{2.1.3}
+$$
+
+This term is scalar in spinor space, gauge-covariant by construction, and contributes an effective momentum-dependent mass shift of order $r/\Delta x$ to high-momentum modes.
+
 To support a leapfrog structure for the evolution, a central difference form of the covariant derivative would be used along the temporal axis:
 
 $$
-D_0 \psi^n \approx \frac{U^n_0(x)\psi^{n+1}(x) - {U^{n-1}_0}^\dagger(x)\psi^{n-1}(x)}{2 \Delta t} \tag{2.1.3}
+D_0 \psi^n \approx \frac{U^n_0(x)\psi^{n+1}(x) - {U^{n-1}_0}^\dagger(x)\psi^{n-1}(x)}{2 \Delta t} \tag{2.1.4}
 $$
 
 From which, the following relation can be easily obtained:
 
 $$
-\psi^{n+1} = 2\Delta t \cdot U^\dagger_0(x) D_0 \psi^{n} + U^\dagger_0(x){U^{n-1}_0}^\dagger(x) \psi^{n-1} \tag{2.1.4}
+\psi^{n+1} = 2\Delta t \cdot U^\dagger_0(x) D_0 \psi^{n} + U^\dagger_0(x){U^{n-1}_0}^\dagger(x) \psi^{n-1} \tag{2.1.5}
 $$
 
 Substituting the expression for $D_0 \psi$ from equation $(1.2.1)$ into the leapfrog formulation yields the final update rule:
@@ -65,9 +80,12 @@ $$
 \psi^{n+1}(x) =
 U^\dagger_0(x){U^{n-1}_0}^\dagger(x)\psi^{n-1}(x)
 \ +\  2\Delta t \cdot \gamma^0 U^\dagger_0(x) \left(
-im\psi^n(x) - \gamma^i \left[
-\frac{U^n_i(x)\psi^n(x + \Delta x \ \hat i) - \psi^n(x)}{\Delta x}
-\right] \right)
+\gamma^i \left[
+\frac{U^n_i(x)\psi^n(x + \Delta x \, \hat i) - \psi^n(x)}{\Delta x}
+\right]
++ i m \psi^n(x)
++ \tfrac{r}{2} \Delta x \, D_i D_i \, \psi^n(x)
+\right)
 \quad}
 $$
 
