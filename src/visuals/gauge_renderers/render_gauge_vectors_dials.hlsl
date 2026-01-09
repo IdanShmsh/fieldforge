@@ -26,6 +26,7 @@ namespace GaugeRendering
             {
                 if (!SimulationDataOps::is_gauge_symmetry_active(symmetry_index)) continue;
                 half4 field_vector = state[symmetry_index];
+                field_vector[3] = 0;
                 half3 symmetry_color = CommonMath::hsv2rgb(half3(symmetry_index / 12.0f, 0.5f, 1));
                 color += half4(symmetry_color, 1) * VectorDialRendering::get_vector_dial_color_at_position_xy(field_vector, length_scale, offset_coefficient);
             }
