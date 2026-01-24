@@ -29,19 +29,30 @@ namespace FieldModesInjection
             FermionFieldProperties field_properties = fermion_field_properties[field_index];
             half field_mass = field_properties.field_mass;
 
-            FermionFieldState new_state;
-
-            DiracFormalism::construct_spin_state(spin_vector, wave_vector, field_mass, new_state);
             half3 delta_position = position - origin;
-            half2 position_phase = amplitude * ComplexNumbersMath::cxp(half2(-dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, position - origin)));
-            FermionFieldStateMath::scl(new_state, position_phase, new_state);
+            half3 effective_momentum = sin(wave_vector) / simulation_spatial_unit;
+            half wilson_mass_shift = (simulation_wilson_r / simulation_spatial_unit) * ((1 - cos(wave_vector.x)) + (1 - cos(wave_vector.y)) + (1 - cos(wave_vector.z)));
+            half effective_mass = field_mass + wilson_mass_shift;
+            half continuum_energy = sqrt(dot(effective_momentum, effective_momentum) + effective_mass * effective_mass);
+            half effective_energy = asin(clamp(continuum_energy * simulation_temporal_unit, -1.0h, 1.0h)) / simulation_temporal_unit;
+
+            FermionFieldState injected_state;
+            DiracFormalism::construct_spin_state(spin_vector, effective_momentum, effective_mass, injected_state);
+            half2 position_phase = amplitude * ComplexNumbersMath::cxp(half2(-dot(delta_position * delta_position, inverse_gaussian_width * inverse_gaussian_width), dot(wave_vector, delta_position)));
+            FermionFieldStateMath::scl(injected_state, position_phase, injected_state);
+
+            FermionFieldState injected_previous_state;
+            half2 temporal_phase = ComplexNumbersMath::cxp(half2(0, effective_energy * simulation_temporal_unit));
+            FermionFieldStateMath::scl(injected_state, temporal_phase, injected_previous_state);
 
             FermionFieldState current_state = crnt_fermions_lattice_buffer[buffer_index];
             FermionFieldState previous_state = prev_fermions_lattice_buffer[buffer_index];
-            FermionFieldStateMath::sum(previous_state, new_state, new_state);
-            FermionFieldStateMath::sum(current_state, new_state, new_state);
-            prev_fermions_lattice_buffer[buffer_index] = new_state;
-            crnt_fermions_lattice_buffer[buffer_index] = new_state;
+
+            FermionFieldStateMath::sum(previous_state, injected_previous_state, previous_state);
+            FermionFieldStateMath::sum(current_state, injected_state, current_state);
+
+            prev_fermions_lattice_buffer[buffer_index] = previous_state;
+            crnt_fermions_lattice_buffer[buffer_index] = current_state;
         }
 
         // Inject all fermion modes in the buffer at a specified position
