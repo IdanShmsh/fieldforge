@@ -15,11 +15,20 @@ FieldForge includes a real-time visual interface that renders the live state of 
 The gallery below shows live captures from FieldForge simulations:
 
 <p align="center">
-  <img src="assets/gifs/Interaction.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <h4>Charged Fermion/Anti-Fermion Pair In A Uniform Depth-Oriented Magnetic Field</h4>
   <img src="assets/gifs/Magnetic.gif" width="300" alt="Fermion-U1 Uniform Magnetic Coupling"/>
+  <h4>Charged Fermion Packet Reacting To An Abruptly Activated Electric Monopole</h4>
+  <img src="assets/gifs/Coloumb.gif" width="300" alt="Fermion-U1 Monopole Electric Coupling"/>
+  <h4>Massive Fermion Packet Passing Through A Double Slit Barrier</h4>
+  <img src="assets/gifs/Doubleslit.gif" width="300" alt="Fermion Double Slit"/>
+  <h4>Particle/Anti-Particle Pair Scattering In A Non-Trivial/Time-Evolving U1 Potential</h4>
+  <img src="assets/gifs/Interaction.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
+  <h4>Fermion Packets With Equal Mass-Different Momentum Tunneling Through A Potential Barrier</h4>
+  <img src="assets/gifs/Tunneling.gif" width="300" alt="Fermion Barrier Tunneling"/>
+  <h4>Free Evolution Of Perturbed Electromagnetic Fields</h4>
   <img src="assets/gifs/EM.gif" width="300" alt="Free Fermion Fields"/>
+  <h4>Free Evolution Of Perturbed Fermion Field</h4>
   <img src="assets/gifs/Fermion.gif" width="300" alt="Fermion-U1 Potential Coupling"/>
-  <img src="assets/gifs/DoubleSlit.gif" width="300" alt="Free Fermion Fields"/>
 </p>
 
 Each frame is fully determined by the encoded theory - no randomness, no noise, no render approximations -  simulations are accurate up to machine precision.
