@@ -72,11 +72,11 @@ namespace FermionFieldEvolution
             // Factor and sum the kinetic terms
             FermionFieldState tmp;
             DiracFormalism::gamma1(evolution_cache.spacetime_gradient[1], tmp);
-            FermionFieldStateMath::sub(temporal_slope, tmp, temporal_slope);
+            FermionFieldStateMath::sum(temporal_slope, tmp, temporal_slope);
             DiracFormalism::gamma2(evolution_cache.spacetime_gradient[2], tmp);
-            FermionFieldStateMath::sub(temporal_slope, tmp, temporal_slope);
+            FermionFieldStateMath::sum(temporal_slope, tmp, temporal_slope);
             DiracFormalism::gamma3(evolution_cache.spacetime_gradient[3], tmp);
-            FermionFieldStateMath::sub(temporal_slope, tmp, temporal_slope);
+            FermionFieldStateMath::sum(temporal_slope, tmp, temporal_slope);
 
             // Multiply all by gamma0
             DiracFormalism::gamma0(temporal_slope, temporal_slope);
