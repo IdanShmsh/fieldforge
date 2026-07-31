@@ -2,8 +2,8 @@
 /// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
 /// -----------------------------------------------------------------------------------------------
 /// This pipeline operation renders the gauge magnetic within the xy-plane of the simulation by
-/// coloring pixels to indicate dials pointing along the fields' vector potential directions.
-Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
+/// coloring pixels to indicate tinted dials pointing along the fields' vector potential directions.
+Shader "Custom/gauge_magnetic_tinted_vector_field_rendering_2d"
 {
     SubShader
     {
@@ -48,6 +48,9 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
             half opacity = 1.0;
             half granularity = 1.0;
             half length_scale = 1.0;
+            half lattice_offset_x = 0.0;
+            half lattice_offset_y = 0.0;
+            half lattice_offset_z = 0.0;
 
             half4 frag(v2f i) : SV_Target
             {
@@ -57,7 +60,8 @@ Shader "Custom/gauge_magnetic_vector_field_rendering_2d"
                 length_scale = length_scale ? length_scale : 1.0;
                 half4 color = half4(0, 0, 0, 0);
                 half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
-                color += GaugeRendering::RenderGaugeVectorsDials::get_gauge_vectors_dial_color_at_position_xy(rend_magnetic_strengths_lattice_buffer, position, granularity, length_scale);
+                half3 lattice_offset = half3(lattice_offset_x, lattice_offset_y, lattice_offset_z);
+                color += GaugeRendering::RenderGaugeVectorsDials::get_gauge_vectors_tinted_dial_color_at_position_xy(rend_magnetic_strengths_lattice_buffer, position, granularity, length_scale, lattice_offset);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;

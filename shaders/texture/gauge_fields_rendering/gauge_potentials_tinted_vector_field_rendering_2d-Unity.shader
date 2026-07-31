@@ -2,8 +2,8 @@
 /// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
 /// -----------------------------------------------------------------------------------------------
 /// This pipeline operation renders the gauge potentials within the xy-plane of the simulation by
-/// coloring pixels to indicate dials pointing along the fields' vector potential directions.
-Shader "Custom/gauge_potentials_vector_field_rendering_2d"
+/// coloring pixels to indicate tinted dials pointing along the fields' vector potential directions.
+Shader "Custom/gauge_potentials_tinted_vector_field_rendering_2d"
 {
     SubShader
     {
@@ -61,7 +61,7 @@ Shader "Custom/gauge_potentials_vector_field_rendering_2d"
                 half4 color = half4(0, 0, 0, 0);
                 half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
                 half3 lattice_offset = half3(lattice_offset_x, lattice_offset_y, lattice_offset_z);
-                color += GaugeRendering::RenderGaugeVectorsDials::get_gauge_vectors_dial_color_at_position_xy(rend_gauge_potentials_lattice_buffer, position, granularity, length_scale, lattice_offset);
+                color += GaugeRendering::RenderGaugeVectorsDials::get_gauge_vectors_tinted_dial_color_at_position_xy(rend_gauge_potentials_lattice_buffer, position, granularity, length_scale, lattice_offset);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;

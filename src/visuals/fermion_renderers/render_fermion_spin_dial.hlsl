@@ -15,13 +15,13 @@ namespace FermionRendering
     {
         // Get the color at a given position to render the spin state of the fermion field as a vector dial.
         // • Reads directly from the simulation's lattice buffers
-        half4 get_fermion_spin_dial_color_at_position(half3 position, uint field_index, half granularity, half length_scale)
+        half4 get_fermion_spin_dial_color_at_position(half3 position, uint field_index, half granularity, half length_scale, half3 lattice_offset)
         {
             if (!SimulationDataOps::is_fermion_field_active(field_index)) return half4(0, 0, 0, 0);
-            half3 rounded_position;
+            half3 center_position;
             half2 offset_coefficient;
-            VectorDialRendering::calculate_position_offset_variables_xy(position, granularity, rounded_position, offset_coefficient);
-            const uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(rounded_position, field_index);
+            VectorDialRendering::calculate_position_offset_variables_xy(position, granularity, lattice_offset, center_position, offset_coefficient);
+            const uint buffer_index = SimulationDataOps::get_fermion_lattice_buffer_index(center_position, field_index);
             FermionFieldState state = rend_fermions_lattice_buffer[buffer_index];
             half state_norm = (half)FermionFieldStateMath::norm(state);
             if (state_norm == 0) return half4(0, 0, 0, 0);
