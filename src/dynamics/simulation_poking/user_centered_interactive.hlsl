@@ -86,13 +86,15 @@ namespace SimulationPokesProcessing
         void _accumulate_gauge_packs(PokeApplicationCache poke_application_data, half3 electric_delta, half3 magnetic_delta, inout GaugeSymmetriesVectorPack crnt_electric_state, inout GaugeSymmetriesVectorPack prev_electric_state, inout GaugeSymmetriesVectorPack crnt_magnetic_state, inout GaugeSymmetriesVectorPack prev_magnetic_state)
         {
             GaugeSymmetriesVectorPack electric_addition, magnetic_addition;
-            [unroll]
+            [loop]
             for (uint symmetry_index = 0; symmetry_index < 12; symmetry_index++)
             {
                 const int active = _poking_active_for_field(poke_application_data.poke_mask, (int)symmetry_index + 8);
                 const half active_factor = (half)active;
-                electric_addition[symmetry_index] = active_factor * half4(0.0f, electric_delta) / (1.0f + length(crnt_electric_state[symmetry_index]));
-                magnetic_addition[symmetry_index] = active_factor * half4(0.0f, magnetic_delta) / (1.0f + length(crnt_magnetic_state[symmetry_index]));
+                uint h = _get_random_number_for_poke_data(poke_application_data.raw_poke_data, symmetry_index + 1);
+                const half3 random_delta = (half3(uint3(h, h >> 5, h >> 10) & 511u) + 128.0f) / 512.0f + 1.0f;
+                electric_addition[symmetry_index] = active_factor * half4(0.0f, electric_delta * random_delta) / (1.0f + length(crnt_electric_state[symmetry_index]));
+                magnetic_addition[symmetry_index] = active_factor * half4(0.0f, magnetic_delta * random_delta) / (1.0f + length(crnt_magnetic_state[symmetry_index]));
             }
             GaugeSymmetriesVectorPackMath::sum(crnt_electric_state, electric_addition, crnt_electric_state);
             GaugeSymmetriesVectorPackMath::sum(crnt_magnetic_state, magnetic_addition, crnt_magnetic_state);
