@@ -13,18 +13,26 @@ namespace FieldForge
         [SerializeField] private Vector3 waveVector;
         [SerializeField] private Vector3 spinState;
         [SerializeField] private bool submit;
+        [SerializeField] private float submissionPeriodSeconds = 0;
+        private float submissionPeriodElapsedSeconds = 0;
 
         private SimulationData simulationData;
 
         private void Start()
         {
             simulationData = simulationManager.simulationInterface.simulationData;
+            submissionPeriodElapsedSeconds = submissionPeriodSeconds;
         }
 
         private void Update()
         {
             if (submit) {
                 submit = false;
+                SubmitMode();
+            }
+            submissionPeriodElapsedSeconds += Time.deltaTime;
+            if (submissionPeriodElapsedSeconds >= submissionPeriodSeconds && submissionPeriodSeconds > 0) {
+                submissionPeriodElapsedSeconds = 0;
                 SubmitMode();
             }
         }
