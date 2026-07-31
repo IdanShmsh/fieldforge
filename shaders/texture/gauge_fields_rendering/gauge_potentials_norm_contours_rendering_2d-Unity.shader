@@ -1,10 +1,10 @@
 /// -----------------------------------------------------------------------------------------------
 /// This shader performs a single rendering operation in FieldForge's configurable render-pipeline.
 /// -----------------------------------------------------------------------------------------------
-/// This pipeline operation renders contour lines of the magnetic strength fields within the xy-plane 
+/// This pipeline operation renders contour lines of the potentials strength fields' norm within the xy-plane 
 /// of the simulation by summing over colors whose RGB-channels are set to be proportional to the fields' 
 /// vector components at that position.
-Shader "Custom/gauge_magnetic_contours_rendering_2d"
+Shader "Custom/gauge_potentials_norm_contours_rendering_2d"
 {
     SubShader
     {
@@ -57,7 +57,7 @@ Shader "Custom/gauge_magnetic_contours_rendering_2d"
                 opacity = opacity ? opacity : 1.0;
                 half4 color = half4(0, 0, 0, 0);
                 half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
-                color += GaugeRendering::RenderGaugeVectorsRGBContours::get_gauge_vectors_rgb_contours_color_at_position(rend_magnetic_strengths_lattice_buffer, position, granularity, definition);
+                color += GaugeRendering::RenderGaugeVectorsRGBContours::get_gauge_vectors_norm_contours_color_at_position(rend_gauge_potentials_lattice_buffer, position, granularity, definition);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
