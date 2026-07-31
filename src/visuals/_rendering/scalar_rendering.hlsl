@@ -100,6 +100,20 @@ namespace ScalarRendering
         const half4 c7 = half4(1, 1, 1, 1);
         return interpolate_color_8(normalized, c0, c1, c2, c3, c4, c5, c6, c7);
     }
+
+    // Returns a color that represents a scalar in a rainbow-like color scale (black - purple - cyan - green - orange).
+    half4 scalar_plasma_color(half scalar, half scale)
+    {
+        if (scale == 0) return half4(0, 0, 0, 0);
+        const half dimensionless = scalar / scale;
+        const half normalized = saturate(CommonMath::harmonic_mean(abs(dimensionless), 1));
+        const half4 c0 = half4(0, 0, 0, 1);
+        const half4 c1 = half4(0.31, 0.13, 1, 1);
+        const half4 c2 = half4(0.082, 0.83, 1, 1);
+        const half4 c3 = half4(0.31, 0.94, 0.67, 1);
+        const half4 c4 = half4(0.72, 0.23, 0.06, 1);
+        return interpolate_color_5(normalized, c0, c1, c2, c3, c4);
+    }
 }
 
 #endif

@@ -93,6 +93,18 @@ namespace CommonMath
         rgb = lerp(half3(1.0, 1.0, 1.0), rgb, s);
         return v * rgb;
     }
+    
+    half3 adjust_saturation(half3 color, half saturation)
+    {
+        half luma = dot(color, half3(0.2126, 0.7152, 0.0722));
+        return lerp(luma.xxx, color, saturation);
+    }
+
+    half4 adjust_saturation(half4 color, half saturation)
+    {
+        half luma = dot(color.rgb, half3(0.2126, 0.7152, 0.0722));
+        return half4(lerp(luma.xxx, color.rgb, saturation), color.a);
+    }
 
     void interpolate_2d(half2 fraction, half values[4], out half result)
     {

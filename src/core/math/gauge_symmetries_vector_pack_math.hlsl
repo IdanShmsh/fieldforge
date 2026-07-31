@@ -154,6 +154,23 @@ namespace GaugeSymmetriesVectorPackMath
         half m10 = length(vector_pack[10]); result[10] = m10 == 0 ? vector_pack[10] : vector_pack[10] * CommonMath::harmonic_mean(m10, max_norm) / m10;
         half m11 = length(vector_pack[11]); result[11] = m11 == 0 ? vector_pack[11] : vector_pack[11] * CommonMath::harmonic_mean(m11, max_norm) / m11;
     }
+
+    // Cross every associated vector pair across two gauge-symmetries-vector-packs
+    void cross_product(GaugeSymmetriesVectorPack vector_pack1, GaugeSymmetriesVectorPack vector_pack2, out GaugeSymmetriesVectorPack result)
+    {
+        result[0] = half4(0, cross(vector_pack1[0].yzw, vector_pack2[0].yzw));
+        result[1] = half4(0, cross(vector_pack1[1].yzw, vector_pack2[1].yzw));
+        result[2] = half4(0, cross(vector_pack1[2].yzw, vector_pack2[2].yzw));
+        result[3] = half4(0, cross(vector_pack1[3].yzw, vector_pack2[3].yzw));
+        result[4] = half4(0, cross(vector_pack1[4].yzw, vector_pack2[4].yzw));
+        result[5] = half4(0, cross(vector_pack1[5].yzw, vector_pack2[5].yzw));
+        result[6] = half4(0, cross(vector_pack1[6].yzw, vector_pack2[6].yzw));
+        result[7] = half4(0, cross(vector_pack1[7].yzw, vector_pack2[7].yzw));
+        result[8] = half4(0, cross(vector_pack1[8].yzw, vector_pack2[8].yzw));
+        result[9] = half4(0, cross(vector_pack1[9].yzw, vector_pack2[9].yzw));
+        result[10] = half4(0, cross(vector_pack1[10].yzw, vector_pack2[10].yzw));
+        result[11] = half4(0, cross(vector_pack1[11].yzw, vector_pack2[11].yzw));
+    }
 }
 
 #endif
