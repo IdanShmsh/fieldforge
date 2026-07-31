@@ -55,7 +55,7 @@ Shader "Custom/gauge_electric_rendering_2d"
                 opacity = opacity ? opacity : 1.0;
                 half4 color = half4(0, 0, 0, 0);
                 half3 position = half3(i.uv.x * (half)simulation_width, i.uv.y * (half)simulation_height, 0);
-                color += GaugeRendering::RenderGaugeVectorsRGB::get_gauge_vectors_rgb_color_at_position(rend_electric_strengths_lattice_buffer, position);
+                color += GaugeRendering::RenderGaugeVectorsRGB::get_gauge_vectors_scaled_rgb_color_at_position(rend_electric_strengths_lattice_buffer, position);
                 color *= simulation_brightness;
                 color *= brightness;
                 color[3] = opacity;
