@@ -1,6 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.EventSystems;
 
 namespace FieldForge
 {
@@ -34,10 +35,17 @@ namespace FieldForge
             _touchTracker.Update();
             foreach (Touch touch in Input.touches)
             {
+                if (IsTouchOverUi(touch.fingerId)) continue;
                 if (!_touchTracker.IsTouchActive(touch.fingerId)) continue;
                 if (!(touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)) continue;
                 SubmitCurrentPoke(touch);
             }
+        }
+
+        private static bool IsTouchOverUi(int fingerId)
+        {
+            if (EventSystem.current == null) return false;
+            return EventSystem.current.IsPointerOverGameObject(fingerId);
         }
 
         private void SubmitCurrentPoke(Touch touch)
